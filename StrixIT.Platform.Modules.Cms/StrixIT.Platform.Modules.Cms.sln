@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrixIT.Platform.Modules.Cms.Web", "StrixIT.Platform.Modules.Cms.Web\StrixIT.Platform.Modules.Cms.Web.csproj", "{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrixIT.Platform.Modules.Cms", "StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.csproj", "{61E57377-722A-4031-ABC9-2BF647C21CA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Test|Any CPU = Test|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}.Test|Any CPU.Build.0 = Test|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{61E57377-722A-4031-ABC9-2BF647C21CA7}.Test|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

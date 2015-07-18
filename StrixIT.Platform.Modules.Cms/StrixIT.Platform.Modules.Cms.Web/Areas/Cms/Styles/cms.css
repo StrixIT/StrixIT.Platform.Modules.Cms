@@ -1,0 +1,171 @@
+﻿/* Apache license */
+/** 
+ * Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#tabs {
+    margin-bottom: 20px;
+}
+
+/* Entity actions page */
+#EntityTypes {
+    margin-bottom: 10px;
+}
+
+.serviceaction {
+    height: 45px;
+}
+
+.save-button {
+    margin-top: 10px;
+}
+
+/* Edit language picker */
+#editlanguagepicker {
+    margin-bottom: 10px;
+}
+
+.language-header {
+    font-weight: bold;
+}
+
+#editlanguagepicker ul {
+    display: inline-block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+    #editlanguagepicker ul li {
+        display: inline-block;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+#editlanguagepicker .selectedlanguage {
+    font-size: large;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+#editlanguagepicker .unavailable {
+    color: #b6b5b6;
+    font-weight: normal;
+}
+
+.cms-languagepicker {
+    margin: 10px 20px 0 0;
+}
+
+#create-multiple-link {
+    margin-left: 20px;
+}
+
+#documentlist, document-tags {
+    list-style: none;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+#documentlist {
+    margin: 0 0 10px 0;
+    padding: 0;
+    list-style: none;
+}
+
+    #documentlist img {
+        max-height: 100px;
+    }
+
+    #documentlist li {
+        margin-bottom: 10px;
+    }
+
+    #documentlist .input-label {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    #documentlist .document-data {
+        height: 100px;
+        display: table;
+    }
+
+    #documentlist .document-data .document-data-container {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+#taglist {
+    font-size: larger;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.content-tag-list {
+    margin-top: -20px;
+}
+
+.document-tags {
+    list-style: none;
+    margin-top: 5px 0 0 -10px;
+}
+
+    .document-tags img {
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+.edit-tag-list, .margin-top {
+    margin-top: 10px;
+}
+
+#detail-taglist {
+    padding: 0;
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+    #detail-taglist li {
+        margin-right: 10px;
+    }
+
+.add-tag-button {
+    margin-top: 10px;
+}
+
+.form-margin-bottom, .cms-editor {
+    margin-bottom: 10px;
+}
+
+.details-tabs {
+    margin-top: 25px;
+}
+
+.view-version {
+    cursor: pointer;
+}
+
+.version-log-container {
+    margin-top: 20px;
+}
+
+.version-log {
+    width: 65%;
+}
+
+.table.no-border th, .table.no-border td {
+    border: none;
+}

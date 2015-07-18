@@ -1,0 +1,95 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+@model Guid?
+@{
+    var type = (Type)ViewBag.ModelType;
+    var contentType = EntityHelper.GetObjectMap(type).ContentType;
+    bool versionable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+    bool allowNested = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowNestedComments);
+}
+<script type="text/ng-template" id="commenttemplate">
+    <div ng-show="!comment.isEditing">
+        @if (Request.IsAuthenticated)
+        {
+            <div class="commentoptions pull-right">
+                <div ng-click="edit(comment, $event)" ng-show="comment.canEdit">
+                    <i class="fa fa-pencil fa-lg" kendo-tooltip k-content="'@DefaultInterface.Edit'"></i>
+                </div>
+                <div ng-click="delete(comment, $event)" ng-show="comment.canDelete">
+                    <i class="fa fa-trash-o fa-lg" kendo-tooltip k-content="'@DefaultInterface.Delete'"></i>
+                </div>
+            </div>
+        }
+        <div class="commentinfo">
+            <strong>{{ comment.createdBy }}</strong> @Interface.ResponseCreatedOn <strong>{{ comment.createdOn | kendoDate }}</strong>
+            @if (versionable)
+            {
+                @:(@Interface.ResponseToVersion <strong>{{ comment.entityVersion }}</strong>)
+                            }
+            @if (allowNested && Request.IsAuthenticated)
+            {
+                <div class="commentoptions" ng-click=" respond(comment, $event)" ng-show="comment.canRespond">
+                    <i class="fa fa-reply fa-lg" kendo-tooltip k-content="'@Interface.Respond'"></i>
+                </div>
+            }
+        </div>
+        <div class="clearfix"></div>
+        <div ng-show="supportGravatar" class="row">
+            <div class="col-md-3">
+                <img ng-src="{{comment.gravatarLink}}" class="img-thumbnail" />
+            </div>
+            <p class="col-md-9" ng-bind-html="comment.text">
+            </p>
+        </div>
+        <div ng-show="!supportGravatar">
+            <p ng-bind-html="comment.text">
+            </p>
+        </div>
+        <hr />
+        <div class="childcomments" ng-repeat="comment in comment.childComments" ng-include="'commenttemplate'">
+        </div>
+    </div>
+</script>
+<div class="cms-comment-container" ng-controller="commentcontroller" ng-cloak ng-init="init('@type.Name.Replace("ViewModel", string.Empty).ToLower()', '@EntityHelper.GetEntityTypeId(contentType)', '@Interface.NewResponse', '@Interface.EditResponse', '@Interface.RespondToResponse', '@Model')">
+    <h3>@Interface.Comments</h3>
+    <div class="cms-comment-data" ng-show="!loading">
+        <ul class="cms-comment-list">
+            <li ng-repeat="comment in getScopeComments()" ng-include="'commenttemplate'">
+
+            </li>
+        </ul>
+        @if (Request.IsAuthenticated)
+        {
+            <form class="commentform" name="comment" kendo-validator="validator" novalidate>
+                <h4>
+                    {{formHeader}}
+                </h4>
+                @*<textarea id="text" class="k-textbox comment-edit" name="text" rows="8" required data-required-msg="Enter a comment" ng-model="currentComment.text"></textarea>*@
+                @Html.Partial("TinyMCE", new RteModel(typeof(Comment), "Text", 10, 100) { ModelName = "CurrentComment", CommentSettingsOnly = true, RequiredMessage = Interface.EnterAComment })
+                <p>
+                    <kendo-button ng-click="save($event)" class="k-primary" ng-disabled="isSaving">@DefaultInterface.Save</kendo-button>
+                    <kendo-button ng-show="isEditing" ng-click="cancelEdit($event)">@DefaultInterface.Cancel</kendo-button>
+                </p>
+            </form>
+        }
+    </div>
+    <div ng-show="loading">
+        <span class="ajaxloader"><img ng-src="{{ getLoadingImage() }}" alt="Loading..." />@DefaultInterface.Loading</span>
+    </div>
+    @Html.Partial("ConfirmationModal", new ConfirmationConfig { Id = "commentconfirm", Title = Interface.DeleteComment, Body = Interface.ConfirmDeleteComment, ConfirmMethod = "confirmDelete" })
+</div>

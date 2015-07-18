@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{61E57377-722A-4031-ABC9-2BF647C21CA7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StrixIT.Platform.Modules.Cms</RootNamespace>
+    <AssemblyName>StrixIT.Platform.Modules.Cms</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="StrixIT.Platform.Core">
+      <HintPath>..\StrixIT.Platform.Modules.Cms.Web\Libraries\StrixIT.Platform.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="StrixIT.Platform.Web">
+      <HintPath>..\StrixIT.Platform.Modules.Cms.Web\Libraries\StrixIT.Platform.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.3.1.5.154\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Areas\CmsAreaRegistration.cs" />
+    <Compile Include="Attributes\AuthenticatedCacheAttribute.cs" />
+    <Compile Include="Attributes\FileUploadAttribute.cs" />
+    <Compile Include="Attributes\RteAttribute.cs" />
+    <Compile Include="Audit\AuditViewModel.cs" />
+    <Compile Include="Audit\GroupSaveHandler.cs" />
+    <Compile Include="Audit\IAudit.cs" />
+    <Compile Include="Audit\MembershipMailHandler.cs" />
+    <Compile Include="Audit\UserSaveHandler.cs" />
+    <Compile Include="CmsPermissions.cs" />
+    <Compile Include="Comments\Comment.cs" />
+    <Compile Include="Comments\CommentListModel.cs" />
+    <Compile Include="Comments\CommentManager.cs" />
+    <Compile Include="Comments\CommentService.cs" />
+    <Compile Include="Comments\CommentStatus.cs" />
+    <Compile Include="Comments\CommentViewModel.cs" />
+    <Compile Include="Comments\ICommentManager.cs" />
+    <Compile Include="Comments\ICommentService.cs" />
+    <Compile Include="Content\ContentBase.cs" />
+    <Compile Include="Content\ContentCustomFieldValue.cs" />
+    <Compile Include="Content\ContentSharedWithGroup.cs" />
+    <Compile Include="Content\Dtos\EntityListModel.cs" />
+    <Compile Include="Content\Dtos\EntityViewModel.cs" />
+    <Compile Include="Content\Dtos\PlatformBaseViewModel.cs" />
+    <Compile Include="Content\Dtos\RteModel.cs" />
+    <Compile Include="Content\Dtos\SelectRelationDto.cs" />
+    <Compile Include="Content\Dtos\VersionViewModel.cs" />
+    <Compile Include="Content\EntityCustomField.cs" />
+    <Compile Include="Content\EntityManager.cs" />
+    <Compile Include="Content\EntityService.cs" />
+    <Compile Include="Content\EntityType.cs" />
+    <Compile Include="Content\IContent.cs" />
+    <Compile Include="Content\IEntityManager.cs" />
+    <Compile Include="Content\IEntityService.cs" />
+    <Compile Include="Content\IObjectManager.cs" />
+    <Compile Include="Content\IObjectService.cs" />
+    <Compile Include="Content\ObjectManager.cs" />
+    <Compile Include="Content\ObjectService.cs" />
+    <Compile Include="Content\PlatformEntity.cs" />
+    <Compile Include="Data Access\IPlatformDataSource.cs" />
+    <Compile Include="Data Access\PlatformDataSource.cs" />
+    <Compile Include="Data Access\PlatformDataSourceFactory.cs" />
+    <Compile Include="Documents\Document.cs" />
+    <Compile Include="Documents\DocumentListModel.cs" />
+    <Compile Include="Documents\DocumentService.cs" />
+    <Compile Include="Documents\DocumentType.cs" />
+    <Compile Include="Documents\DocumentViewModel.cs" />
+    <Compile Include="Documents\IDocumentService.cs" />
+    <Compile Include="Entity Services\EntityServiceActions.cs" />
+    <Compile Include="Entity Services\EntityServiceCollection.cs" />
+    <Compile Include="Entity Services\EntityServiceManager.cs" />
+    <Compile Include="Entity Services\EntityTypeServiceAction.cs" />
+    <Compile Include="Entity Services\HandleBindServicesModel.cs" />
+    <Compile Include="Entity Services\IEntityServiceManager.cs" />
+    <Compile Include="Entity Services\IServiceManagerService.cs" />
+    <Compile Include="Entity Services\ServiceActionRecord.cs" />
+    <Compile Include="Entity Services\ServiceManagerService.cs" />
+    <Compile Include="EventHandlers\GetContentHandler.cs" />
+    <Compile Include="EventHandlers\HandlePrepareQuery.cs" />
+    <Compile Include="EventHandlers\PageControllerHandler.cs" />
+    <Compile Include="Events\CacheEntityModelEvent.cs" />
+    <Compile Include="Events\PrepareQueryEvent.cs" />
+    <Compile Include="Files\Dtos\AddFile.cs" />
+    <Compile Include="Files\Dtos\FileDisplayModel.cs" />
+    <Compile Include="Files\Dtos\FileListModel.cs" />
+    <Compile Include="Files\Dtos\FileViewModel.cs" />
+    <Compile Include="Files\Dtos\UploadFileResult.cs" />
+    <Compile Include="Files\File.cs" />
+    <Compile Include="Files\FileManager.cs" />
+    <Compile Include="Files\FileService.cs" />
+    <Compile Include="Files\FileUploadMode.cs" />
+    <Compile Include="Files\IFileManager.cs" />
+    <Compile Include="Files\IFileService.cs" />
+    <Compile Include="Files\IImageConverter.cs" />
+    <Compile Include="Files\ImageConverter.cs" />
+    <Compile Include="Files\SaveFileArguments.cs" />
+    <Compile Include="Helpers\DefaultEntityHelper.cs" />
+    <Compile Include="Helpers\DefaultPlatformHelper.cs" />
+    <Compile Include="Helpers\EntityHelper.cs" />
+    <Compile Include="Helpers\IEntityHelper.cs" />
+    <Compile Include="Helpers\IPlatformHelper.cs" />
+    <Compile Include="Helpers\ObjectMap.cs" />
+    <Compile Include="Helpers\StrixCms.cs" />
+    <Compile Include="Html\Html.cs" />
+    <Compile Include="Html\HtmlListModel.cs" />
+    <Compile Include="Html\HtmlViewModel.cs" />
+    <Compile Include="Mailing\IMailService.cs" />
+    <Compile Include="Mailing\MailBuilder.cs" />
+    <Compile Include="Mailing\MailContent.cs" />
+    <Compile Include="Mailing\MailContentListModel.cs" />
+    <Compile Include="Mailing\MailContentTemplate.cs" />
+    <Compile Include="Mailing\MailContentTemplateListModel.cs" />
+    <Compile Include="Mailing\MailContentTemplateViewModel.cs" />
+    <Compile Include="Mailing\MailContentViewModel.cs" />
+    <Compile Include="Mailing\MailService.cs" />
+    <Compile Include="Mailing\MailTemplateService.cs" />
+    <Compile Include="Migrations\201506251130154_initial.cs" />
+    <Compile Include="Migrations\201506251130154_initial.Designer.cs">
+      <DependentUpon>201506251130154_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="News\INewsService.cs" />
+    <Compile Include="News\News.cs" />
+    <Compile Include="News\NewsListModel.cs" />
+    <Compile Include="News\NewsService.cs" />
+    <Compile Include="News\NewsViewModel.cs" />
+    <Compile Include="Pages\ContentLocator.cs" />
+    <Compile Include="Pages\IPageRegistrator.cs" />
+    <Compile Include="Pages\PageRegistration.cs" />
+    <Compile Include="Pages\PageRegistrator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\DefaultTokens.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultTokens.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Interface.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Interface.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Interface.nl.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Interface.nl.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\InterfaceClient.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>InterfaceClient.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\InterfaceClient.nl.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>InterfaceClient.nl.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Search\ISearchService.cs" />
+    <Compile Include="Search\SearchItem.cs" />
+    <Compile Include="Search\SearchResult.cs" />
+    <Compile Include="Search\SearchService.cs" />
+    <Compile Include="Startup and Configuration\CmsConfiguration.cs" />
+    <Compile Include="Startup and Configuration\CmsConstants.cs" />
+    <Compile Include="Startup and Configuration\CmsInitializer.cs" />
+    <Compile Include="Startup and Configuration\CmsRegistry.cs" />
+    <Compile Include="Startup and Configuration\CmsRoleNames.cs" />
+    <Compile Include="Startup and Configuration\FilesConfiguration.cs" />
+    <Compile Include="StrixValidationException.cs" />
+    <Compile Include="Tagging\CoreVocabulary.cs" />
+    <Compile Include="Tagging\ITaxonomyManager.cs" />
+    <Compile Include="Tagging\ITaxonomyService.cs" />
+    <Compile Include="Tagging\Synonym.cs" />
+    <Compile Include="Tagging\TaxonomyManager.cs" />
+    <Compile Include="Tagging\TaxonomyService.cs" />
+    <Compile Include="Tagging\Term.cs" />
+    <Compile Include="Tagging\TermViewModel.cs" />
+    <Compile Include="Tagging\Vocabulary.cs" />
+    <Compile Include="Tagging\VocabularyListConfiguration.cs" />
+    <Compile Include="Tagging\VocabularyViewModel.cs" />
+    <Compile Include="Web\CmsModuleConfiguration.cs" />
+    <Compile Include="Web\Controllers\CommentController.cs" />
+    <Compile Include="Web\Controllers\DocumentController.cs" />
+    <Compile Include="Web\Controllers\EntityActionController.cs" />
+    <Compile Include="Web\Controllers\EntityController.cs" />
+    <Compile Include="Web\Controllers\FileController.cs" />
+    <Compile Include="Web\Controllers\HtmlController.cs" />
+    <Compile Include="Web\Controllers\MailContentController.cs" />
+    <Compile Include="Web\Controllers\MailContentTemplateController.cs" />
+    <Compile Include="Web\Controllers\NewsController.cs" />
+    <Compile Include="Web\Controllers\PageController.cs" />
+    <Compile Include="Web\Controllers\SearchController.cs" />
+    <Compile Include="Web\Controllers\VocabularyController.cs" />
+    <Compile Include="Web\EntityListConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Migrations\Scripts\Create database 1.0.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201506251130154_initial.resx">
+      <DependentUpon>201506251130154_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DefaultTokens.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultTokens.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Interface.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Interface.nl.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Interface.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Interface.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\InterfaceClient.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>InterfaceClient.nl.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\InterfaceClient.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>InterfaceClient.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /E /F /I "$(TargetPath)" "$(TargetPath)\..\..\..\..\StrixIT.Platform.Modules.Cms.Web\Areas\Cms\bin"
+xcopy /Y /E /F /I "$(TargetPath)\..\nl\StrixIT.Platform.Modules.Cms.resources.dll" "$(TargetPath)\..\..\..\..\StrixIT.Platform.Modules.Cms.Web\Areas\Cms\bin\nl"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

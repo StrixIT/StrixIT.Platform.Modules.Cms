@@ -1,0 +1,51 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+
+@{
+    Html.AddScript("~/Areas/Cms/Scripts/Widgets/strixit.newscontroller.js");
+    var itemPageUrl = (string)ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL];
+    var basePage = Request.Url.AbsolutePath.Replace(string.Format("/{0}/", StrixPlatform.DefaultCultureCode), string.Empty).ToLower();
+    if (!string.IsNullOrWhiteSpace(itemPageUrl) && basePage != itemPageUrl.ToLower())
+    {
+        basePage = basePage + "/" + itemPageUrl;
+    }
+    if (basePage.StartsWith("/"))
+    {
+        basePage = basePage.Substring(1);
+    }
+}
+<script type="text/x-kendo-angular-template" id="newstemplate">
+    <li>
+        <h3 ng-bind-html="dataItem.name"></h3>
+        <p ng-bind-html="dataItem.summary"></p>
+        <a href="{{ '@basePage' + '/' + dataItem.url }}">@Interface.ReadFullNews</a>
+        @if (StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES))
+        {
+            <a class="cms-editlink" href="{{ '@Url.Action("Edit", "News", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })/' + dataItem.url }}">@Interface.EditNews</a>
+        }
+    </li>
+</script>
+<div class="cms-listcontainer-news" id="newslist" ng-controller="newscontroller" ng-init="init()" ng-show="dataAvailable" ng-cloak>
+    <input type="text" class="k-textbox" strix-search k-data-source="news" placeholder="Search news..." data-field="Name, Summary, Body" />
+    <ul class="cms-list-news" kendo-listview="newslist" k-options="newslistconfig"></ul>
+    <div kendo-pager k-data-source="news"></div>
+    @if (StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES))
+    {
+        <a class="cms-createlink" href="@Url.Action("Edit", "News", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })">@Interface.CreateNews</a>
+    }
+</div>
