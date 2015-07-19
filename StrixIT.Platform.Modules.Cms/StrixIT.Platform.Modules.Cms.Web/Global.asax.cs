@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 using StrixIT.Platform.Web;
 
-namespace StrixIT.Platform.Cms.Web
+namespace StrixIT.Platform.Modules.Cms.Web
 {
     public class Global : StrixWebApplication { }
 }
