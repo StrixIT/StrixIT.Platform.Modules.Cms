@@ -223,13 +223,14 @@
                 return;
             }
 
+            var type = $route.current.data.type;
+
             if (data.body && $scope[type + 'form'].body) {
                 if (data.body != $scope[type + 'form'].body.$modelValue) {
                     data.body = $scope[type + 'form'].body.$modelValue;
                 }
             }
 
-            var type = $route.current.data.type;
             var args = { type: type, entity: data, isValid: true };
             $rootScope.$broadcast('validatingEntity', args);
 

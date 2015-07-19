@@ -267,6 +267,12 @@ namespace StrixIT.Platform.Modules.Cms
         protected bool CheckIsAccessAllowed()
         {
             var result = true;
+
+            if (DependencyInjector.TryGet<IMembershipService>() == null)
+            {
+                return true;
+            }
+
             var map = EntityHelper.GetObjectMap(typeof(TModel));
 
             // Todo: use injected request and response
