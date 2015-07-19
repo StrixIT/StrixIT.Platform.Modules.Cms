@@ -277,7 +277,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /E /F /I "$(TargetPath)" "$(TargetPath)\..\..\..\..\StrixIT.Platform.Modules.Cms.Web\Areas\Cms\bin"
+    <PostBuildEvent>xcopy /Y /E /F /I "$(TargetPath)\..\..\..\Migrations\Scripts\*.*" "c:\builds\Modules\Cms\SQL Scripts\"
+xcopy /Y /E /F /I "$(TargetPath)" "$(TargetPath)\..\..\..\..\StrixIT.Platform.Modules.Cms.Web\Areas\Cms\bin"
 xcopy /Y /E /F /I "$(TargetPath)\..\nl\StrixIT.Platform.Modules.Cms.resources.dll" "$(TargetPath)\..\..\..\..\StrixIT.Platform.Modules.Cms.Web\Areas\Cms\bin\nl"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
