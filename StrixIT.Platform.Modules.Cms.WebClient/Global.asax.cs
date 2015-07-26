@@ -20,7 +20,7 @@
 
 using StrixIT.Platform.Web;
 
-namespace StrixIT.Platform.Modules.Cms.Web
+namespace StrixIT.Platform.Modules.Cms.WebClient
 {
     public class Global : StrixWebApplication { }
 }
