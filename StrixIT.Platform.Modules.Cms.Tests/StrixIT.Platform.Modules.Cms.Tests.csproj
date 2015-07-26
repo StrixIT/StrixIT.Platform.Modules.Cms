@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.csproj">
-      <Project>{61e57377-722a-4031-abc9-2bf647c21ca7}</Project>
+      <Project>{a3184dca-94da-4cc6-a0c3-ee395dcce88b}</Project>
       <Name>StrixIT.Platform.Modules.Cms</Name>
     </ProjectReference>
   </ItemGroup>

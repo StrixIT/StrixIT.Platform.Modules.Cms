@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Actions" xml:space="preserve">
+    <value>Acties</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="EditResponse" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+  <data name="EntityServiceActionIndex" xml:space="preserve">
+    <value>Entity Service acties</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="NewResponse" xml:space="preserve">
+    <value>Nieuwe reactie</value>
+  </data>
+  <data name="Respond" xml:space="preserve">
+    <value>Reageer</value>
+  </data>
+  <data name="RespondToResponse" xml:space="preserve">
+    <value>Reageer op commentaar</value>
+  </data>
+  <data name="ResponseCreatedOn" xml:space="preserve">
+    <value>op</value>
+  </data>
+  <data name="ResponseToVersion" xml:space="preserve">
+    <value>versie</value>
+  </data>
+  <data name="RestoreVersion" xml:space="preserve">
+    <value>Herstel</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="VersionNumber" xml:space="preserve">
+    <value>versie {0}</value>
+  </data>
+  <data name="ViewVersion" xml:space="preserve">
+    <value>Bekijken</value>
+  </data>
+  <data name="ConfirmActivateDraft" xml:space="preserve">
+    <value>Deze draft echt activeren?</value>
+  </data>
+  <data name="ConfirmDeleteFile" xml:space="preserve">
+    <value>Weet u zeker dat u dit bestand wilt verwijderen?</value>
+  </data>
+  <data name="DeleteFile" xml:space="preserve">
+    <value>Bestand verwijderen</value>
+  </data>
+  <data name="Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="DraftNumber" xml:space="preserve">
+    <value>Draft nummer {0}</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Geschiedenis</value>
+  </data>
+  <data name="LastResponseDate" xml:space="preserve">
+    <value>Laatste reactie</value>
+  </data>
+  <data name="NumberOfResponses" xml:space="preserve">
+    <value>Aantal reacties</value>
+  </data>
+  <data name="UploadFile" xml:space="preserve">
+    <value>Nieuw bestand uploaden</value>
+  </data>
+  <data name="ZippedFileInstructions" xml:space="preserve">
+    <value>Meerdere bestanden moeten in één zip bestand worden opgeslagen vóór uploaden</value>
+  </data>
+  <data name="ActivateDraft" xml:space="preserve">
+    <value>Draft activeren</value>
+  </data>
+  <data name="BackToVersionList" xml:space="preserve">
+    <value>Terug naar de versielijst</value>
+  </data>
+  <data name="ViewDraft" xml:space="preserve">
+    <value>Draft bekijken</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="DeleteMessage" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="EditNews" xml:space="preserve">
+    <value>Nieuwsbericht bewerken</value>
+  </data>
+  <data name="NewsIndex" xml:space="preserve">
+    <value>Nieuws overzicht</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Samenvatting</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Verder</value>
+  </data>
+  <data name="VersionNumberHeader" xml:space="preserve">
+    <value>Versienummer</value>
+  </data>
+  <data name="ModifiedBy" xml:space="preserve">
+    <value>Laatst bewerkt door</value>
+  </data>
+  <data name="ModifiedOn" xml:space="preserve">
+    <value>Laatst bewerkt op</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>&amp;copy; {0} - StrixIT</value>
+  </data>
+  <data name="ExtractZip" xml:space="preserve">
+    <value>Bestanden uitpakken</value>
+  </data>
+  <data name="HomePageTitle" xml:space="preserve">
+    <value>Home page</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Logboeken</value>
+  </data>
+  <data name="MailContentIndex" xml:space="preserve">
+    <value>Mail berichten</value>
+  </data>
+  <data name="MailContentTemplateIndex" xml:space="preserve">
+    <value>Mail sjablonen</value>
+  </data>
+  <data name="HTML" xml:space="preserve">
+    <value>Html</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>Nieuws</value>
+  </data>
+  <data name="HtmlIndex" xml:space="preserve">
+    <value>Html overzicht</value>
+  </data>
+  <data name="NewsItem" xml:space="preserve">
+    <value>News item {0}</value>
+  </data>
+  <data name="ErrorSavingServiceAction" xml:space="preserve">
+    <value>Er is een fout opgetreden bij het opslaan van de service acties</value>
+  </data>
+  <data name="NameNotUnique" xml:space="preserve">
+    <value>Deze naam bestaat al</value>
+  </data>
+  <data name="NoRecordsToSave" xml:space="preserve">
+    <value>No service settings to save</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>{0} is verplicht</value>
+  </data>
+  <data name="StringLength" xml:space="preserve">
+    <value>{0} mag maximaal  {1} tekens lang zijn.</value>
+  </data>
+  <data name="UpdatedByOn" xml:space="preserve">
+    <value>Bijgewerkt door {0} op {1}</value>
+  </data>
+  <data name="ExpireTime" xml:space="preserve">
+    <value>Verloopt op</value>
+  </data>
+  <data name="PublishedOn" xml:space="preserve">
+    <value>Gepubliceerd op</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="DocumentIndex" xml:space="preserve">
+    <value>Documenten</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Documenten</value>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>List</value>
+  </data>
+  <data name="Extension" xml:space="preserve">
+    <value>Extensie</value>
+  </data>
+  <data name="TaxonomyIndex" xml:space="preserve">
+    <value>Taxonomie</value>
+  </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>Tag toevoegen</value>
+  </data>
+  <data name="EditVocabulary" xml:space="preserve">
+    <value>Vocabulaire bewerken</value>
+  </data>
+  <data name="NoTagsAvailable" xml:space="preserve">
+    <value>Geen tags gevonden</value>
+  </data>
+  <data name="Vocabulary" xml:space="preserve">
+    <value>Vocabulaire {0}</value>
+  </data>
+  <data name="VocabularyTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="CreateDocument" xml:space="preserve">
+    <value>Document toevoegen</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>op</value>
+  </data>
+  <data name="PublishedBy" xml:space="preserve">
+    <value>Gepubliceerd door</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="ReadFullNews" xml:space="preserve">
+    <value>Volledige artikel lezen</value>
+  </data>
+  <data name="Access" xml:space="preserve">
+    <value>Toegang</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Reacties</value>
+  </data>
+  <data name="ContentView" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="FilterTags" xml:space="preserve">
+    <value>Tags filteren...</value>
+  </data>
+  <data name="RemoveTag" xml:space="preserve">
+    <value>Tag verwijderen</value>
+  </data>
+  <data name="SelectArchive" xml:space="preserve">
+    <value>Kies een zip bestand</value>
+  </data>
+  <data name="SelectSingleFile" xml:space="preserve">
+    <value>Kies een bestand</value>
+  </data>
+  <data name="UploadFiles" xml:space="preserve">
+    <value>Meerdere bestanden uploaden</value>
+  </data>
+  <data name="ConfirmRestoreVersion" xml:space="preserve">
+    <value>Weet u zeker dat u versie {0} van {1} {2} wilt herstellen?</value>
+  </data>
+  <data name="RestoreVersionTitle" xml:space="preserve">
+    <value>Herstel versie {0}</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Uploaden</value>
+  </data>
+  <data name="SelectedFile" xml:space="preserve">
+    <value>Geselecteerde bestand: {0}</value>
+  </data>
+  <data name="UploadMultipleDocuments" xml:space="preserve">
+    <value>Meerdere documenten uploaden</value>
+  </data>
+  <data name="ConfirmDeleteComment" xml:space="preserve">
+    <value>Weet u zeker dat u deze reactie wilt verwijderen?</value>
+  </data>
+  <data name="DeleteComment" xml:space="preserve">
+    <value>Reactie verwijderen</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="VersionLog" xml:space="preserve">
+    <value>Versie log</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>Van</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Onderwerp</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>Sjabloon</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Kies...</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Geef a.u.b. een geldig e-mail adres op</value>
+  </data>
+  <data name="FileTypesAllowed" xml:space="preserve">
+    <value>U kunt deze bestandstypen uploaden: {0}.</value>
+  </data>
+  <data name="CreateNews" xml:space="preserve">
+    <value>Nieuw nieuws item</value>
+  </data>
+  <data name="ProcessingUpload" xml:space="preserve">
+    <value>De bestanden worden verwerkt, even geduld a.u.b...</value>
+  </data>
+  <data name="ClickToViewDocument" xml:space="preserve">
+    <value>Klik hier om het document te bekijken</value>
+  </data>
+  <data name="EditDocument" xml:space="preserve">
+    <value>Document bewerken</value>
+  </data>
+  <data name="PleaseSelectAFile" xml:space="preserve">
+    <value>Selecteer a.u.b. een bestand</value>
+  </data>
+  <data name="ErrorUploadingFile" xml:space="preserve">
+    <value>Er is een onverwachte fout opgetreden bij het uploaden van het bestand</value>
+  </data>
+  <data name="FileDeleteSuccess" xml:space="preserve">
+    <value>Het bestand is verwijderd</value>
+  </data>
+  <data name="FileTypeNotAllowed" xml:space="preserve">
+    <value>Dit bestandstype is niet toegestaan</value>
+  </data>
+  <data name="FileUploadSuccess" xml:space="preserve">
+    <value>Het bestand is geupload</value>
+  </data>
+  <data name="NoFileSelected" xml:space="preserve">
+    <value>Geen bestand geselecteerd</value>
+  </data>
+  <data name="FileUploadedOn" xml:space="preserve">
+    <value>Toegevoegd op</value>
+  </data>
+  <data name="OriginalFileName" xml:space="preserve">
+    <value>Bestandsnaam</value>
+  </data>
+  <data name="FileData" xml:space="preserve">
+    <value>Bestand</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>Bestanden mogen niet groter zijn dan {0} MB.</value>
+  </data>
+  <data name="FileSize" xml:space="preserve">
+    <value>Grootte</value>
+  </data>
+  <data name="DownloadCount" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="EnterAComment" xml:space="preserve">
+    <value>Voer a.u.b. uw commentaar in</value>
+  </data>
+  <data name="SearchPlaceHolder" xml:space="preserve">
+    <value>Zoeken...</value>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Zoekresultaten voor {0}</value>
+  </data>
+  <data name="AuthorName" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+</root>
