@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CacheEntityModelEvent.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using StrixIT.Platform.Core;
 
@@ -28,8 +30,10 @@ namespace StrixIT.Platform.Modules.Cms
     /// <typeparam name="TModel">The type of the view model</typeparam>
     public class CacheEntityModelEvent<TModel> : IPlatformEvent where TModel : EntityViewModel
     {
+        #region Public Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="CacheEntityModelEvent{TModel}" /> class.
+        /// Initializes a new instance of the <see cref="CacheEntityModelEvent{TModel}"/> class.
         /// </summary>
         /// <param name="model">The entity model to cache</param>
         public CacheEntityModelEvent(TModel model)
@@ -37,9 +41,15 @@ namespace StrixIT.Platform.Modules.Cms
             this.Model = model;
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         /// <summary>
         /// Gets the entity model to cache.
         /// </summary>
         public TModel Model { get; private set; }
+
+        #endregion Public Properties
     }
 }

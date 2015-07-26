@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsPermissions.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,17 +17,22 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public static class CmsPermissions
     {
+        #region Public Fields
+
+        public static readonly string AddVocabulary = "StrixIT.Cms.AddVocabulary";
+        public static readonly string DeleteVocabulary = "StrixIT.Cms.DeleteVocabulary";
+        public static readonly string EditVocabulary = "StrixIT.Cms.EditVocabulary";
         public static readonly string ManageServices = "StrixIT.Cms.ManageServices";
 
         public static readonly string ViewVocabularies = "StrixIT.Cms.ViewVocabularies";
-        public static readonly string AddVocabulary = "StrixIT.Cms.AddVocabulary";
-        public static readonly string EditVocabulary = "StrixIT.Cms.EditVocabulary";
-        public static readonly string DeleteVocabulary = "StrixIT.Cms.DeleteVocabulary";
+
+        #endregion Public Fields
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IPlatformDataSource.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,13 +17,14 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,10 +33,24 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IPlatformDataSource : IDataSource
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets the file system wrapper used.
         /// </summary>
         IFileSystemWrapper FileSystemWrapper { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets the values of a many-to-many relation for an entity.
+        /// </summary>
+        /// <param name="entity">The entity to get the relation values for</param>
+        /// <param name="propertyName">The name of the relation property</param>
+        /// <returns>The relation values</returns>
+        IList GetExistingManyToManyRelations(object entity, string propertyName);
 
         /// <summary>
         /// Gets the key value of the entity with the specified key type.
@@ -43,6 +59,28 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="entity">The entity to get the key value for</param>
         /// <returns>The entity key</returns>
         TKey GetKeyValue<TKey>(object entity);
+
+        /// <summary>
+        /// Gets the names of the many-to-many relations of an entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to get the relations for</param>
+        /// <returns>The names of the many-to-many relations</returns>
+        string[] GetManyToManyRelations(Type entityType);
+
+        /// <summary>
+        /// Gets a list of changed properties of the entity, the property names and their old and
+        /// new values.
+        /// </summary>
+        /// <param name="entity">The entity to get the changed properties for</param>
+        /// <returns>The list of modified property values</returns>
+        IList<ModifiedPropertyValue> GetModifiedPropertyValues(object entity);
+
+        /// <summary>
+        /// Ignores an entity, so changes made to it will no longer be saved to the data source.
+        /// Used to create new versions.
+        /// </summary>
+        /// <param name="entity">The entity to ignore</param>
+        void Ignore(object entity);
 
         /// <summary>
         /// Gets a query for the specified entity type.
@@ -67,32 +105,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The query</returns>
         IQueryable Query(Type entityType, string relations);
 
-        /// <summary>
-        /// Gets the names of the many-to-many relations of an entity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to get the relations for</param>
-        /// <returns>The names of the many-to-many relations</returns>
-        string[] GetManyToManyRelations(Type entityType);
-
-        /// <summary>
-        /// Ignores an entity, so changes made to it will no longer be saved to the data source. Used to create new versions.
-        /// </summary>
-        /// <param name="entity">The entity to ignore</param>
-        void Ignore(object entity);
-
-        /// <summary>
-        /// Gets a list of changed properties of the entity, the property names and their old and new values.
-        /// </summary>
-        /// <param name="entity">The entity to get the changed properties for</param>
-        /// <returns>The list of modified property values</returns>
-        IList<ModifiedPropertyValue> GetModifiedPropertyValues(object entity);
-
-        /// <summary>
-        /// Gets the values of a many-to-many relation for an entity.
-        /// </summary>
-        /// <param name="entity">The entity to get the relation values for</param>
-        /// <param name="propertyName">The name of the relation property</param>
-        /// <returns>The relation values</returns>
-        IList GetExistingManyToManyRelations(object entity, string propertyName);
+        #endregion Public Methods
     }
 }

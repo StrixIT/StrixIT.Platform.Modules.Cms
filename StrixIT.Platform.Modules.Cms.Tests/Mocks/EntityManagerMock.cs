@@ -4,21 +4,21 @@
 //// </auto-generated>
 ////------------------------------------------------------------------------------
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public class EntityManagerMock
     {
-        private IEntityManager _manager;
-        private DataSourceMock _dataSourceMock = new DataSourceMock();
+        #region Private Fields
+
         private Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
+        private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private IEntityManager _manager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EntityManagerMock()
         {
@@ -27,11 +27,15 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             _manager = new EntityManager(_dataSourceMock.Mock.Object, _cacheMock.Object);
         }
 
-        public IEntityManager EntityManager
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public Mock<ICacheService> CacheMock
         {
             get
             {
-                return _manager;
+                return _cacheMock;
             }
         }
 
@@ -43,12 +47,14 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
-        public Mock<ICacheService> CacheMock
+        public IEntityManager EntityManager
         {
             get
             {
-                return _cacheMock;
+                return _manager;
             }
         }
+
+        #endregion Public Properties
     }
 }

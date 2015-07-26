@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ObjectService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Linq.Dynamic;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,9 +31,15 @@ namespace StrixIT.Platform.Modules.Cms
         where TKey : struct
         where TModel : PlatformBaseViewModel, new()
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
 
         private IObjectManager _objectManager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public ObjectService(IPlatformDataSource dataSource, IObjectManager objectManager)
         {
@@ -39,11 +47,36 @@ namespace StrixIT.Platform.Modules.Cms
             this._objectManager = objectManager;
         }
 
+        #endregion Public Constructors
+
+        #region Protected Properties
+
         protected IObjectManager Manager
         {
             get
             {
                 return this._objectManager;
+            }
+        }
+
+        #endregion Protected Properties
+
+        #region Public Methods
+
+        public void Delete(TKey id)
+        {
+            this.Delete(id, true);
+        }
+
+        public virtual void Delete(TKey id, bool saveChanges)
+        {
+            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            var entity = this._objectManager.Get(map.ContentType, id);
+            this._objectManager.Delete(entity);
+
+            if (saveChanges)
+            {
+                this._dataSource.SaveChanges();
             }
         }
 
@@ -138,22 +171,9 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        public void Delete(TKey id)
-        {
-            this.Delete(id, true);
-        }
+        #endregion Public Methods
 
-        public virtual void Delete(TKey id, bool saveChanges)
-        {
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
-            var entity = this._objectManager.Get(map.ContentType, id);
-            this._objectManager.Delete(entity);
-
-            if (saveChanges)
-            {
-                this._dataSource.SaveChanges();
-            }
-        }
+        #region Protected Methods
 
         protected bool Exists(string name, TKey? id, string idPropertyName)
         {
@@ -184,5 +204,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             this._dataSource.SaveChanges();
         }
+
+        #endregion Protected Methods
     }
 }

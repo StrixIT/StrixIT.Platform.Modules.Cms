@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IMailService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -25,6 +27,8 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IMailService : IEntityService<MailContentViewModel>
     {
+        #region Public Methods
+
         /// <summary>
         /// Gets a mail content for the specified culture with the specified name.
         /// </summary>
@@ -32,5 +36,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="name">The content name to get</param>
         /// <returns>The mail content</returns>
         MailContent GetMailContent(string culture, string name);
+
+        #endregion Public Methods
     }
 }

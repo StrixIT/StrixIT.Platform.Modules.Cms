@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MembershipMailHandler.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using StrixIT.Platform.Core;
 
@@ -24,12 +26,22 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class MembershipMailHandler : IHandlePlatformEvent<GeneralEvent>
     {
+        #region Private Fields
+
         private IMailService _mailService;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public MembershipMailHandler(IMailService mailService)
         {
             this._mailService = mailService;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void Handle(GeneralEvent args)
         {
@@ -53,5 +65,7 @@ namespace StrixIT.Platform.Modules.Cms
                 args.Data["Subject"] = mail.Subject;
             }
         }
+
+        #endregion Public Methods
     }
 }

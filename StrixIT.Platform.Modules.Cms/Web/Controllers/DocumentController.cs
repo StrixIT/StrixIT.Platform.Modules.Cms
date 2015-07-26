@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="DocumentController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,47 +17,43 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using System;
-using System.Web;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
     public class DocumentController : EntityController<DocumentViewModel>
     {
+        #region Private Fields
+
         private ITaxonomyService _taxonomyService;
 
+        #endregion Private Fields
+
+        #region Public Constructors
+
         public DocumentController(IDocumentService documentService, ICommentService commentService, ITaxonomyService taxonomyService)
-            : base(documentService, commentService) 
+            : base(documentService, commentService)
         {
             this._taxonomyService = taxonomyService;
         }
 
-        public override ActionResult Index()
-        {
-            var config = new EntityListConfiguration<DocumentViewModel>(StrixPlatform.User);
-            config.Fields.Insert(0, new ListFieldConfiguration("Extension"));
-            config.Fields.Insert(1, new ListFieldConfiguration("FileSize", "bytes") { ShowFilter = false });
-            return this.View(config);
-        }
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public ActionResult CreateMany()
         {
             ViewBag.ModelType = typeof(Document);
             return this.View("CreateMany");
-        }
-
-        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
-        public JsonResult GetAllTags()
-        {
-            return this.Json(this._taxonomyService.GetAllTags().OrderBy(t => t.Name));
         }
 
         [HttpPost]
@@ -79,5 +76,21 @@ namespace StrixIT.Platform.Modules.Cms
 
             return new FilePathResult(StrixPlatform.Environment.MapPath(document.FullPath), MimeMapping.GetMimeMapping(document.FullPath));
         }
+
+        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
+        public JsonResult GetAllTags()
+        {
+            return this.Json(this._taxonomyService.GetAllTags().OrderBy(t => t.Name));
+        }
+
+        public override ActionResult Index()
+        {
+            var config = new EntityListConfiguration<DocumentViewModel>(StrixPlatform.User);
+            config.Fields.Insert(0, new ListFieldConfiguration("Extension"));
+            config.Fields.Insert(1, new ListFieldConfiguration("FileSize", "bytes") { ShowFilter = false });
+            return this.View(config);
+        }
+
+        #endregion Public Methods
     }
 }

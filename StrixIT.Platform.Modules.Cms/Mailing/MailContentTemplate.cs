@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailContentTemplate.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,16 +31,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class MailContentTemplate : ContentBase, IContent
     {
-        /// <summary>
-        /// Gets or sets the entity id.
-        /// </summary>
-        [StrixRequired]
-        public Guid EntityId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity.
-        /// </summary>
-        public PlatformEntity Entity { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the template body.
@@ -48,8 +41,21 @@ namespace StrixIT.Platform.Modules.Cms
         public string Body { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity.
+        /// </summary>
+        public PlatformEntity Entity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity id.
+        /// </summary>
+        [StrixRequired]
+        public Guid EntityId { get; set; }
+
+        /// <summary>
         /// Gets or sets the mail content using this template.
         /// </summary>
         public ICollection<MailContent> Mails { get; set; }
+
+        #endregion Public Properties
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailContent.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.ComponentModel.DataAnnotations;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,11 +31,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class MailContent : ContentBase, IContent
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the entity id.
+        /// Gets or sets the mail body.
         /// </summary>
+        [Rte]
         [StrixRequired]
-        public Guid EntityId { get; set; }
+        public string Body { get; set; }
 
         /// <summary>
         /// Gets or sets the entity.
@@ -41,15 +46,10 @@ namespace StrixIT.Platform.Modules.Cms
         public PlatformEntity Entity { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the mail template.
+        /// Gets or sets the entity id.
         /// </summary>
         [StrixRequired]
-        public Guid TemplateId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the mail template.
-        /// </summary>
-        public MailContentTemplate Template { get; set; }
+        public Guid EntityId { get; set; }
 
         /// <summary>
         /// Gets or sets the mail from address.
@@ -66,10 +66,16 @@ namespace StrixIT.Platform.Modules.Cms
         public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the mail body.
+        /// Gets or sets the mail template.
         /// </summary>
-        [Rte]
+        public MailContentTemplate Template { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the mail template.
+        /// </summary>
         [StrixRequired]
-        public string Body { get; set; }
+        public Guid TemplateId { get; set; }
+
+        #endregion Public Properties
     }
 }

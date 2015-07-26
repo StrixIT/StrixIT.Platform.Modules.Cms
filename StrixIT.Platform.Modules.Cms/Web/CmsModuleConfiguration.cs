@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsModuleConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,31 +17,25 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Collections.Generic;
-using System;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CmsModuleConfiguration : IWebModuleConfiguration
     {
-        public string Name
-        {
-            get
-            {
-                return CmsConstants.CMS;
-            }
-        }
+        #region Public Properties
 
         public IList<ModuleLink> ModuleLinks
         {
             get
             {
-                return new List<ModuleLink> 
-                { 
+                return new List<ModuleLink>
+                {
                     new ModuleLink(Resources.Interface.HtmlIndex, null, "Html"),
                     new ModuleLink(Resources.Interface.NewsIndex, null, "News"),
                     new ModuleLink(Resources.Interface.DocumentIndex, null, "Document"),
@@ -97,11 +92,11 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        public IList<string> StyleBundles
+        public string Name
         {
             get
             {
-                return new List<string> { "~/Areas/Cms/Styles/css" };
+                return CmsConstants.CMS;
             }
         }
 
@@ -112,5 +107,15 @@ namespace StrixIT.Platform.Modules.Cms
                 return new List<string> { "~/bundles/cms" };
             }
         }
+
+        public IList<string> StyleBundles
+        {
+            get
+            {
+                return new List<string> { "~/Areas/Cms/Styles/css" };
+            }
+        }
+
+        #endregion Public Properties
     }
 }

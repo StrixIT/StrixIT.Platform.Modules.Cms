@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsRegistry.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,16 +17,18 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Web;
-using StructureMap.Configuration.DSL;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using StructureMap.Configuration.DSL;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CmsRegistry : Registry
     {
+        #region Public Constructors
+
         public CmsRegistry()
         {
             For<IPlatformDataSource>()
@@ -38,5 +41,7 @@ namespace StrixIT.Platform.Modules.Cms
             For<IPlatformHelper>().Use<DefaultPlatformHelper>();
             For<IEntityHelper>().Use<DefaultEntityHelper>();
         }
+
+        #endregion Public Constructors
     }
 }

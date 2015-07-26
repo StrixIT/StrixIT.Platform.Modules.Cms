@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="AuditViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using Newtonsoft.Json;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,6 +30,18 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public abstract class AuditViewModel : PlatformBaseViewModel, IAudit
     {
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user can edit this view model.
+        /// </summary>
+        public bool CanEdit { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the user that created or last modified this entity.
+        /// </summary>
+        public string CreatedBy { get; set; }
+
         /// <summary>
         /// Gets or sets the id of the user that created this entity.
         /// </summary>
@@ -42,7 +56,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <summary>
         /// Gets or sets the name of the user that created or last modified this entity.
         /// </summary>
-        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the user that last updated this entity, if any.
@@ -55,14 +69,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         public DateTime UpdatedOn { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the user that created or last modified this entity.
-        /// </summary>
-        public string UpdatedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the user can edit this view model.
-        /// </summary>
-        public bool CanEdit { get; set; }
+        #endregion Public Properties
     }
 }

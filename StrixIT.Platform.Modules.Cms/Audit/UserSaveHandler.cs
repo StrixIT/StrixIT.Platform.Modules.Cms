@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="UserSaveHandler.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,16 +17,19 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class UserSaveHandler : IHandlePlatformEvent<GeneralEvent>
     {
+        #region Public Methods
+
         public void Handle(GeneralEvent args)
         {
             if (args.EventName != "UserCreateEvent" && args.EventName != "UserUpdateEvent")
@@ -53,5 +57,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             StrixCms.ClearUserNameDictionary();
         }
+
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="NewsListModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using Newtonsoft.Json;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,10 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class NewsListModel : EntityListModel
     {
-        /// <summary>
-        /// Gets or sets the message summary.
-        /// </summary>
-        public string Summary { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the message body.
@@ -40,13 +39,20 @@ namespace StrixIT.Platform.Modules.Cms
         public string Body { get; set; }
 
         /// <summary>
+        /// Gets or sets the message expire time.
+        /// </summary>
+        public DateTime? ExpireTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the message publish time.
         /// </summary>
         public DateTime? PublishedOn { get; set; }
 
         /// <summary>
-        /// Gets or sets the message expire time.
+        /// Gets or sets the message summary.
         /// </summary>
-        public DateTime? ExpireTime { get; set; }
+        public string Summary { get; set; }
+
+        #endregion Public Properties
     }
 }

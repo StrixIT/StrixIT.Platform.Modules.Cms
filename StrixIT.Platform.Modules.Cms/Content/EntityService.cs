@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,28 +17,47 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Text.RegularExpressions;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class EntityService<TModel> : ObjectService<Guid, TModel>, IEntityService<TModel> where TModel : EntityViewModel, new()
     {
-        private ITaxonomyManager _taxonomyManager;
+        #region Private Fields
+
         private ICacheService _cache;
+        private ITaxonomyManager _taxonomyManager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EntityService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache)
             : base(dataSource, entityManager)
         {
             this._taxonomyManager = taxonomyManager;
             this._cache = cache;
+        }
+
+        #endregion Public Constructors
+
+        #region Protected Properties
+
+        protected ICacheService Cache
+        {
+            get
+            {
+                return this._cache;
+            }
         }
 
         protected new IEntityManager Manager
@@ -48,13 +68,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        protected ICacheService Cache
-        {
-            get
-            {
-                return this._cache;
-            }
-        }
+        #endregion Protected Properties
+
+        #region Public Methods
 
         public override bool Exists(string name, Guid? id)
         {
@@ -68,31 +84,9 @@ namespace StrixIT.Platform.Modules.Cms
             return base.Exists(name, id, "EntityId");
         }
 
+        #endregion Public Methods
+
         #region Get
-
-        public Guid? GetId(string idOrUrl)
-        {
-            Guid id;
-
-            if (Guid.TryParse(idOrUrl, out id))
-            {
-                return id;
-            }
-
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
-            return (Guid?)this.Manager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND Entity.Url.ToLower().Equals(@1)", StrixPlatform.CurrentCultureCode, idOrUrl).Select("EntityId").GetFirst();
-        }
-
-        public string GetUrl(Guid id)
-        {
-            if (id == Guid.Empty)
-            {
-                throw new ArgumentException("Id guid is empty");
-            }
-
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
-            return (string)this.Manager.Query(map.ContentType).Where("EntityId.Equals(@0)", id).Select("Entity.Url").GetFirst();
-        }
 
         public override TModel Get(Guid? id)
         {
@@ -154,7 +148,31 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Get(typeof(TModel), null, url, culture, 0, relationsToInclude, true) as TModel;
         }
 
-        #endregion
+        public Guid? GetId(string idOrUrl)
+        {
+            Guid id;
+
+            if (Guid.TryParse(idOrUrl, out id))
+            {
+                return id;
+            }
+
+            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            return (Guid?)this.Manager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND Entity.Url.ToLower().Equals(@1)", StrixPlatform.CurrentCultureCode, idOrUrl).Select("EntityId").GetFirst();
+        }
+
+        public string GetUrl(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentException("Id guid is empty");
+            }
+
+            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            return (string)this.Manager.Query(map.ContentType).Where("EntityId.Equals(@0)", id).Select("Entity.Url").GetFirst();
+        }
+
+        #endregion Get
 
         #region Cache
 
@@ -164,7 +182,8 @@ namespace StrixIT.Platform.Modules.Cms
             var currentCulture = StrixPlatform.CurrentCultureCode;
             var cacheKey = string.Format(CmsConstants.CONTENTPERCULTURE, typeof(TModel).Name) + permissionKey;
 
-            // First, try to get the content from the cache. If it is not there, retrieve it from the database and add it to the cache.
+            // First, try to get the content from the cache. If it is not there, retrieve it from
+            // the database and add it to the cache.
             var tupleList = this._cache[cacheKey] as List<Tuple<string, string, dynamic>>;
 
             if (tupleList != null)
@@ -190,7 +209,7 @@ namespace StrixIT.Platform.Modules.Cms
             return entity;
         }
 
-        #endregion
+        #endregion Cache
 
         #region List
 
@@ -212,21 +231,21 @@ namespace StrixIT.Platform.Modules.Cms
             return query.Map(map.ListModelType);
         }
 
-        #endregion
+        #endregion List
 
         #region Tags
-
-        public IList<TermViewModel> GetTags(Guid entityId)
-        {
-            return this._taxonomyManager.TagQuery().Where(t => t.TaggedEntities.Any(e => e.Id == entityId)).Map<TermViewModel>().ToList();
-        }
 
         public IList<TermViewModel> GetAllTags()
         {
             return this._taxonomyManager.TagQuery().Map<TermViewModel>().ToList();
         }
 
-        #endregion
+        public IList<TermViewModel> GetTags(Guid entityId)
+        {
+            return this._taxonomyManager.TagQuery().Where(t => t.TaggedEntities.Any(e => e.Id == entityId)).Map<TermViewModel>().ToList();
+        }
+
+        #endregion Tags
 
         #region Save
 
@@ -331,7 +350,7 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        #endregion
+        #endregion Save
 
         #region Delete
 
@@ -367,7 +386,7 @@ namespace StrixIT.Platform.Modules.Cms
             this.Delete(typeof(TModel), id, culture, versionNumber, log, saveChanges);
         }
 
-        #endregion
+        #endregion Delete
 
         #region Versions
 
@@ -436,7 +455,7 @@ namespace StrixIT.Platform.Modules.Cms
             return result.Model;
         }
 
-        #endregion
+        #endregion Versions
 
         #region Protected Methods
 
@@ -499,8 +518,8 @@ namespace StrixIT.Platform.Modules.Cms
                             var query = this.Manager.Query(map.ContentType, relationsToInclude).Where("Entity.Url.ToLower().Equals(@0) AND IsCurrentVersion", url.ToLower());
                             content = query.Where("Culture.ToLower().Equals(@0)", StrixPlatform.CurrentCultureCode.ToLower()).GetFirst() as IContent;
 
-                            // If no content was found for this url and the current culture, try and get a version for another culture and
-                            // set the culture to the current one.
+                            // If no content was found for this url and the current culture, try and
+                            // get a version for another culture and set the culture to the current one.
                             if (content == null)
                             {
                                 content = query.GetFirst() as IContent;
@@ -538,9 +557,42 @@ namespace StrixIT.Platform.Modules.Cms
             return model;
         }
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
+
+        private static void CleanRteFilePaths(IContent content, string[] properties, string attr, string pattern)
+        {
+            foreach (var property in properties)
+            {
+                var value = (string)content.GetPropertyValue(property);
+
+                if (value != null)
+                {
+                    // Replace relative paths by a path to the root to prevent difficulties.
+                    MatchCollection sourceMatches = Regex.Matches(value, string.Format(pattern, attr));
+
+                    // Remove ../../ etc and replace by /.
+                    foreach (Match match in sourceMatches)
+                    {
+                        string newValue = Regex.Replace(match.Value, @"(\.\./)+", "/");
+
+                        Uri uriResult;
+                        bool isUrl = Uri.TryCreate(newValue.Replace(attr + "=", string.Empty).Replace("\"", string.Empty), UriKind.Absolute, out uriResult);
+
+                        // If the path does not start with a '/', add it. This seems to be a bug
+                        // introduced by the current version of TinyMCE.
+                        if (!isUrl && newValue.ElementAt(newValue.IndexOf("\"") + 1) != '/')
+                        {
+                            newValue = newValue.Substring(0, newValue.IndexOf("\"")) + "\"/" + newValue.Substring(newValue.IndexOf("\"") + 1);
+                        }
+
+                        content.SetPropertyValue(property, value.Replace(match.Value, newValue));
+                        value = (string)content.GetPropertyValue(property);
+                    }
+                }
+            }
+        }
 
         private static string GetRelationsToInclude(string relationsToInclude, bool useTagging)
         {
@@ -585,38 +637,6 @@ namespace StrixIT.Platform.Modules.Cms
                 if (relation != null)
                 {
                     model.SetPropertyValue(relationProperty.Name, relation.AsQueryable().Where("Selected").GetList());
-                }
-            }
-        }
-
-        private static void CleanRteFilePaths(IContent content, string[] properties, string attr, string pattern)
-        {
-            foreach (var property in properties)
-            {
-                var value = (string)content.GetPropertyValue(property);
-
-                if (value != null)
-                {
-                    // Replace relative paths by a path to the root to prevent difficulties.
-                    MatchCollection sourceMatches = Regex.Matches(value, string.Format(pattern, attr));
-
-                    // Remove ../../ etc and replace by /.
-                    foreach (Match match in sourceMatches)
-                    {
-                        string newValue = Regex.Replace(match.Value, @"(\.\./)+", "/");
-
-                        Uri uriResult;
-                        bool isUrl = Uri.TryCreate(newValue.Replace(attr + "=", string.Empty).Replace("\"", string.Empty), UriKind.Absolute, out uriResult);
-
-                        // If the path does not start with a '/', add it. This seems to be a bug introduced by the current version of TinyMCE.
-                        if (!isUrl && newValue.ElementAt(newValue.IndexOf("\"") + 1) != '/')
-                        {
-                            newValue = newValue.Substring(0, newValue.IndexOf("\"")) + "\"/" + newValue.Substring(newValue.IndexOf("\"") + 1);
-                        }
-
-                        content.SetPropertyValue(property, value.Replace(match.Value, newValue));
-                        value = (string)content.GetPropertyValue(property);
-                    }
                 }
             }
         }
@@ -724,6 +744,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

@@ -4,27 +4,37 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Moq;
-using StrixIT.Platform.Modules.Cms;
-using StrixIT.Platform.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public class FileManagerMock
     {
-        private IFileManager _manager;
+        #region Private Fields
+
         private DataSourceMock _dataSourceMock = new DataSourceMock();
         private Mock<IImageConverter> _imageConverterMock = new Mock<IImageConverter>();
+        private IFileManager _manager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public FileManagerMock()
         {
             _dataSourceMock.RegisterData<EntityType>(EntityServicesTestData.EntityTypes);
             _manager = new FileManager(_dataSourceMock.Mock.Object, _imageConverterMock.Object);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public DataSourceMock DataSourceMock
+        {
+            get
+            {
+                return _dataSourceMock;
+            }
         }
 
         public IFileManager FileManager
@@ -35,12 +45,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
-        public DataSourceMock DataSourceMock
-        {
-            get
-            {
-                return _dataSourceMock;
-            }
-        }
+        #endregion Public Properties
     }
 }

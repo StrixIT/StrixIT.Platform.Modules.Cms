@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="RteModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,15 +29,19 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class RteModel
     {
+        #region Public Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RteModel" /> class.
+        /// Initializes a new instance of the <see cref="RteModel"/> class.
         /// </summary>
         /// <param name="modelType">The type of the model the editor is for</param>
         /// <param name="fieldName">The entity property name the model is for</param>
-        public RteModel(Type modelType, string fieldName) : this(modelType, fieldName, 35, 100) { }
+        public RteModel(Type modelType, string fieldName) : this(modelType, fieldName, 35, 100)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RteModel" /> class.
+        /// Initializes a new instance of the <see cref="RteModel"/> class.
         /// </summary>
         /// <param name="modelType">The type of the model the editor is for</param>
         /// <param name="fieldName">The entity property name the model is for</param>
@@ -49,25 +55,9 @@ namespace StrixIT.Platform.Modules.Cms
             this.Columns = columns;
         }
 
-        /// <summary>
-        /// Gets the type of the model the editor is for.
-        /// </summary>
-        public Type ModelType { get; private set; }
+        #endregion Public Constructors
 
-        /// <summary>
-        /// Gets or sets the name of the type of the model the editor is for.
-        /// </summary>
-        public string ModelName { get; set; }
-
-        /// <summary>
-        /// Gets the name of the property of the entity the editor is for.
-        /// </summary>
-        public string FieldName { get; private set; }
-
-        /// <summary>
-        /// Gets the number of rows for the editor.
-        /// </summary>
-        public int Rows { get; private set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets the number of colums for the editor.
@@ -75,10 +65,33 @@ namespace StrixIT.Platform.Modules.Cms
         public int Columns { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether only the comment options should be available. If not, the CMS settings are used.
+        /// Gets or sets a value indicating whether only the comment options should be available. If
+        /// not, the CMS settings are used.
         /// </summary>
         public bool CommentSettingsOnly { get; set; }
 
+        /// <summary>
+        /// Gets the name of the property of the entity the editor is for.
+        /// </summary>
+        public string FieldName { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the name of the type of the model the editor is for.
+        /// </summary>
+        public string ModelName { get; set; }
+
+        /// <summary>
+        /// Gets the type of the model the editor is for.
+        /// </summary>
+        public Type ModelType { get; private set; }
+
         public string RequiredMessage { get; set; }
+
+        /// <summary>
+        /// Gets the number of rows for the editor.
+        /// </summary>
+        public int Rows { get; private set; }
+
+        #endregion Public Properties
     }
 }

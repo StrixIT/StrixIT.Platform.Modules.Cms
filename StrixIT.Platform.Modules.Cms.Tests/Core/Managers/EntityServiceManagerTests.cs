@@ -5,19 +5,16 @@
 ////------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass]
     public class EntityServiceManagerTests
     {
-        private List<Mock> _mocks;
+        #region Private Fields
 
         private static List<EntityType> entityTypes = new List<EntityType>
         {
@@ -48,11 +45,11 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             },
         };
 
-        [TestInitialize]
-        public void Init()
-        {
-            _mocks = TestHelpers.MockUtilities();
-        }
+        private List<Mock> _mocks;
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         [TestMethod()]
         public void GetManagerActionRecordsShouldReturnCorrectNumberOfRecords()
@@ -70,5 +67,13 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(5, result.Count);
             Assert.AreEqual(10, result.First().Item3.Count);
         }
+
+        [TestInitialize]
+        public void Init()
+        {
+            _mocks = TestHelpers.MockUtilities();
+        }
+
+        #endregion Public Methods
     }
 }

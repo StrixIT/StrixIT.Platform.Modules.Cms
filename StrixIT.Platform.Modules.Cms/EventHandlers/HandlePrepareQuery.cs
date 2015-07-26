@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="HandlePrepareQuery.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,18 +17,21 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Linq;
 using System.Linq.Dynamic;
-using StrixIT.Platform.Core;
 
 // Todo: move to taxonomy module?
 namespace StrixIT.Platform.Modules.Cms
 {
     public class HandlePrepareQuery : IHandlePlatformEvent<PrepareQueryEvent>
     {
+        #region Public Methods
+
         public void Handle(PrepareQueryEvent args)
         {
             var tagsToSearchField = args.Filter.Filter.Filters.FirstOrDefault(f => f.Value != null && f.Value.ToLower().Contains("tag:"));
@@ -42,5 +46,7 @@ namespace StrixIT.Platform.Modules.Cms
                 args.Query = args.Query.Filter(args.Filter, !args.Page);
             }
         }
+
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ITaxonomyManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +76,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>True if tagging was successful, false otherwise</returns>
         bool Tag(Guid entityId, string vocabularyName, string termName, string culture);
 
-        #endregion
+        #endregion Tag
 
         #region Get Tags
 
@@ -147,7 +149,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The tag query</returns>
         IQueryable<Term> TagQueryForVocabulary(string vocabularyName, string culture);
 
-        #endregion
+        #endregion Get Tags
 
         #region Create Tag
 
@@ -167,7 +169,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The tag</returns>
         Term CreateTag(string vocabularyName, string tagName);
 
-        #endregion
+        #endregion Create Tag
 
         #region Get Vocabulary
 
@@ -177,13 +179,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="id">The vocabulary id</param>
         /// <returns>The vocabulary</returns>
         Vocabulary GetVocabulary(Guid id);
-
-        /// <summary>
-        /// Gets a vocabulary by its url.
-        /// </summary>
-        /// <param name="url">The vocabulary url</param>
-        /// <returns>The vocabulary</returns>
-        Vocabulary GetVocabularyByUrl(string url);
 
         /// <summary>
         /// Gets a vocabulary by its name.
@@ -205,9 +200,18 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         /// <param name="vocabularyName">The vocabulary name</param>
         /// <param name="culture">The vocabulary culture</param>
-        /// <param name="includeTerms">True if the vocabulary terms should be included, false otherwise</param>
+        /// <param name="includeTerms">
+        /// True if the vocabulary terms should be included, false otherwise
+        /// </param>
         /// <returns>The vocabulary</returns>
         Vocabulary GetVocabulary(string vocabularyName, string culture, bool includeTerms);
+
+        /// <summary>
+        /// Gets a vocabulary by its url.
+        /// </summary>
+        /// <param name="url">The vocabulary url</param>
+        /// <returns>The vocabulary</returns>
+        Vocabulary GetVocabularyByUrl(string url);
 
         /// <summary>
         /// Gets a query of all non-system vocabularies.
@@ -215,7 +219,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The vocabulary query</returns>
         IQueryable<Vocabulary> VocabularyQuery();
 
-        #endregion
+        #endregion Get Vocabulary
 
         #region Create Vocabulary
 
@@ -234,7 +238,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The vocabulary</returns>
         Vocabulary CreateVocabulary(string vocabularyName, string culture);
 
-        #endregion
+        #endregion Create Vocabulary
 
         #region Delete Tags
 
@@ -250,7 +254,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="entityId">The entity platform id</param>
         void DeleteTags(Guid entityId);
 
-        #endregion
+        #endregion Delete Tags
 
         #region Delete Vocabulary
 
@@ -260,7 +264,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="id">The vocabulary id</param>
         void DeleteVocabulary(Guid id);
 
-        #endregion
+        #endregion Delete Vocabulary
 
         #region Tag Files
 
@@ -278,6 +282,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="fileNames">The names of the files to remove the tags from</param>
         void RemoveTagFromFiles(string tag, string[] fileNames);
 
-        #endregion
+        #endregion Tag Files
     }
 }

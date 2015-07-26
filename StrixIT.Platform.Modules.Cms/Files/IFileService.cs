@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IFileService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,22 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IFileService
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Check whether a user can access a file.
+        /// </summary>
+        /// <param name="url">The file url</param>
+        /// <returns>True of the file can be accessed, false otherwise</returns>
+        bool CheckAccessFile(string url);
+
+        /// <summary>
+        /// Deletes a file.
+        /// </summary>
+        /// <param name="fileId">The id of the file</param>
+        /// <returns>The result as an upload result</returns>
+        UploadFileResult DeleteFile(Guid fileId);
+
         /// <summary>
         /// Uploads a file.
         /// </summary>
@@ -44,18 +62,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>A list of file upload results</returns>
         IList<UploadFileResult> UploadFiles(AddFile model, HttpRequestBase request);
 
-        /// <summary>
-        /// Deletes a file.
-        /// </summary>
-        /// <param name="fileId">The id of the file</param>
-        /// <returns>The result as an upload result</returns>
-        UploadFileResult DeleteFile(Guid fileId);
-
-        /// <summary>
-        /// Check whether a user can access a file.
-        /// </summary>
-        /// <param name="url">The file url</param>
-        /// <returns>True of the file can be accessed, false otherwise</returns>
-        bool CheckAccessFile(string url);
+        #endregion Public Methods
     }
 }

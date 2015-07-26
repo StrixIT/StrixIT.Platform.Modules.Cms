@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityHelper.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,13 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using StructureMap;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
+using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,7 +31,13 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public static class EntityHelper
     {
+        #region Private Fields
+
         private static IEntityHelper _helper;
+
+        #endregion Private Fields
+
+        #region Public Properties
 
         /// <summary>
         /// Gets the list of loaded entity types.
@@ -43,6 +49,10 @@ namespace StrixIT.Platform.Modules.Cms
                 return Helper.EntityTypes;
             }
         }
+
+        #endregion Public Properties
+
+        #region Private Properties
 
         /// <summary>
         /// Gets the entity helper used.
@@ -60,25 +70,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// Sets the entity helper to use
-        /// </summary>
-        /// <param name="helper">The entity helper to use</param>
-        public static void SetHelper(IEntityHelper helper)
-        {
-            _helper = helper;
-        }
+        #endregion Private Properties
 
-        /// <summary>
-        /// Gets a value indicating whether the action is active for the entity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to check the action for</param>
-        /// <param name="action">The action to check</param>
-        /// <returns>True if the action is active for the entity type, false otherwise.</returns>
-        public static bool IsServiceActive(Type entityType, string action)
-        {
-            return Helper.IsServiceActive(entityType, action);
-        }
+        #region Public Methods
 
         /// <summary>
         /// Activates a number of actions for an entity type.
@@ -98,16 +92,6 @@ namespace StrixIT.Platform.Modules.Cms
         public static void DeactivateServices(Type entityType, IEnumerable<string> actions)
         {
             Helper.DeactivateServices(entityType, actions);
-        }
-
-        /// <summary>
-        /// Gets the id of an antity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to get the id for</param>
-        /// <returns>The entity type id</returns>
-        public static Guid GetEntityTypeId(Type entityType)
-        {
-            return Helper.GetEntityTypeId(entityType);
         }
 
         /// <summary>
@@ -131,13 +115,23 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Gets the object map for an entity type.
+        /// Gets the id of an antity type.
         /// </summary>
-        /// <param name="entityType">The entity type to get the object map for</param>
-        /// <returns>The object map</returns>
-        public static ObjectMap GetObjectMap(Type entityType)
+        /// <param name="entityType">The entity type to get the id for</param>
+        /// <returns>The entity type id</returns>
+        public static Guid GetEntityTypeId(Type entityType)
         {
-            return Helper.GetObjectMap(entityType);
+            return Helper.GetEntityTypeId(entityType);
+        }
+
+        /// <summary>
+        /// Gets the file id property names for an entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to get the file id property names for</param>
+        /// <returns>The file id property names</returns>
+        public static string[] GetFileIdProperties(Type entityType)
+        {
+            return Helper.GetFileIdProperties(entityType);
         }
 
         /// <summary>
@@ -151,13 +145,35 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Gets the file id property names for an entity type.
+        /// Gets the object map for an entity type.
         /// </summary>
-        /// <param name="entityType">The entity type to get the file id property names for</param>
-        /// <returns>The file id property names</returns>
-        public static string[] GetFileIdProperties(Type entityType)
+        /// <param name="entityType">The entity type to get the object map for</param>
+        /// <returns>The object map</returns>
+        public static ObjectMap GetObjectMap(Type entityType)
         {
-            return Helper.GetFileIdProperties(entityType);
+            return Helper.GetObjectMap(entityType);
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the action is active for the entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to check the action for</param>
+        /// <param name="action">The action to check</param>
+        /// <returns>True if the action is active for the entity type, false otherwise.</returns>
+        public static bool IsServiceActive(Type entityType, string action)
+        {
+            return Helper.IsServiceActive(entityType, action);
+        }
+
+        /// <summary>
+        /// Sets the entity helper to use
+        /// </summary>
+        /// <param name="helper">The entity helper to use</param>
+        public static void SetHelper(IEntityHelper helper)
+        {
+            _helper = helper;
+        }
+
+        #endregion Public Methods
     }
 }

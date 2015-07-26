@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="DocumentService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,52 +17,36 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class DocumentService : EntityService<DocumentViewModel>, IDocumentService
     {
+        #region Private Fields
+
         private IFileManager _fileManager;
 
+        #endregion Private Fields
+
+        #region Public Constructors
+
         public DocumentService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, IFileManager fileManager, ICacheService cache)
-            : base(dataSource, entityManager, taxonomyManager, cache) 
+            : base(dataSource, entityManager, taxonomyManager, cache)
         {
             this._fileManager = fileManager;
         }
 
-        public override IEnumerable List(FilterOptions filter)
-        {
-            IEnumerable list = null;
-            var documentTypeField = filter != null ? filter.ExtractField("DocumentType") : null;
+        #endregion Public Constructors
 
-            if (documentTypeField != null)
-            {
-                filter.TraverseListPropertyName = "EntityId";
-                var extEnum = Enum.Parse(typeof(DocumentType), documentTypeField.Value);
-                var extensions = this._fileManager.GetExtensions(extEnum.ToString());
-                var culture = StrixPlatform.CurrentCultureCode.ToLower();
-                list = this.Manager.Query<Document>().Where(d => d.Culture.ToLower() == culture && d.IsCurrentVersion && extensions.Contains(d.File.Extension.ToLower())).Filter(filter).Map<DocumentListModel>();
-                return list;
-            }
-            else
-            {
-                list = base.List(filter);
-            }
-
-            foreach (var model in list.Cast<DocumentListModel>())
-            {
-                this.SetDocumentType(model);
-            }
-
-            return list;
-        }
+        #region Public Methods
 
         public IList<DocumentViewModel> CreateMany(IList<DocumentViewModel> models)
         {
@@ -110,12 +95,47 @@ namespace StrixIT.Platform.Modules.Cms
             return document.Map<DocumentViewModel>();
         }
 
+        public override IEnumerable List(FilterOptions filter)
+        {
+            IEnumerable list = null;
+            var documentTypeField = filter != null ? filter.ExtractField("DocumentType") : null;
+
+            if (documentTypeField != null)
+            {
+                filter.TraverseListPropertyName = "EntityId";
+                var extEnum = Enum.Parse(typeof(DocumentType), documentTypeField.Value);
+                var extensions = this._fileManager.GetExtensions(extEnum.ToString());
+                var culture = StrixPlatform.CurrentCultureCode.ToLower();
+                list = this.Manager.Query<Document>().Where(d => d.Culture.ToLower() == culture && d.IsCurrentVersion && extensions.Contains(d.File.Extension.ToLower())).Filter(filter).Map<DocumentListModel>();
+                return list;
+            }
+            else
+            {
+                list = base.List(filter);
+            }
+
+            foreach (var model in list.Cast<DocumentListModel>())
+            {
+                this.SetDocumentType(model);
+            }
+
+            return list;
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected override EntityViewModel Get(Type modelType, Guid? id, string url, string culture, int versionNumber, string relationsToInclude, bool useFallBack = false)
         {
             var model = base.Get(modelType, id, url, culture, versionNumber, relationsToInclude, useFallBack) as DocumentViewModel;
             this.SetDocumentType(model);
             return model;
         }
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         private void SetDocumentType(dynamic model)
         {
@@ -124,5 +144,7 @@ namespace StrixIT.Platform.Modules.Cms
                 model.DocumentType = this._fileManager.GetDocumentType(model.File.Extension);
             }
         }
+
+        #endregion Private Methods
     }
 }

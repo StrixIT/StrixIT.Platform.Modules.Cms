@@ -13,7 +13,6 @@
 		init : function(ed, url) {
 			// Register commands
 			ed.addCommand('mceStyleProps', function() {
-
 				var applyStyleToBlocks = false;
 				var blocks = ed.selection.getSelectedBlocks();
 				var styles = [];

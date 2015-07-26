@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsInitializer.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,8 +17,10 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,28 +29,38 @@ using System.Linq.Dynamic;
 using System.Resources;
 using System.Web.Mvc;
 using System.Web.Optimization;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CmsInitializer : IInitializer, IWebInitializer
     {
+        #region Private Fields
+
         private static bool _isInitialized = false;
 
-        private IPlatformDataSource _platformDataSource;
         private IFileSystemWrapper _fileSystemWrapper;
         private IImageConverter _imageConverter;
         private IMembershipService _membershipService;
+        private IPlatformDataSource _platformDataSource;
 
-        // Todo: inject membershipservice instead of using service locator.
+        #endregion Private Fields
+
+        #region Public Constructors
+
         public CmsInitializer(IPlatformDataSource platformDataSource, IFileSystemWrapper fileSystemWrapper, IImageConverter imageConverter)
         {
             this._platformDataSource = platformDataSource;
             this._fileSystemWrapper = fileSystemWrapper;
             this._imageConverter = imageConverter;
-            this._membershipService = DependencyInjector.TryGet<IMembershipService>(); //membershipService;
+
+            // I must use the service locator here because no implementation for IMembershipService
+            // could be available.
+            this._membershipService = DependencyInjector.TryGet<IMembershipService>();
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void Initialize()
         {
@@ -63,6 +76,10 @@ namespace StrixIT.Platform.Modules.Cms
         {
             RegisterBundles(BundleTable.Bundles);
         }
+
+        #endregion Public Methods
+
+        #region Internal Methods
 
         internal static void ConfigureEntityMaps()
         {
@@ -109,30 +126,6 @@ namespace StrixIT.Platform.Modules.Cms
             _isInitialized = true;
         }
 
-        internal void UpdateMembershipLookups()
-        {
-            if (this._membershipService != null)
-            {
-                var existingGroupIds = this._platformDataSource.Query<GroupData>().Select(u => u.Id).ToArray();
-                var newGroupData = this._membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
-
-                if (newGroupData.Count() > 0)
-                {
-                    this._platformDataSource.Save(newGroupData.ToList());
-                    this._platformDataSource.SaveChanges();
-                }
-
-                var existingUserIds = this._platformDataSource.Query<UserData>().Select(u => u.Id).ToArray();
-                var newUserData = this._membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
-
-                if (newUserData.Count() > 0)
-                {
-                    this._platformDataSource.Save(newUserData.ToList());
-                    this._platformDataSource.SaveChanges();
-                }
-            }
-        }
-
         internal void AddMailTemplates()
         {
             if (this._platformDataSource.Query<MailContentTemplate>().Count() == 0)
@@ -173,17 +166,47 @@ namespace StrixIT.Platform.Modules.Cms
             ConfigureHtmlEncoding();
         }
 
-        private static void RegisterBundles(BundleCollection bundles)
+        internal void UpdateMembershipLookups()
         {
-            bundles.Add(new StyleBundle("~/Areas/Cms/Styles/css").Include(
-                                        "~/Areas/Cms/Styles/cms*",
-                                        "~/Areas/Cms/Styles/comments*",
-                                        "~/Areas/Cms/Styles/tinymce*"));
+            if (this._membershipService != null)
+            {
+                var existingGroupIds = this._platformDataSource.Query<GroupData>().Select(u => u.Id).ToArray();
+                var newGroupData = this._membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
 
-            bundles.Add(new ScriptBundle("~/bundles/cms").Include(
-                                         "~/Areas/Cms/Scripts/Controllers/strixit.*")
-                                         .IncludeDirectory("~/Areas/Cms/Scripts/Directives", "*.js", true));
+                if (newGroupData.Count() > 0)
+                {
+                    this._platformDataSource.Save(newGroupData.ToList());
+                    this._platformDataSource.SaveChanges();
+                }
+
+                var existingUserIds = this._platformDataSource.Query<UserData>().Select(u => u.Id).ToArray();
+                var newUserData = this._membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
+
+                if (newUserData.Count() > 0)
+                {
+                    this._platformDataSource.Save(newUserData.ToList());
+                    this._platformDataSource.SaveChanges();
+                }
+            }
+            else
+            {
+                if (!this._platformDataSource.Query<GroupData>().Any(g => g.Id == Guid.Empty))
+                {
+                    this._platformDataSource.Save(new GroupData { Id = Guid.Empty, Name = "Main" });
+                }
+
+                if (!this._platformDataSource.Query<UserData>().Any(g => g.Id == Guid.Empty))
+                {
+                    this._platformDataSource.Save(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
+                }
+
+                this._platformDataSource.SaveChanges();
+            }
         }
+
+        #endregion Internal Methods
+
+        #region Private Methods
 
         private static void ConfigureAuditMaps()
         {
@@ -256,6 +279,16 @@ namespace StrixIT.Platform.Modules.Cms
             DataMapper.RegisterMapConfig(fileConfig);
         }
 
+        private static void ConfigureFilterMaps()
+        {
+            DataFilter.RegisterFilterMap<IContent>(CreateNameMap("CreatedBy"));
+            DataFilter.RegisterFilterMap<IContent>(CreateNameMap(CmsConstants.UPDATEDBY));
+            DataFilter.RegisterFilterMap<IContent>(CreateTagsMap());
+            DataFilter.RegisterFilterMap<IContent>(CreateCommentsMap());
+            DataFilter.RegisterFilterMap<Document>(CreateExtensionMap());
+            DataFilter.RegisterFilterMap<Document>(CreateFileSizeMap());
+        }
+
         private static void ConfigureHtmlEncoding()
         {
             Action<object, object> decodingAction = (x, y) =>
@@ -303,58 +336,6 @@ namespace StrixIT.Platform.Modules.Cms
             var encodeCommentConfig = new MapConfig<CommentViewModel, Comment>();
             encodeCommentConfig.AfterMapAction = encodingAction;
             DataMapper.RegisterMapConfig(encodeCommentConfig);
-        }
-
-        private static void RegisterDefaultTokens()
-        {
-            ResourceManager manager = new ResourceManager(typeof(StrixIT.Platform.Modules.Cms.Resources.DefaultTokens));
-            ResourceSet resources = manager.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
-            IDictionaryEnumerator enumerator = resources.GetEnumerator();
-
-            while (enumerator.MoveNext())
-            {
-                Tokenizer.RegisterToken(string.Format("[[{0}]]", enumerator.Key.ToString().ToUpper()), (string)enumerator.Value);
-            }
-        }
-
-        private static void ConfigureFilterMaps()
-        {
-            DataFilter.RegisterFilterMap<IContent>(CreateNameMap("CreatedBy"));
-            DataFilter.RegisterFilterMap<IContent>(CreateNameMap(CmsConstants.UPDATEDBY));
-            DataFilter.RegisterFilterMap<IContent>(CreateTagsMap());
-            DataFilter.RegisterFilterMap<IContent>(CreateCommentsMap());
-            DataFilter.RegisterFilterMap<Document>(CreateExtensionMap());
-            DataFilter.RegisterFilterMap<Document>(CreateFileSizeMap());
-        }
-
-        private static FilterSortMap CreateNameMap(string propertyName)
-        {
-            FilterSortMap nameMap = new FilterSortMap { FieldToMap = propertyName };
-
-            nameMap.FilterMap = (method, input) =>
-            {
-                return string.Format(@"{0}User.Name.ToLower().{1}(""{2}"")", propertyName, method.ToString(), input);
-            };
-
-            nameMap.SortMap = (query, order) =>
-            {
-                query = query.OrderBy(string.Format(@"{0}User.Name {1}", propertyName, order));
-                return query;
-            };
-
-            return nameMap;
-        }
-
-        private static FilterSortMap CreateTagsMap()
-        {
-            FilterSortMap tagMap = new FilterSortMap { FieldToMap = "Tags" };
-
-            tagMap.FilterMap = (method, input) =>
-            {
-                return string.Format("Entity.Tags.Any(Name.ToLower().{0}(@0))", method.ToString());
-            };
-
-            return tagMap;
         }
 
         private static FilterSortMap CreateCommentsMap()
@@ -405,6 +386,60 @@ namespace StrixIT.Platform.Modules.Cms
             return sizeMap;
         }
 
+        private static FilterSortMap CreateNameMap(string propertyName)
+        {
+            FilterSortMap nameMap = new FilterSortMap { FieldToMap = propertyName };
+
+            nameMap.FilterMap = (method, input) =>
+            {
+                return string.Format(@"{0}User.Name.ToLower().{1}(""{2}"")", propertyName, method.ToString(), input);
+            };
+
+            nameMap.SortMap = (query, order) =>
+            {
+                query = query.OrderBy(string.Format(@"{0}User.Name {1}", propertyName, order));
+                return query;
+            };
+
+            return nameMap;
+        }
+
+        private static FilterSortMap CreateTagsMap()
+        {
+            FilterSortMap tagMap = new FilterSortMap { FieldToMap = "Tags" };
+
+            tagMap.FilterMap = (method, input) =>
+            {
+                return string.Format("Entity.Tags.Any(Name.ToLower().{0}(@0))", method.ToString());
+            };
+
+            return tagMap;
+        }
+
+        private static void RegisterBundles(BundleCollection bundles)
+        {
+            bundles.Add(new StyleBundle("~/Areas/Cms/Styles/css").Include(
+                                        "~/Areas/Cms/Styles/cms*",
+                                        "~/Areas/Cms/Styles/comments*",
+                                        "~/Areas/Cms/Styles/tinymce*"));
+
+            bundles.Add(new ScriptBundle("~/bundles/cms").Include(
+                                         "~/Areas/Cms/Scripts/Controllers/strixit.*")
+                                         .IncludeDirectory("~/Areas/Cms/Scripts/Directives", "*.js", true));
+        }
+
+        private static void RegisterDefaultTokens()
+        {
+            ResourceManager manager = new ResourceManager(typeof(StrixIT.Platform.Modules.Cms.Resources.DefaultTokens));
+            ResourceSet resources = manager.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
+            IDictionaryEnumerator enumerator = resources.GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                Tokenizer.RegisterToken(string.Format("[[{0}]]", enumerator.Key.ToString().ToUpper()), (string)enumerator.Value);
+            }
+        }
+
         private void ConfigureTypeMaps(object sender, CreateMapEventArgs e)
         {
             if (typeof(IContent).IsAssignableFrom(e.Types.Key) && (typeof(EntityListModel).IsAssignableFrom(e.Types.Value) || typeof(EntityViewModel).IsAssignableFrom(e.Types.Value)))
@@ -442,5 +477,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
         }
+
+        #endregion Private Methods
     }
 }

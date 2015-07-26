@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="Vocabulary.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,21 +33,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class Vocabulary : ValidationBase
     {
-        /// <summary>
-        /// Gets or sets the vocabulary id.
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the group this vocabulary belongs to.
-        /// </summary>
-        [StrixRequiredWithMembershipAttribute]
-        public Guid GroupId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the group this vocabulary belongs to.
-        /// </summary>
-        public GroupData Group { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the culture this vocabulary is for.
@@ -55,11 +43,44 @@ namespace StrixIT.Platform.Modules.Cms
         public string Culture { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity types that can use this Vocabulary. If empty, all types can use
+        /// this Vocabulary.
+        /// </summary>
+        public virtual ICollection<EntityType> EntityTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group this vocabulary belongs to.
+        /// </summary>
+        public GroupData Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the group this vocabulary belongs to.
+        /// </summary>
+        [StrixRequiredWithMembershipAttribute]
+        public Guid GroupId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vocabulary id.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this Vocabulary is used by the Platform
+        /// internally and should not be modified or extended by users.
+        /// </summary>
+        public bool IsSystemVocabulary { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the Entity.
         /// </summary>
         [StrixRequired]
         [StringLength(250, MinimumLength = 2)]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Terms in this Vocabulary.
+        /// </summary>
+        public virtual ICollection<Term> Terms { get; set; }
 
         /// <summary>
         /// Gets or sets the Url of the entity.
@@ -69,35 +90,22 @@ namespace StrixIT.Platform.Modules.Cms
         public string Url { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this vocabulary allows for relations between Terms.
-        /// </summary>
-        public bool UseTermRelations { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this Vocabulary allows for parent-child relations between Terms.
-        /// </summary>
-        public bool UseTermHierarchy { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this Vocabulary is used by the Platform internally and should not
-        /// be modified or extended by users.
-        /// </summary>
-        public bool IsSystemVocabulary { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether regular users can add Terms to the Vocabulary. Used for free tagging.
+        /// Gets or sets a value indicating whether regular users can add Terms to the Vocabulary.
+        /// Used for free tagging.
         /// </summary>
         public bool UserExtensible { get; set; }
 
         /// <summary>
-        /// Gets or sets the Terms in this Vocabulary.
+        /// Gets or sets a value indicating whether this Vocabulary allows for parent-child
+        /// relations between Terms.
         /// </summary>
-        public virtual ICollection<Term> Terms { get; set; }
+        public bool UseTermHierarchy { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity types that can use this Vocabulary. If empty, all types can use this
-        /// Vocabulary.
+        /// Gets or sets a value indicating whether this vocabulary allows for relations between Terms.
         /// </summary>
-        public virtual ICollection<EntityType> EntityTypes { get; set; }
+        public bool UseTermRelations { get; set; }
+
+        #endregion Public Properties
     }
 }

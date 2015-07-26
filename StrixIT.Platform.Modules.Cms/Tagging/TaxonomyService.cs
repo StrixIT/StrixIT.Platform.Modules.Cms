@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="TaxonomyService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,21 +17,27 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class TaxonomyService : ITaxonomyService
     {
-        private IPlatformDataSource _source;
+        #region Private Fields
 
         private ITaxonomyManager _manager;
+        private IPlatformDataSource _source;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public TaxonomyService(IPlatformDataSource dataSource, ITaxonomyManager manager)
         {
@@ -38,24 +45,29 @@ namespace StrixIT.Platform.Modules.Cms
             this._manager = manager;
         }
 
-        public TermViewModel GetTag(Guid id)
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        public void Delete(Guid id)
         {
-            return this._manager.GetTag(id).Map<TermViewModel>();
+            this.Delete(id, true);
         }
 
-        public IList<TermViewModel> GetTagList(FilterOptions filter, Guid vocabularyId)
+        public void Delete(Guid id, bool saveChanges)
         {
-            return this._manager.TagQueryForVocabulary(vocabularyId).Filter(filter).Map<TermViewModel>().ToList();
+            this._manager.DeleteVocabulary(id);
+
+            if (saveChanges)
+            {
+                this._source.SaveChanges();
+            }
         }
 
-        public IList<TermViewModel> GetTagList(FilterOptions filter, string vocabularyName)
+        public void DeleteTag(Guid id)
         {
-            return this._manager.TagQueryForVocabulary(vocabularyName, null).Filter(filter).Map<TermViewModel>().ToList();
-        }
-
-        public IList<TermViewModel> GetAllTags()
-        {
-            return this._manager.TagQuery().Map<TermViewModel>().ToList();
+            this._manager.DeleteTag(id);
+            this._source.SaveChanges();
         }
 
         public bool Exists(string name, Guid? id)
@@ -86,6 +98,26 @@ namespace StrixIT.Platform.Modules.Cms
             return model;
         }
 
+        public IList<TermViewModel> GetAllTags()
+        {
+            return this._manager.TagQuery().Map<TermViewModel>().ToList();
+        }
+
+        public TermViewModel GetTag(Guid id)
+        {
+            return this._manager.GetTag(id).Map<TermViewModel>();
+        }
+
+        public IList<TermViewModel> GetTagList(FilterOptions filter, Guid vocabularyId)
+        {
+            return this._manager.TagQueryForVocabulary(vocabularyId).Filter(filter).Map<TermViewModel>().ToList();
+        }
+
+        public IList<TermViewModel> GetTagList(FilterOptions filter, string vocabularyName)
+        {
+            return this._manager.TagQueryForVocabulary(vocabularyName, null).Filter(filter).Map<TermViewModel>().ToList();
+        }
+
         public VocabularyViewModel GetVocabulary(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -99,37 +131,6 @@ namespace StrixIT.Platform.Modules.Cms
         public IEnumerable List(FilterOptions filter)
         {
             return this._manager.VocabularyQuery().Filter(filter).Map<VocabularyViewModel>().ToList();
-        }
-
-        public SaveResult<TermViewModel> SaveTag(TermViewModel model)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException("model");
-            }
-
-            var result = new SaveResult<TermViewModel>();
-            Term term;
-
-            if (model.Id == Guid.Empty)
-            {
-                term = this._manager.CreateTag(model.VocabularyId, model.Name);
-            }
-            else
-            {
-                term = this._manager.GetTag(model.Id);
-                model.Map<Term>(term);
-            }
-
-            result.Success = term != null;
-
-            if (result.Success)
-            {
-                this._source.SaveChanges();
-            }
-
-            result.Entity = term;
-            return result;
         }
 
         public SaveResult<VocabularyViewModel> Save(VocabularyViewModel model)
@@ -168,25 +169,37 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        public void DeleteTag(Guid id)
+        public SaveResult<TermViewModel> SaveTag(TermViewModel model)
         {
-            this._manager.DeleteTag(id);
-            this._source.SaveChanges();
-        }
+            if (model == null)
+            {
+                throw new ArgumentNullException("model");
+            }
 
-        public void Delete(Guid id)
-        {
-            this.Delete(id, true);
-        }
+            var result = new SaveResult<TermViewModel>();
+            Term term;
 
-        public void Delete(Guid id, bool saveChanges)
-        {
-            this._manager.DeleteVocabulary(id);
+            if (model.Id == Guid.Empty)
+            {
+                term = this._manager.CreateTag(model.VocabularyId, model.Name);
+            }
+            else
+            {
+                term = this._manager.GetTag(model.Id);
+                model.Map<Term>(term);
+            }
 
-            if (saveChanges)
+            result.Success = term != null;
+
+            if (result.Success)
             {
                 this._source.SaveChanges();
             }
+
+            result.Entity = term;
+            return result;
         }
+
+        #endregion Public Methods
     }
 }

@@ -5,19 +5,14 @@
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StrixIT.Platform.Core;
-using StrixIT.Platform.Modules.Cms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass]
     public class EntityHelperTests
     {
+        #region Public Methods
+
         [ClassInitialize]
         public static void Init(TestContext context)
         {
@@ -27,13 +22,35 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod]
-        public void ObjectMapShouldReturnProperObjectMap()
+        public void GetEntityTypeIdShouldReturnCorrectId()
         {
             var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
-            var map = helper.GetObjectMap(typeof(News));
-            Assert.AreEqual(typeof(News), map.ContentType);
-            Assert.AreEqual(typeof(NewsViewModel), map.ViewModelType);
-            Assert.AreEqual(typeof(NewsListModel), map.ListModelType);
+            var id = helper.GetEntityTypeId(typeof(Html));
+            Assert.AreEqual(EntityServicesTestData.HtmlEntityTypeId, id);
+        }
+
+        [TestMethod]
+        public void GetTypeUsingEntityIdShouldReturnCorrectType()
+        {
+            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var type = helper.GetEntityType(EntityServicesTestData.HtmlEntityTypeId);
+            Assert.AreEqual(typeof(Html), type);
+        }
+
+        [TestMethod]
+        public void IsServiceActiveShouldReturnFalseForNonActiveService()
+        {
+            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var result = helper.IsServiceActive(typeof(Html), "Versioning");
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void IsServiceActiveShouldReturnTrueForActiveService()
+        {
+            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var result = helper.IsServiceActive(typeof(Html), "Translations");
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -47,35 +64,15 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod]
-        public void GetTypeUsingEntityIdShouldReturnCorrectType()
+        public void ObjectMapShouldReturnProperObjectMap()
         {
             var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
-            var type = helper.GetEntityType(EntityServicesTestData.HtmlEntityTypeId);
-            Assert.AreEqual(typeof(Html), type);
+            var map = helper.GetObjectMap(typeof(News));
+            Assert.AreEqual(typeof(News), map.ContentType);
+            Assert.AreEqual(typeof(NewsViewModel), map.ViewModelType);
+            Assert.AreEqual(typeof(NewsListModel), map.ListModelType);
         }
 
-        [TestMethod]
-        public void GetEntityTypeIdShouldReturnCorrectId()
-        {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
-            var id = helper.GetEntityTypeId(typeof(Html));
-            Assert.AreEqual(EntityServicesTestData.HtmlEntityTypeId, id);
-        }
-
-        [TestMethod]
-        public void IsServiceActiveShouldReturnTrueForActiveService()
-        {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
-            var result = helper.IsServiceActive(typeof(Html), "Translations");
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsServiceActiveShouldReturnFalseForNonActiveService()
-        {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
-            var result = helper.IsServiceActive(typeof(Html), "Versioning");
-            Assert.IsFalse(result);
-        }
+        #endregion Public Methods
     }
 }

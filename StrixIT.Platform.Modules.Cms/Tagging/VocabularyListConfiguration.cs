@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="VocabularyListConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using StrixIT.Platform.Core;
 
@@ -24,6 +26,8 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class VocabularyListConfiguration : ListConfiguration
     {
+        #region Public Constructors
+
         public VocabularyListConfiguration(IUserContext userContext)
             : base(typeof(VocabularyViewModel))
         {
@@ -32,5 +36,7 @@ namespace StrixIT.Platform.Modules.Cms
             this.CanEdit = userContext.HasPermission(CmsPermissions.EditVocabulary);
             this.CanDelete = userContext.HasPermission(CmsPermissions.DeleteVocabulary);
         }
+
+        #endregion Public Constructors
     }
 }

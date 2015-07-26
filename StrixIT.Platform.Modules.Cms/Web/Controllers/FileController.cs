@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FileController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,23 +17,29 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Web;
+using System;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
-using System;
 using System.Web.Helpers;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
     public class FileController : BaseController
     {
+        #region Private Fields
+
         private IFileService _fileService;
         private IImageConverter _imageConverter;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public FileController(IFileService fileService, IImageConverter imageConverter)
         {
@@ -40,16 +47,9 @@ namespace StrixIT.Platform.Modules.Cms
             this._imageConverter = imageConverter;
         }
 
-        [HttpPost]
-        public JsonResult UploadFile(AddFile model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
+        #endregion Public Constructors
 
-            return this.Json(this._fileService.UploadFiles(model, this.Request));
-        }
+        #region Public Methods
 
         [HttpPost]
         public ContentResult AddFromRTE()
@@ -77,6 +77,21 @@ namespace StrixIT.Platform.Modules.Cms
         {
             return this.GetFileInternal(type, Web.Helpers.HtmlDecode(url, false), width, height);
         }
+
+        [HttpPost]
+        public JsonResult UploadFile(AddFile model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return this.Json(this._fileService.UploadFiles(model, this.Request));
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private ActionResult GetFileInternal(string type, string url, int width = 0, int height = 0)
         {
@@ -113,5 +128,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return this.File(this.Server.MapPath(path) + url, MimeMapping.GetMimeMapping(url));
         }
+
+        #endregion Private Methods
     }
 }

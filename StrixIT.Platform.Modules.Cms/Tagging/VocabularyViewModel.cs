@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="VocabularyViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,15 +29,22 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class VocabularyViewModel : PlatformBaseViewModel
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the vocabulary id.
+        /// Gets or sets a value indicating whether the user can edit this view model.
         /// </summary>
-        public Guid Id { get; set; }
+        public bool CanEdit { get; set; }
 
         /// <summary>
         /// Gets or sets the vocabulary culture.
         /// </summary>
         public string Culture { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vocabulary id.
+        /// </summary>
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the vocabulary name.
@@ -47,9 +56,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         public string Url { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the user can edit this view model.
-        /// </summary>
-        public bool CanEdit { get; set; }
+        #endregion Public Properties
     }
 }

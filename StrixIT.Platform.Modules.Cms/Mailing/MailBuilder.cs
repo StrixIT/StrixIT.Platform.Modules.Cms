@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailBuilder.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,28 +17,38 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Configuration;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class MailBuilder
     {
+        #region Private Fields
+
         private IFileSystemWrapper _fileSystemWrapper;
         private IMembershipService _membershipService;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public MailBuilder(IFileSystemWrapper fileSystemWrapper, IMembershipService membershipService)
         {
             this._fileSystemWrapper = fileSystemWrapper;
             this._membershipService = membershipService;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void InitMails(IPlatformDataSource source)
         {
@@ -68,56 +79,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        private string GetFromAddress()
-        {
-            var mailSettings = Helpers.GetConfigSectionGroup<MailSettingsSectionGroup>("system.net/mailSettings");
-            return mailSettings.Smtp.From ?? "rutger@strixit.com";
-        }
+        #endregion Public Methods
 
-        private List<MailContentTemplate> AddMailTemplate(IPlatformDataSource source, Guid adminId, Guid mainGroupId, string directory, EntityType mailTemplateType, DateTime date, string[] supportedCultures)
-        {
-            // Add the mail template
-            var templateName = "Default";
-            var templateData = this._fileSystemWrapper.GetHtmlTemplate(directory, "MailTemplate", null);
-            List<MailContentTemplate> templateContent = new List<MailContentTemplate>();
-
-            var templateEntity = new PlatformEntity
-            {
-                Id = Guid.NewGuid(),
-                GroupId = mainGroupId,
-                Url = templateName.ToLower(),
-                EntityType = mailTemplateType,
-                OwnerUserId = adminId
-            };
-
-            source.Save(templateEntity);
-
-            foreach (var data in templateData.Where(t => supportedCultures.Contains(t.Culture.ToLower())))
-            {
-                var template = new MailContentTemplate
-                {
-                    Id = Guid.NewGuid(),
-                    EntityId = templateEntity.Id,
-                    Entity = templateEntity,
-                    Culture = data.Culture,
-                    VersionNumber = 1,
-                    Name = "Default",
-                    CreatedByUserId = adminId,
-                    CreatedOn = date,
-                    UpdatedByUserId = adminId,
-                    UpdatedOn = date,
-                    IsCurrentVersion = true,
-                    PublishedByUserId = adminId,
-                    PublishedOn = date,
-                    Body = data.Body
-                };
-
-                templateContent.Add(template);
-                source.Save(template);
-            }
-
-            return templateContent;
-        }
+        #region Private Methods
 
         private void AddMails(IPlatformDataSource source, Guid adminId, Guid mainGroupId, string directory, List<MailContentTemplate> templateContent, EntityType mailType, string from, DateTime date, string[] supportedCultures)
         {
@@ -179,5 +143,58 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
         }
+
+        private List<MailContentTemplate> AddMailTemplate(IPlatformDataSource source, Guid adminId, Guid mainGroupId, string directory, EntityType mailTemplateType, DateTime date, string[] supportedCultures)
+        {
+            // Add the mail template
+            var templateName = "Default";
+            var templateData = this._fileSystemWrapper.GetHtmlTemplate(directory, "MailTemplate", null);
+            List<MailContentTemplate> templateContent = new List<MailContentTemplate>();
+
+            var templateEntity = new PlatformEntity
+            {
+                Id = Guid.NewGuid(),
+                GroupId = mainGroupId,
+                Url = templateName.ToLower(),
+                EntityType = mailTemplateType,
+                OwnerUserId = adminId
+            };
+
+            source.Save(templateEntity);
+
+            foreach (var data in templateData.Where(t => supportedCultures.Contains(t.Culture.ToLower())))
+            {
+                var template = new MailContentTemplate
+                {
+                    Id = Guid.NewGuid(),
+                    EntityId = templateEntity.Id,
+                    Entity = templateEntity,
+                    Culture = data.Culture,
+                    VersionNumber = 1,
+                    Name = "Default",
+                    CreatedByUserId = adminId,
+                    CreatedOn = date,
+                    UpdatedByUserId = adminId,
+                    UpdatedOn = date,
+                    IsCurrentVersion = true,
+                    PublishedByUserId = adminId,
+                    PublishedOn = date,
+                    Body = data.Body
+                };
+
+                templateContent.Add(template);
+                source.Save(template);
+            }
+
+            return templateContent;
+        }
+
+        private string GetFromAddress()
+        {
+            var mailSettings = Helpers.GetConfigSectionGroup<MailSettingsSectionGroup>("system.net/mailSettings");
+            return mailSettings.Smtp.From ?? "rutger@strixit.com";
+        }
+
+        #endregion Private Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ObjectMap.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,8 +29,10 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class ObjectMap
     {
+        #region Public Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectMap" /> class.
+        /// Initializes a new instance of the <see cref="ObjectMap"/> class.
         /// </summary>
         /// <param name="contentType">The content type</param>
         /// <param name="viewModelType">The view model type</param>
@@ -40,10 +44,14 @@ namespace StrixIT.Platform.Modules.Cms
             this.ListModelType = listModelType;
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets the view model type of this map.
+        /// Gets the content type of this map.
         /// </summary>
-        public Type ViewModelType { get; private set; }
+        public Type ContentType { get; private set; }
 
         /// <summary>
         /// Gets the list model type of this map.
@@ -51,8 +59,10 @@ namespace StrixIT.Platform.Modules.Cms
         public Type ListModelType { get; private set; }
 
         /// <summary>
-        /// Gets the content type of this map.
+        /// Gets the view model type of this map.
         /// </summary>
-        public Type ContentType { get; private set; }
+        public Type ViewModelType { get; private set; }
+
+        #endregion Public Properties
     }
 }

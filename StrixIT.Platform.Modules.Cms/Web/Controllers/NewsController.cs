@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="NewsController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,18 +17,41 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Web.Mvc;
-using StrixIT.Platform.Web;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Web;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     [StrixAuthorization(Roles = CmsRoleNames.EDITORROLES)]
     public class NewsController : EntityController<NewsViewModel>
     {
-        public NewsController(INewsService newsService, ICommentService commentService) : base(newsService, commentService) { }
+        #region Public Constructors
+
+        public NewsController(INewsService newsService, ICommentService commentService) : base(newsService, commentService)
+        {
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        [AllowAnonymous]
+        [ChildActionOnly]
+        public ActionResult DisplayLatest()
+        {
+            var model = ((INewsService)this.Service).GetLatest();
+
+            if (model == null)
+            {
+                model = new NewsViewModel();
+            }
+
+            return this.View("Latest", model);
+        }
 
         [AllowAnonymous]
         public override ActionResult Index()
@@ -43,18 +67,6 @@ namespace StrixIT.Platform.Modules.Cms
             return this.View(config);
         }
 
-        [AllowAnonymous]
-        [ChildActionOnly]
-        public ActionResult DisplayLatest()
-        {
-            var model = ((INewsService)this.Service).GetLatest();
-
-            if (model == null)
-            {
-                model = new NewsViewModel();
-            }
-
-            return this.View("Latest", model);
-        }
+        #endregion Public Methods
     }
 }

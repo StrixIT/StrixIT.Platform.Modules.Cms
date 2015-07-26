@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsAreaRegistration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,16 +17,19 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Web.Mvc;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CmsAreaRegistration : AreaRegistration
     {
+        #region Public Properties
+
         public override string AreaName
         {
             get
@@ -33,6 +37,10 @@ namespace StrixIT.Platform.Modules.Cms
                 return "Cms";
             }
         }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
@@ -73,5 +81,7 @@ namespace StrixIT.Platform.Modules.Cms
                 url: "{language}/Admin/Cms/{controller}/{action}/{id}",
                 defaults: new { language = culture, controller = "Home", action = "Index", id = UrlParameter.Optional });
         }
+
+        #endregion Public Methods
     }
 }

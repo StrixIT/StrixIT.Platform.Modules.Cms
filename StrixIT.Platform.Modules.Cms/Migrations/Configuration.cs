@@ -6,21 +6,26 @@
 namespace StrixIT.Platform.Modules.Cms.Migrations
 {
     using StrixIT.Platform.Core;
-    using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
-    using System.Linq;
 
     internal sealed class Configuration : DbMigrationsConfiguration<StrixIT.Platform.Modules.Cms.PlatformDataSource>
     {
+        #region Public Constructors
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
+        #endregion Public Constructors
+
+        #region Protected Methods
+
         protected override void Seed(StrixIT.Platform.Modules.Cms.PlatformDataSource context)
         {
             new MailBuilder(DependencyInjector.Get<IFileSystemWrapper>(), DependencyInjector.TryGet(typeof(IMembershipService)) as IMembershipService).InitMails(context);
         }
+
+        #endregion Protected Methods
     }
 }

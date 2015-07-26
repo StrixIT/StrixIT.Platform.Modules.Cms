@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CommentController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,23 +17,38 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Web;
 using System;
 using System.Web.Mvc;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CommentController : BaseController
     {
+        #region Private Fields
+
         private ICommentService _service;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public CommentController(ICommentService service)
             : base()
         {
             this._service = service;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        public JsonResult DeleteComment(CommentViewModel model)
+        {
+            return this.Json(this._service.DeleteComment(model));
         }
 
         public JsonResult GetComments(Guid entityId, string culture)
@@ -45,9 +61,6 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Json(this._service.SaveComment(model));
         }
 
-        public JsonResult DeleteComment(CommentViewModel model)
-        {
-            return this.Json(this._service.DeleteComment(model));
-        }
+        #endregion Public Methods
     }
 }

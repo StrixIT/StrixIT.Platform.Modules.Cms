@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PageControllerHandler.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,17 +17,20 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Web.Routing;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System;
+using System.Web.Routing;
 
 namespace StrixIT.Platform.Modules.Cms.EventHandlers
 {
     public class PageControllerHandler : IHandlePlatformEvent<GetControllerEvent>
     {
+        #region Public Methods
+
         public void Handle(GetControllerEvent args)
         {
             if (args.Stage == ControllerResolveStage.NotFound)
@@ -50,6 +54,10 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
                 args.Controller = pageController;
             }
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private string GetPageUrl(RequestContext requestContext, string path, bool retry)
         {
@@ -77,5 +85,7 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
 
             return matchedUrl;
         }
+
+        #endregion Private Methods
     }
 }

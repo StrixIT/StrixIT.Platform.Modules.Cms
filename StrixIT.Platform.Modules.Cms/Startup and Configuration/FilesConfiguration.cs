@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FilesConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,62 +17,24 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Configuration;
-using System.Collections.Generic;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class FilesConfiguration
     {
+        #region Private Fields
+
         private static IDictionary<string, string> _settings = ModuleManager.AppSettings.ContainsKey(CmsConstants.CMS) ? ModuleManager.AppSettings[CmsConstants.CMS] : ModuleManager.AppSettings[PlatformConstants.PLATFORM];
 
-        /// <summary>
-        /// Gets a value indicating whether files uploaded to the system should be secured, i.e. not accessible to unauthenticated users
-        /// and users that do not belong to the group the file was uploaded for.
-        /// </summary>
-        public bool SecureFiles
-        {
-            get
-            {
-                return bool.Parse(_settings["secureFiles"]);
-            }
-        }
+        #endregion Private Fields
 
-        /// <summary>
-        /// Gets the folder to upload files to when storing them on the file system, relative to the site root.
-        /// </summary>
-        public string UploadFolder
-        {
-            get
-            {
-                return _settings["uploadFolder"];
-            }
-        }
-
-        /// <summary>
-        /// Gets the thumb directory for the application, relative to the root.
-        /// </summary>
-        public string ThumbDirectory
-        {
-            get
-            {
-                return _settings["thumbDirectory"];
-            }
-        }
-
-        /// <summary>
-        /// Gets the path to the water mark image, relative to the root.
-        /// </summary>
-        public string WaterMarkPath
-        {
-            get
-            {
-                return _settings["waterMarkPath"];
-            }
-        }
+        #region Public Properties
 
         /// <summary>
         /// Gets the file types allowed in the application as a comma separated string.
@@ -82,28 +45,6 @@ namespace StrixIT.Platform.Modules.Cms
             get
             {
                 return _settings["allowedFileTypes"];
-            }
-        }
-
-        /// <summary>
-        /// Gets the extensions that should be treated as image files as a comma separated string.
-        /// </summary>
-        public string ImageExtensions
-        {
-            get
-            {
-                return _settings["imageExtensions"];
-            }
-        }
-
-        /// <summary>
-        /// Gets the extensions that should be treated as video files as a comma separated string.
-        /// </summary>
-        public string VideoExtensions
-        {
-            get
-            {
-                return _settings["videoExtensions"];
             }
         }
 
@@ -128,5 +69,76 @@ namespace StrixIT.Platform.Modules.Cms
                 return _settings["documentExtensions"];
             }
         }
+
+        /// <summary>
+        /// Gets the extensions that should be treated as image files as a comma separated string.
+        /// </summary>
+        public string ImageExtensions
+        {
+            get
+            {
+                return _settings["imageExtensions"];
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether files uploaded to the system should be secured, i.e. not
+        /// accessible to unauthenticated users and users that do not belong to the group the file
+        /// was uploaded for.
+        /// </summary>
+        public bool SecureFiles
+        {
+            get
+            {
+                return bool.Parse(_settings["secureFiles"]);
+            }
+        }
+
+        /// <summary>
+        /// Gets the thumb directory for the application, relative to the root.
+        /// </summary>
+        public string ThumbDirectory
+        {
+            get
+            {
+                return _settings["thumbDirectory"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the folder to upload files to when storing them on the file system, relative to the
+        /// site root.
+        /// </summary>
+        public string UploadFolder
+        {
+            get
+            {
+                return _settings["uploadFolder"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the extensions that should be treated as video files as a comma separated string.
+        /// </summary>
+        public string VideoExtensions
+        {
+            get
+            {
+                return _settings["videoExtensions"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the path to the water mark image, relative to the root.
+        /// </summary>
+        public string WaterMarkPath
+        {
+            get
+            {
+                return _settings["waterMarkPath"];
+            }
+        }
+
+        #endregion Public Properties
     }
 }

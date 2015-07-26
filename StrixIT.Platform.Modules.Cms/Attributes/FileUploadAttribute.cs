@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FileUploadAttribute.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,36 +17,50 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     /// <summary>
-    /// An attribute to mark a property as an image property. This will have the platform create a thumbnail for it.
+    /// An attribute to mark a property as an image property. This will have the platform create a
+    /// thumbnail for it.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class FileUploadAttribute : Attribute
     {
+        #region Private Fields
+
         /// <summary>
         /// The file id property on the object.
         /// </summary>
         private string _idProperty;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileUploadAttribute" /> class.
-        /// </summary>
-        public FileUploadAttribute() : this(null) { }
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileUploadAttribute" /> class.
+        /// Initializes a new instance of the <see cref="FileUploadAttribute"/> class.
+        /// </summary>
+        public FileUploadAttribute() : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileUploadAttribute"/> class.
         /// </summary>
         /// <param name="idProperty">The file id property on the object</param>
         public FileUploadAttribute(string idProperty)
         {
             this._idProperty = idProperty;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
         /// Gets the id property of the file on the entity.
@@ -57,5 +72,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return this._idProperty;
             }
         }
+
+        #endregion Public Properties
     }
 }

@@ -5,493 +5,12 @@
 //------------------------------------------------------------------------------
 namespace StrixIT.Platform.Modules.Cms.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class initial : DbMigration
     {
-        public override void Up()
-        {
-            CreateTable(
-                "dbo.Comments",
-                c => new
-                    {
-                        Id = c.Long(nullable: false, identity: true),
-                        EntityId = c.Guid(nullable: false),
-                        EntityCulture = c.String(nullable: false, maxLength: 5),
-                        EntityVersion = c.Int(nullable: false),
-                        ParentId = c.Long(),
-                        CommentStatus = c.Int(nullable: false),
-                        Text = c.String(nullable: false),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Comments", t => t.ParentId)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.ParentId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId);
-            
-            CreateTable(
-                "dbo.UserNameLookups",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        Email = c.String(nullable: false, maxLength: 250),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.Entities",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        Url = c.String(nullable: false, maxLength: 300),
-                        EntityTypeId = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                        OwnerUserId = c.Guid(nullable: false),
-                        IsPrivate = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId)
-                .ForeignKey("dbo.UserNameLookups", t => t.OwnerUserId)
-                .Index(t => t.EntityTypeId)
-                .Index(t => t.GroupId)
-                .Index(t => t.OwnerUserId);
-            
-            CreateTable(
-                "dbo.ContentSharedWithGroups",
-                c => new
-                    {
-                        EntityId = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.EntityId, t.GroupId })
-                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
-                .Index(t => t.EntityId)
-                .Index(t => t.GroupId);
-            
-            CreateTable(
-                "dbo.GroupNameLookups",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.EntityTypes",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.EntityCustomFields",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityTypeId = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                        FieldType = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 100),
-                        Section = c.String(maxLength: 100),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
-                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId)
-                .Index(t => t.EntityTypeId)
-                .Index(t => t.GroupId);
-            
-            CreateTable(
-                "dbo.EntityTypeServiceActions",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        EntityTypeId = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                        Action = c.String(nullable: false, maxLength: 250),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
-                .Index(t => t.EntityTypeId)
-                .Index(t => t.GroupId);
-            
-            CreateTable(
-                "dbo.TaxonomyVocabularies",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        Url = c.String(nullable: false, maxLength: 300),
-                        UseTermRelations = c.Boolean(nullable: false),
-                        UseTermHierarchy = c.Boolean(nullable: false),
-                        IsSystemVocabulary = c.Boolean(nullable: false),
-                        UserExtensible = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId)
-                .Index(t => t.GroupId);
-            
-            CreateTable(
-                "dbo.TaxonomyTerms",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        VocabularyId = c.Guid(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        Url = c.String(nullable: false, maxLength: 300),
-                        TagCount = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.TaxonomyVocabularies", t => t.VocabularyId, cascadeDelete: true)
-                .Index(t => t.VocabularyId);
-            
-            CreateTable(
-                "dbo.TaxonomySynonyms",
-                c => new
-                    {
-                        TermId = c.Guid(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                    })
-                .PrimaryKey(t => new { t.TermId, t.Name })
-                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
-                .Index(t => t.TermId);
-            
-            CreateTable(
-                "dbo.Files",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        GroupId = c.Guid(nullable: false),
-                        Folder = c.String(nullable: false, maxLength: 200),
-                        Path = c.String(nullable: false, maxLength: 300),
-                        FileName = c.String(nullable: false, maxLength: 200),
-                        Extension = c.String(nullable: false, maxLength: 5),
-                        OriginalName = c.String(maxLength: 300),
-                        Size = c.Long(),
-                        UploadedOn = c.DateTime(nullable: false),
-                        UploadedByUserId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
-                .ForeignKey("dbo.UserNameLookups", t => t.UploadedByUserId)
-                .Index(t => t.GroupId)
-                .Index(t => t.UploadedByUserId);
-            
-            CreateTable(
-                "dbo.ContentCustomFieldValues",
-                c => new
-                    {
-                        Id = c.Long(nullable: false, identity: true),
-                        ContentId = c.Guid(nullable: false),
-                        CustomFieldId = c.Guid(nullable: false),
-                        NumberValue = c.Double(),
-                        StringValue = c.String(),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.EntityCustomFields", t => t.CustomFieldId, cascadeDelete: true)
-                .Index(t => t.CustomFieldId);
-            
-            CreateTable(
-                "dbo.Documents",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityId = c.Guid(nullable: false),
-                        FileId = c.Guid(nullable: false),
-                        Description = c.String(),
-                        AuthorName = c.String(maxLength: 250),
-                        AuthorUserId = c.Guid(),
-                        Location = c.String(maxLength: 250),
-                        Date = c.DateTime(),
-                        DownloadCount = c.Int(nullable: false),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        VersionNumber = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        VersionLog = c.String(maxLength: 1000),
-                        IsCurrentVersion = c.Boolean(nullable: false),
-                        NumberOfComments = c.Int(nullable: false),
-                        LastCommentDate = c.DateTime(),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                        PublishedByUserId = c.Guid(),
-                        PublishedOn = c.DateTime(),
-                        DeletedByUserId = c.Guid(),
-                        DeletedOn = c.DateTime(),
-                        LockedByUserId = c.Guid(),
-                        LockedOn = c.DateTime(),
-                        SortOrder = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.UserNameLookups", t => t.AuthorUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId)
-                .ForeignKey("dbo.Files", t => t.FileId, cascadeDelete: true)
-                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.FileId)
-                .Index(t => t.AuthorUserId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId)
-                .Index(t => t.PublishedByUserId)
-                .Index(t => t.DeletedByUserId)
-                .Index(t => t.LockedByUserId);
-            
-            CreateTable(
-                "dbo.Html",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityId = c.Guid(nullable: false),
-                        Body = c.String(nullable: false),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        VersionNumber = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        VersionLog = c.String(maxLength: 1000),
-                        IsCurrentVersion = c.Boolean(nullable: false),
-                        NumberOfComments = c.Int(nullable: false),
-                        LastCommentDate = c.DateTime(),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                        PublishedByUserId = c.Guid(),
-                        PublishedOn = c.DateTime(),
-                        DeletedByUserId = c.Guid(),
-                        DeletedOn = c.DateTime(),
-                        LockedByUserId = c.Guid(),
-                        LockedOn = c.DateTime(),
-                        SortOrder = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId)
-                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId)
-                .Index(t => t.PublishedByUserId)
-                .Index(t => t.DeletedByUserId)
-                .Index(t => t.LockedByUserId);
-            
-            CreateTable(
-                "dbo.MailContents",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityId = c.Guid(nullable: false),
-                        TemplateId = c.Guid(nullable: false),
-                        From = c.String(nullable: false, maxLength: 250),
-                        Subject = c.String(nullable: false, maxLength: 250),
-                        Body = c.String(nullable: false),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        VersionNumber = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        VersionLog = c.String(maxLength: 1000),
-                        IsCurrentVersion = c.Boolean(nullable: false),
-                        NumberOfComments = c.Int(nullable: false),
-                        LastCommentDate = c.DateTime(),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                        PublishedByUserId = c.Guid(),
-                        PublishedOn = c.DateTime(),
-                        DeletedByUserId = c.Guid(),
-                        DeletedOn = c.DateTime(),
-                        LockedByUserId = c.Guid(),
-                        LockedOn = c.DateTime(),
-                        SortOrder = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId)
-                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
-                .ForeignKey("dbo.MailContentTemplates", t => t.TemplateId)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.TemplateId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId)
-                .Index(t => t.PublishedByUserId)
-                .Index(t => t.DeletedByUserId)
-                .Index(t => t.LockedByUserId);
-            
-            CreateTable(
-                "dbo.MailContentTemplates",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityId = c.Guid(nullable: false),
-                        Body = c.String(nullable: false),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        VersionNumber = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        VersionLog = c.String(maxLength: 1000),
-                        IsCurrentVersion = c.Boolean(nullable: false),
-                        NumberOfComments = c.Int(nullable: false),
-                        LastCommentDate = c.DateTime(),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                        PublishedByUserId = c.Guid(),
-                        PublishedOn = c.DateTime(),
-                        DeletedByUserId = c.Guid(),
-                        DeletedOn = c.DateTime(),
-                        LockedByUserId = c.Guid(),
-                        LockedOn = c.DateTime(),
-                        SortOrder = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId)
-                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId)
-                .Index(t => t.PublishedByUserId)
-                .Index(t => t.DeletedByUserId)
-                .Index(t => t.LockedByUserId);
-            
-            CreateTable(
-                "dbo.News",
-                c => new
-                    {
-                        Id = c.Guid(nullable: false),
-                        EntityId = c.Guid(nullable: false),
-                        Summary = c.String(),
-                        Body = c.String(nullable: false),
-                        ExpireTime = c.DateTime(),
-                        Culture = c.String(nullable: false, maxLength: 5),
-                        VersionNumber = c.Int(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 250),
-                        VersionLog = c.String(maxLength: 1000),
-                        IsCurrentVersion = c.Boolean(nullable: false),
-                        NumberOfComments = c.Int(nullable: false),
-                        LastCommentDate = c.DateTime(),
-                        CreatedByUserId = c.Guid(nullable: false),
-                        CreatedOn = c.DateTime(nullable: false),
-                        UpdatedByUserId = c.Guid(nullable: false),
-                        UpdatedOn = c.DateTime(nullable: false),
-                        PublishedByUserId = c.Guid(),
-                        PublishedOn = c.DateTime(),
-                        DeletedByUserId = c.Guid(),
-                        DeletedOn = c.DateTime(),
-                        LockedByUserId = c.Guid(),
-                        LockedOn = c.DateTime(),
-                        SortOrder = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
-                .ForeignKey("dbo.Entities", t => t.EntityId)
-                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
-                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
-                .Index(t => t.EntityId)
-                .Index(t => t.CreatedByUserId)
-                .Index(t => t.UpdatedByUserId)
-                .Index(t => t.PublishedByUserId)
-                .Index(t => t.DeletedByUserId)
-                .Index(t => t.LockedByUserId);
-            
-            CreateTable(
-                "dbo.TaxonomyVocabularyEntityTypes",
-                c => new
-                    {
-                        VocabularyId = c.Guid(nullable: false),
-                        EntityTypeId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.VocabularyId, t.EntityTypeId })
-                .ForeignKey("dbo.TaxonomyVocabularies", t => t.VocabularyId, cascadeDelete: true)
-                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
-                .Index(t => t.VocabularyId)
-                .Index(t => t.EntityTypeId);
-            
-            CreateTable(
-                "dbo.TaxonomySiblingTerms",
-                c => new
-                    {
-                        TermId = c.Guid(nullable: false),
-                        SiblingTermId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.TermId, t.SiblingTermId })
-                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId)
-                .ForeignKey("dbo.TaxonomyTerms", t => t.SiblingTermId)
-                .Index(t => t.TermId)
-                .Index(t => t.SiblingTermId);
-            
-            CreateTable(
-                "dbo.TaxonomyParentChildTerms",
-                c => new
-                    {
-                        TermId = c.Guid(nullable: false),
-                        ParentTermId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.TermId, t.ParentTermId })
-                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId)
-                .ForeignKey("dbo.TaxonomyTerms", t => t.ParentTermId)
-                .Index(t => t.TermId)
-                .Index(t => t.ParentTermId);
-            
-            CreateTable(
-                "dbo.FileTerms",
-                c => new
-                    {
-                        FileId = c.Guid(nullable: false),
-                        TermId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.FileId, t.TermId })
-                .ForeignKey("dbo.Files", t => t.FileId, cascadeDelete: true)
-                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
-                .Index(t => t.FileId)
-                .Index(t => t.TermId);
-            
-            CreateTable(
-                "dbo.TaxonomyTermEntities",
-                c => new
-                    {
-                        EntityId = c.Guid(nullable: false),
-                        TermId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.EntityId, t.TermId })
-                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
-                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
-                .Index(t => t.EntityId)
-                .Index(t => t.TermId);
-            
-        }
-        
+        #region Public Methods
+
         public override void Down()
         {
             DropForeignKey("dbo.News", "UpdatedByUserId", "dbo.UserNameLookups");
@@ -642,5 +161,488 @@ namespace StrixIT.Platform.Modules.Cms.Migrations
             DropTable("dbo.UserNameLookups");
             DropTable("dbo.Comments");
         }
+
+        public override void Up()
+        {
+            CreateTable(
+                "dbo.Comments",
+                c => new
+                {
+                    Id = c.Long(nullable: false, identity: true),
+                    EntityId = c.Guid(nullable: false),
+                    EntityCulture = c.String(nullable: false, maxLength: 5),
+                    EntityVersion = c.Int(nullable: false),
+                    ParentId = c.Long(),
+                    CommentStatus = c.Int(nullable: false),
+                    Text = c.String(nullable: false),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Comments", t => t.ParentId)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.ParentId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId);
+
+            CreateTable(
+                "dbo.UserNameLookups",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    Email = c.String(nullable: false, maxLength: 250),
+                })
+                .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.Entities",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    Url = c.String(nullable: false, maxLength: 300),
+                    EntityTypeId = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                    OwnerUserId = c.Guid(nullable: false),
+                    IsPrivate = c.Boolean(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId)
+                .ForeignKey("dbo.UserNameLookups", t => t.OwnerUserId)
+                .Index(t => t.EntityTypeId)
+                .Index(t => t.GroupId)
+                .Index(t => t.OwnerUserId);
+
+            CreateTable(
+                "dbo.ContentSharedWithGroups",
+                c => new
+                {
+                    EntityId = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.EntityId, t.GroupId })
+                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
+                .Index(t => t.EntityId)
+                .Index(t => t.GroupId);
+
+            CreateTable(
+                "dbo.GroupNameLookups",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                })
+                .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.EntityTypes",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                })
+                .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.EntityCustomFields",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityTypeId = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                    FieldType = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 100),
+                    Section = c.String(maxLength: 100),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
+                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId)
+                .Index(t => t.EntityTypeId)
+                .Index(t => t.GroupId);
+
+            CreateTable(
+                "dbo.EntityTypeServiceActions",
+                c => new
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    EntityTypeId = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                    Action = c.String(nullable: false, maxLength: 250),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
+                .Index(t => t.EntityTypeId)
+                .Index(t => t.GroupId);
+
+            CreateTable(
+                "dbo.TaxonomyVocabularies",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    Url = c.String(nullable: false, maxLength: 300),
+                    UseTermRelations = c.Boolean(nullable: false),
+                    UseTermHierarchy = c.Boolean(nullable: false),
+                    IsSystemVocabulary = c.Boolean(nullable: false),
+                    UserExtensible = c.Boolean(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId)
+                .Index(t => t.GroupId);
+
+            CreateTable(
+                "dbo.TaxonomyTerms",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    VocabularyId = c.Guid(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    Url = c.String(nullable: false, maxLength: 300),
+                    TagCount = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.TaxonomyVocabularies", t => t.VocabularyId, cascadeDelete: true)
+                .Index(t => t.VocabularyId);
+
+            CreateTable(
+                "dbo.TaxonomySynonyms",
+                c => new
+                {
+                    TermId = c.Guid(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                })
+                .PrimaryKey(t => new { t.TermId, t.Name })
+                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
+                .Index(t => t.TermId);
+
+            CreateTable(
+                "dbo.Files",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    GroupId = c.Guid(nullable: false),
+                    Folder = c.String(nullable: false, maxLength: 200),
+                    Path = c.String(nullable: false, maxLength: 300),
+                    FileName = c.String(nullable: false, maxLength: 200),
+                    Extension = c.String(nullable: false, maxLength: 5),
+                    OriginalName = c.String(maxLength: 300),
+                    Size = c.Long(),
+                    UploadedOn = c.DateTime(nullable: false),
+                    UploadedByUserId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.GroupNameLookups", t => t.GroupId, cascadeDelete: true)
+                .ForeignKey("dbo.UserNameLookups", t => t.UploadedByUserId)
+                .Index(t => t.GroupId)
+                .Index(t => t.UploadedByUserId);
+
+            CreateTable(
+                "dbo.ContentCustomFieldValues",
+                c => new
+                {
+                    Id = c.Long(nullable: false, identity: true),
+                    ContentId = c.Guid(nullable: false),
+                    CustomFieldId = c.Guid(nullable: false),
+                    NumberValue = c.Double(),
+                    StringValue = c.String(),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.EntityCustomFields", t => t.CustomFieldId, cascadeDelete: true)
+                .Index(t => t.CustomFieldId);
+
+            CreateTable(
+                "dbo.Documents",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityId = c.Guid(nullable: false),
+                    FileId = c.Guid(nullable: false),
+                    Description = c.String(),
+                    AuthorName = c.String(maxLength: 250),
+                    AuthorUserId = c.Guid(),
+                    Location = c.String(maxLength: 250),
+                    Date = c.DateTime(),
+                    DownloadCount = c.Int(nullable: false),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    VersionNumber = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    VersionLog = c.String(maxLength: 1000),
+                    IsCurrentVersion = c.Boolean(nullable: false),
+                    NumberOfComments = c.Int(nullable: false),
+                    LastCommentDate = c.DateTime(),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                    PublishedByUserId = c.Guid(),
+                    PublishedOn = c.DateTime(),
+                    DeletedByUserId = c.Guid(),
+                    DeletedOn = c.DateTime(),
+                    LockedByUserId = c.Guid(),
+                    LockedOn = c.DateTime(),
+                    SortOrder = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.UserNameLookups", t => t.AuthorUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId)
+                .ForeignKey("dbo.Files", t => t.FileId, cascadeDelete: true)
+                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.FileId)
+                .Index(t => t.AuthorUserId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId)
+                .Index(t => t.PublishedByUserId)
+                .Index(t => t.DeletedByUserId)
+                .Index(t => t.LockedByUserId);
+
+            CreateTable(
+                "dbo.Html",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityId = c.Guid(nullable: false),
+                    Body = c.String(nullable: false),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    VersionNumber = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    VersionLog = c.String(maxLength: 1000),
+                    IsCurrentVersion = c.Boolean(nullable: false),
+                    NumberOfComments = c.Int(nullable: false),
+                    LastCommentDate = c.DateTime(),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                    PublishedByUserId = c.Guid(),
+                    PublishedOn = c.DateTime(),
+                    DeletedByUserId = c.Guid(),
+                    DeletedOn = c.DateTime(),
+                    LockedByUserId = c.Guid(),
+                    LockedOn = c.DateTime(),
+                    SortOrder = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId)
+                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId)
+                .Index(t => t.PublishedByUserId)
+                .Index(t => t.DeletedByUserId)
+                .Index(t => t.LockedByUserId);
+
+            CreateTable(
+                "dbo.MailContents",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityId = c.Guid(nullable: false),
+                    TemplateId = c.Guid(nullable: false),
+                    From = c.String(nullable: false, maxLength: 250),
+                    Subject = c.String(nullable: false, maxLength: 250),
+                    Body = c.String(nullable: false),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    VersionNumber = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    VersionLog = c.String(maxLength: 1000),
+                    IsCurrentVersion = c.Boolean(nullable: false),
+                    NumberOfComments = c.Int(nullable: false),
+                    LastCommentDate = c.DateTime(),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                    PublishedByUserId = c.Guid(),
+                    PublishedOn = c.DateTime(),
+                    DeletedByUserId = c.Guid(),
+                    DeletedOn = c.DateTime(),
+                    LockedByUserId = c.Guid(),
+                    LockedOn = c.DateTime(),
+                    SortOrder = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId)
+                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
+                .ForeignKey("dbo.MailContentTemplates", t => t.TemplateId)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.TemplateId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId)
+                .Index(t => t.PublishedByUserId)
+                .Index(t => t.DeletedByUserId)
+                .Index(t => t.LockedByUserId);
+
+            CreateTable(
+                "dbo.MailContentTemplates",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityId = c.Guid(nullable: false),
+                    Body = c.String(nullable: false),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    VersionNumber = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    VersionLog = c.String(maxLength: 1000),
+                    IsCurrentVersion = c.Boolean(nullable: false),
+                    NumberOfComments = c.Int(nullable: false),
+                    LastCommentDate = c.DateTime(),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                    PublishedByUserId = c.Guid(),
+                    PublishedOn = c.DateTime(),
+                    DeletedByUserId = c.Guid(),
+                    DeletedOn = c.DateTime(),
+                    LockedByUserId = c.Guid(),
+                    LockedOn = c.DateTime(),
+                    SortOrder = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId)
+                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId)
+                .Index(t => t.PublishedByUserId)
+                .Index(t => t.DeletedByUserId)
+                .Index(t => t.LockedByUserId);
+
+            CreateTable(
+                "dbo.News",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    EntityId = c.Guid(nullable: false),
+                    Summary = c.String(),
+                    Body = c.String(nullable: false),
+                    ExpireTime = c.DateTime(),
+                    Culture = c.String(nullable: false, maxLength: 5),
+                    VersionNumber = c.Int(nullable: false),
+                    Name = c.String(nullable: false, maxLength: 250),
+                    VersionLog = c.String(maxLength: 1000),
+                    IsCurrentVersion = c.Boolean(nullable: false),
+                    NumberOfComments = c.Int(nullable: false),
+                    LastCommentDate = c.DateTime(),
+                    CreatedByUserId = c.Guid(nullable: false),
+                    CreatedOn = c.DateTime(nullable: false),
+                    UpdatedByUserId = c.Guid(nullable: false),
+                    UpdatedOn = c.DateTime(nullable: false),
+                    PublishedByUserId = c.Guid(),
+                    PublishedOn = c.DateTime(),
+                    DeletedByUserId = c.Guid(),
+                    DeletedOn = c.DateTime(),
+                    LockedByUserId = c.Guid(),
+                    LockedOn = c.DateTime(),
+                    SortOrder = c.Int(nullable: false),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.UserNameLookups", t => t.CreatedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.DeletedByUserId)
+                .ForeignKey("dbo.Entities", t => t.EntityId)
+                .ForeignKey("dbo.UserNameLookups", t => t.LockedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.PublishedByUserId)
+                .ForeignKey("dbo.UserNameLookups", t => t.UpdatedByUserId)
+                .Index(t => t.EntityId)
+                .Index(t => t.CreatedByUserId)
+                .Index(t => t.UpdatedByUserId)
+                .Index(t => t.PublishedByUserId)
+                .Index(t => t.DeletedByUserId)
+                .Index(t => t.LockedByUserId);
+
+            CreateTable(
+                "dbo.TaxonomyVocabularyEntityTypes",
+                c => new
+                {
+                    VocabularyId = c.Guid(nullable: false),
+                    EntityTypeId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.VocabularyId, t.EntityTypeId })
+                .ForeignKey("dbo.TaxonomyVocabularies", t => t.VocabularyId, cascadeDelete: true)
+                .ForeignKey("dbo.EntityTypes", t => t.EntityTypeId, cascadeDelete: true)
+                .Index(t => t.VocabularyId)
+                .Index(t => t.EntityTypeId);
+
+            CreateTable(
+                "dbo.TaxonomySiblingTerms",
+                c => new
+                {
+                    TermId = c.Guid(nullable: false),
+                    SiblingTermId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.TermId, t.SiblingTermId })
+                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId)
+                .ForeignKey("dbo.TaxonomyTerms", t => t.SiblingTermId)
+                .Index(t => t.TermId)
+                .Index(t => t.SiblingTermId);
+
+            CreateTable(
+                "dbo.TaxonomyParentChildTerms",
+                c => new
+                {
+                    TermId = c.Guid(nullable: false),
+                    ParentTermId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.TermId, t.ParentTermId })
+                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId)
+                .ForeignKey("dbo.TaxonomyTerms", t => t.ParentTermId)
+                .Index(t => t.TermId)
+                .Index(t => t.ParentTermId);
+
+            CreateTable(
+                "dbo.FileTerms",
+                c => new
+                {
+                    FileId = c.Guid(nullable: false),
+                    TermId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.FileId, t.TermId })
+                .ForeignKey("dbo.Files", t => t.FileId, cascadeDelete: true)
+                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
+                .Index(t => t.FileId)
+                .Index(t => t.TermId);
+
+            CreateTable(
+                "dbo.TaxonomyTermEntities",
+                c => new
+                {
+                    EntityId = c.Guid(nullable: false),
+                    TermId = c.Guid(nullable: false),
+                })
+                .PrimaryKey(t => new { t.EntityId, t.TermId })
+                .ForeignKey("dbo.Entities", t => t.EntityId, cascadeDelete: true)
+                .ForeignKey("dbo.TaxonomyTerms", t => t.TermId, cascadeDelete: true)
+                .Index(t => t.EntityId)
+                .Index(t => t.TermId);
+        }
+
+        #endregion Public Methods
     }
 }

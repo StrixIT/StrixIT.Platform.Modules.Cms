@@ -20,7 +20,6 @@
 			if (c && newC) {
 				newC.displayColor(c.value);
 			}
-
 		};
 
 		transferColorButtonState('forecolor');
@@ -179,7 +178,6 @@
 
 				transferState(ed, fullscreenEditor, t.fullscreenSettings.bookmark);
 				fullscreenEditor.focus();
-
 			};
 
 			// fullscreenEditor is a param here because in window mode we don't create it

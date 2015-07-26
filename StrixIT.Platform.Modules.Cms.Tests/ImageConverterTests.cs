@@ -4,23 +4,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
 using StrixIT.Platform.Core;
-using Moq;
-using StrixIT.Platform.Modules.Cms;
-using System.Web;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass()]
     public class ImageConverterTests
     {
-        [TestInitialize]
-        public void Init()
-        {
-            TestHelpers.MockUtilities();
-        }
+        #region Public Methods
 
         [TestMethod()]
         public void ImageAsBase64ShouldReturnProperBase64String()
@@ -33,6 +24,12 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             string actual;
             actual = target.ImageAsBase64(path, width, height);
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
+            TestHelpers.MockUtilities();
         }
 
         [TestMethod()]
@@ -57,5 +54,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
             Assert.IsTrue(result);
         }
+
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityServiceManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,24 +17,35 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class EntityServiceManager : IEntityServiceManager
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EntityServiceManager(IPlatformDataSource dataSource)
         {
             this._dataSource = dataSource;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public EntityServiceCollection GetManagerActionRecords()
         {
@@ -100,6 +112,10 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private static void SaveRecord(Tuple<string, Guid, IList<ServiceActionRecord>> group, List<EntityType> entityTypes, Guid groupId)
         {
             var entityType = entityTypes.First(e => e.Id == group.Item2);
@@ -115,5 +131,7 @@ namespace StrixIT.Platform.Modules.Cms
             EntityHelper.DeactivateServices(type, deselectedEntries.Select(e => e.Action));
             EntityHelper.ActivateServices(type, selectedEntries.Select(e => e.Action));
         }
+
+        #endregion Private Methods
     }
 }

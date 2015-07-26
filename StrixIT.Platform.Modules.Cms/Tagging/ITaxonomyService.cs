@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ITaxonomyService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,6 +31,16 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface ITaxonomyService : IObjectService<Guid, VocabularyViewModel>
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Deletes the tag with the specified id.
+        /// </summary>
+        /// <param name="id">The id of the tag to delete</param>
+        void DeleteTag(Guid id);
+
+        IList<TermViewModel> GetAllTags();
+
         /// <summary>
         /// Gets a tag by its id.
         /// </summary>
@@ -52,8 +64,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The list of tags</returns>
         IList<TermViewModel> GetTagList(FilterOptions filter, string vocabularyName);
 
-        IList<TermViewModel> GetAllTags();
-
         /// <summary>
         /// Gets a vocabulary by its url.
         /// </summary>
@@ -68,10 +78,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>A save result</returns>
         SaveResult<TermViewModel> SaveTag(TermViewModel model);
 
-        /// <summary>
-        /// Deletes the tag with the specified id.
-        /// </summary>
-        /// <param name="id">The id of the tag to delete</param>
-        void DeleteTag(Guid id);
+        #endregion Public Methods
     }
 }

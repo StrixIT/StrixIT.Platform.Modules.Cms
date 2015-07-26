@@ -11,15 +11,38 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     [TestClass]
     public class FileManagerTests
     {
+        #region Public Methods
+
         [TestMethod()]
-        public void IsImageShouldReturnTrueForImageExtensionTest()
+        public void IsAllowedShouldReturnFalseForNonAllowedFileType()
         {
             var manager = GetManager();
-            string extension = "jpg";
-            bool expected = true;
-            bool actual;
-            actual = manager.IsImage(extension);
-            Assert.AreEqual(expected, actual);
+            var result = manager.IsFileAllowed("test.doc");
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        public void IsAllowedShouldReturnTrueForAllowedFileType()
+        {
+            var manager = GetManager();
+            var result = manager.IsFileAllowed("test.jpg");
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void IsAllowedShouldReturnTrueWhenExtensionIsPassedAsAdditionalAllowedExtension()
+        {
+            var manager = GetManager();
+            var result = manager.IsFileAllowed("test.doc", new string[] { "doc" });
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void IsImageShouldReturnFalseForNonImageExtension()
+        {
+            var manager = GetManager();
+            var result = manager.IsImage("test.docx");
+            Assert.IsFalse(result);
         }
 
         [TestMethod()]
@@ -34,30 +57,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod()]
-        public void IsAllowedShouldReturnTrueForAllowedFileType()
-        {
-            var manager = GetManager();
-            var result = manager.IsFileAllowed("test.jpg");
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod()]
-        public void IsAllowedShouldReturnFalseForNonAllowedFileType()
-        {
-            var manager = GetManager();
-            var result = manager.IsFileAllowed("test.doc");
-            Assert.IsFalse(result);
-        }
-
-        [TestMethod()]
-        public void IsAllowedShouldReturnTrueWhenExtensionIsPassedAsAdditionalAllowedExtension()
-        {
-            var manager = GetManager();
-            var result = manager.IsFileAllowed("test.doc", new string[] { "doc" });
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod()]
         public void IsImageShouldReturnTrueForImageExtension()
         {
             var manager = GetManager();
@@ -66,16 +65,25 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod()]
-        public void IsImageShouldReturnFalseForNonImageExtension()
+        public void IsImageShouldReturnTrueForImageExtensionTest()
         {
             var manager = GetManager();
-            var result = manager.IsImage("test.docx");
-            Assert.IsFalse(result);
+            string extension = "jpg";
+            bool expected = true;
+            bool actual;
+            actual = manager.IsImage(extension);
+            Assert.AreEqual(expected, actual);
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private IFileManager GetManager()
         {
             return new FileManager(new Mock<IPlatformDataSource>().Object, new Mock<IImageConverter>().Object);
         }
+
+        #endregion Private Methods
     }
 }

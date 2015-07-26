@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IEntityHelper.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
@@ -28,39 +30,16 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IEntityHelper
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets the list of loaded entity types.
         /// </summary>
         IList<EntityType> EntityTypes { get; }
 
-        /// <summary>
-        /// Gets the id of an antity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to get the id for</param>
-        /// <returns>The entity type id</returns>
-        Guid GetEntityTypeId(Type entityType);
+        #endregion Public Properties
 
-        /// <summary>
-        /// Gets an entity type based on its id.
-        /// </summary>
-        /// <param name="entityTypeId">The id of the entity type to get</param>
-        /// <returns>The entity type</returns>
-        Type GetEntityType(Guid entityTypeId);
-
-        /// <summary>
-        /// Gets an entity type based on its type name.
-        /// </summary>
-        /// <param name="entityTypeName">The full name of the entity type to get</param>
-        /// <returns>The entity type</returns>
-        Type GetEntityType(string entityTypeName);
-
-        /// <summary>
-        /// Gets a value indicating whether the action is active for the entity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to check the action for</param>
-        /// <param name="action">The action to check</param>
-        /// <returns>True if the action is active for the entity type, false otherwise.</returns>
-        bool IsServiceActive(Type entityType, string action);
+        #region Public Methods
 
         /// <summary>
         /// Activates a number of actions for an entity type.
@@ -77,11 +56,32 @@ namespace StrixIT.Platform.Modules.Cms
         void DeactivateServices(Type entityType, IEnumerable<string> actions);
 
         /// <summary>
-        /// Gets the object map for an entity type.
+        /// Gets an entity type based on its id.
         /// </summary>
-        /// <param name="entityType">The entity type to get the object map for</param>
-        /// <returns>The object map</returns>
-        ObjectMap GetObjectMap(Type entityType);
+        /// <param name="entityTypeId">The id of the entity type to get</param>
+        /// <returns>The entity type</returns>
+        Type GetEntityType(Guid entityTypeId);
+
+        /// <summary>
+        /// Gets an entity type based on its type name.
+        /// </summary>
+        /// <param name="entityTypeName">The full name of the entity type to get</param>
+        /// <returns>The entity type</returns>
+        Type GetEntityType(string entityTypeName);
+
+        /// <summary>
+        /// Gets the id of an antity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to get the id for</param>
+        /// <returns>The entity type id</returns>
+        Guid GetEntityTypeId(Type entityType);
+
+        /// <summary>
+        /// Gets the file id property names for an entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to get the file id property names for</param>
+        /// <returns>The file id property names</returns>
+        string[] GetFileIdProperties(Type entityType);
 
         /// <summary>
         /// Gets the file property names for an entity type.
@@ -91,10 +91,20 @@ namespace StrixIT.Platform.Modules.Cms
         string[] GetFileProperties(Type entityType);
 
         /// <summary>
-        /// Gets the file id property names for an entity type.
+        /// Gets the object map for an entity type.
         /// </summary>
-        /// <param name="entityType">The entity type to get the file id property names for</param>
-        /// <returns>The file id property names</returns>
-        string[] GetFileIdProperties(Type entityType);
+        /// <param name="entityType">The entity type to get the object map for</param>
+        /// <returns>The object map</returns>
+        ObjectMap GetObjectMap(Type entityType);
+
+        /// <summary>
+        /// Gets a value indicating whether the action is active for the entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to check the action for</param>
+        /// <param name="action">The action to check</param>
+        /// <returns>True if the action is active for the entity type, false otherwise.</returns>
+        bool IsServiceActive(Type entityType, string action);
+
+        #endregion Public Methods
     }
 }

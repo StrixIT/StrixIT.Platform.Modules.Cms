@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="SearchResult.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,10 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using System.Collections.Generic;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,8 +29,10 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class SearchResult
     {
+        #region Public Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="SearchResult" /> class.
+        /// Initializes a new instance of the <see cref="SearchResult"/> class.
         /// </summary>
         public SearchResult()
         {
@@ -38,10 +40,9 @@ namespace StrixIT.Platform.Modules.Cms
             this.Locators = new List<ContentLocator>();
         }
 
-        /// <summary>
-        ///  Gets or sets the total amount of content items in the data store.
-        /// </summary>
-        public int Total { get; set; }
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the retrieved content items.
@@ -52,5 +53,12 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets the content locators registered by the platform.
         /// </summary>
         public IList<ContentLocator> Locators { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total amount of content items in the data store.
+        /// </summary>
+        public int Total { get; set; }
+
+        #endregion Public Properties
     }
 }

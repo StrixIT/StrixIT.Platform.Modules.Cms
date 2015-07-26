@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="HandleBindServicesModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,19 +17,22 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.IO;
-using System.Web.Mvc;
+#endregion Apache License
+
 using Newtonsoft.Json;
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System;
+using System.IO;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class HandleBindServicesModel : IHandlePlatformEvent<BindModelEvent>
     {
+        #region Public Methods
+
         public void Handle(BindModelEvent args)
         {
             if (args.ModelBindingContext.ModelType == typeof(EntityServiceCollection))
@@ -37,6 +41,10 @@ namespace StrixIT.Platform.Modules.Cms
                 args.IsBound = true;
             }
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private static string GetInputString(ControllerContext controllerContext)
         {
@@ -62,5 +70,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return inputString;
         }
+
+        #endregion Private Methods
     }
 }

@@ -771,7 +771,6 @@
 				defaultAction: this.adjustPaddingFunction(true),
 				elements: this.selectedBlocks()
 			});
-
 		},
 
 		outdent: function(ui, elements) {
@@ -868,7 +867,6 @@
 					sel.setRng(r);
 				}
 			}
-
 
 			if (tinymce.isIE8) {
 				// append a zero sized nbsp so that caret is restored correctly using bookmark

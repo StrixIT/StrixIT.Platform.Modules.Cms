@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityActionController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,33 +17,43 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Web.Mvc;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
-using Newtonsoft.Json;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     [StrixAuthorization(Roles = PlatformConstants.ADMINROLE)]
     public class EntityActionController : BaseController
     {
+        #region Private Fields
+
         private IServiceManagerService _service;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EntityActionController(IServiceManagerService managerService)
         {
             this._service = managerService;
         }
 
-        public ActionResult Index()
-        {
-            return this.View(MvcConstants.INDEX);
-        }
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public JsonResult GetData()
         {
             return this.Json(this._service.GetServiceActionRecords());
+        }
+
+        public ActionResult Index()
+        {
+            return this.View(MvcConstants.INDEX);
         }
 
         [HttpPost]
@@ -65,5 +76,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return status;
         }
+
+        #endregion Public Methods
     }
 }

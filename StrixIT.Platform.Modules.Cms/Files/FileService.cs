@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FileService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,26 +17,125 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Web;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class FileService : IFileService
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
         private IFileManager _fileManager;
         private IImageConverter _imageConverter;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public FileService(IPlatformDataSource dataSource, IFileManager fileManager, IImageConverter imageConverter)
         {
             this._dataSource = dataSource;
             this._fileManager = fileManager;
             this._imageConverter = imageConverter;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        public bool CheckAccessFile(string url)
+        {
+            return this._fileManager.CheckAccessFile(url);
+        }
+
+        public UploadFileResult DeleteFile(Guid fileId)
+        {
+            if (fileId == Guid.Empty)
+            {
+                throw new ArgumentException("fileId cannot be empty", "fileId");
+            }
+
+            var result = new UploadFileResult();
+
+            try
+            {
+                var file = this._fileManager.Get(fileId);
+
+                if (file != null)
+                {
+                    this._fileManager.Delete(file);
+                    this._dataSource.SaveChanges();
+                    result.Succeeded = true;
+                    result.Message = Resources.Interface.FileDeleteSuccess;
+                }
+            }
+            catch (Exception ex)
+            {
+                this._dataSource.FileSystemWrapper.ClearDeleteQueue();
+                Logger.Log(ex.Message, ex, LogLevel.Fatal);
+                throw;
+            }
+
+            return result;
+        }
+
+        public UploadFileResult UploadFile(HttpRequestBase request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+
+            var result = new UploadFileResult();
+
+            if (request.Files.Count < 1 || request.Files[0].ContentLength == 0)
+            {
+                result.Succeeded = false;
+                result.Message = "<script type=\"text/javascript\">var result = {{ error: \"{0}\" }};</script>";
+                result.Message = Resources.Interface.NoFileSelected;
+            }
+
+            try
+            {
+                var postedFile = request.Files[0];
+                System.IO.Stream fileStream = postedFile.InputStream;
+                byte[] fileData = new byte[postedFile.ContentLength];
+                fileStream.Read(fileData, 0, postedFile.ContentLength);
+                var args = new SaveFileArguments { FileData = fileData, FileName = postedFile.FileName };
+
+                if (this._fileManager.IsFileAllowed(postedFile.FileName))
+                {
+                    var file = this._fileManager.Save(args);
+                    this._dataSource.SaveChanges();
+                    var path = file.Folder;
+                    string filePath = string.Format("/{0}/{1}/{2}.{3}", path, file.Path.Replace("\\", "/"), file.FileName, file.Extension);
+                    result.Succeeded = true;
+                    result.Message = string.Format("<script type=\"text/javascript\">var result = {{ url: \"{0}\", name: \"{1}\" }};</script>", filePath, file.OriginalName);
+                    result.DocumentType = this._fileManager.GetDocumentType(file.Extension);
+                    result.Extension = file.Extension;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Message = "<script type=\"text/javascript\">var result = {{ error: \"{0}\"  }};</script>";
+                    result.Message = Resources.Interface.FileTypeNotAllowed;
+                }
+            }
+            catch (Exception)
+            {
+                result.Succeeded = false;
+                result.Message = string.Format("<script type=\"text/javascript\">var result = {{ error: \"{0}\"  }};</script>", Resources.Interface.ErrorUploadingFile);
+            }
+
+            return result;
         }
 
         public IList<UploadFileResult> UploadFiles(AddFile model, HttpRequestBase request)
@@ -108,93 +208,9 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        public UploadFileResult UploadFile(HttpRequestBase request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException("request");
-            }
+        #endregion Public Methods
 
-            var result = new UploadFileResult();
-
-            if (request.Files.Count < 1 || request.Files[0].ContentLength == 0)
-            {
-                result.Succeeded = false;
-                result.Message = "<script type=\"text/javascript\">var result = {{ error: \"{0}\" }};</script>";
-                result.Message = Resources.Interface.NoFileSelected;
-            }
-
-            try
-            {
-                var postedFile = request.Files[0];
-                System.IO.Stream fileStream = postedFile.InputStream;
-                byte[] fileData = new byte[postedFile.ContentLength];
-                fileStream.Read(fileData, 0, postedFile.ContentLength);
-                var args = new SaveFileArguments { FileData = fileData, FileName = postedFile.FileName };
-
-                if (this._fileManager.IsFileAllowed(postedFile.FileName))
-                {
-                    var file = this._fileManager.Save(args);
-                    this._dataSource.SaveChanges();
-                    var path = file.Folder;
-                    string filePath = string.Format("/{0}/{1}/{2}.{3}", path, file.Path.Replace("\\", "/"), file.FileName, file.Extension);
-                    result.Succeeded = true;
-                    result.Message = string.Format("<script type=\"text/javascript\">var result = {{ url: \"{0}\", name: \"{1}\" }};</script>", filePath, file.OriginalName);
-                    result.DocumentType = this._fileManager.GetDocumentType(file.Extension);
-                    result.Extension = file.Extension;
-                    return result;
-                }
-                else
-                {
-                    result.Succeeded = false;
-                    result.Message = "<script type=\"text/javascript\">var result = {{ error: \"{0}\"  }};</script>";
-                    result.Message = Resources.Interface.FileTypeNotAllowed;
-                }
-            }
-            catch (Exception)
-            {
-                result.Succeeded = false;
-                result.Message = string.Format("<script type=\"text/javascript\">var result = {{ error: \"{0}\"  }};</script>", Resources.Interface.ErrorUploadingFile);
-            }
-
-            return result;
-        }
-
-        public UploadFileResult DeleteFile(Guid fileId)
-        {
-            if (fileId == Guid.Empty)
-            {
-                throw new ArgumentException("fileId cannot be empty", "fileId");
-            }
-
-            var result = new UploadFileResult();
-
-            try
-            {
-                var file = this._fileManager.Get(fileId);
-
-                if (file != null)
-                {
-                    this._fileManager.Delete(file);
-                    this._dataSource.SaveChanges();
-                    result.Succeeded = true;
-                    result.Message = Resources.Interface.FileDeleteSuccess;
-                }
-            }
-            catch (Exception ex)
-            {
-                this._dataSource.FileSystemWrapper.ClearDeleteQueue();
-                Logger.Log(ex.Message, ex, LogLevel.Fatal);
-                throw;
-            }
-
-            return result;
-        }
-
-        public bool CheckAccessFile(string url)
-        {
-            return this._fileManager.CheckAccessFile(url);
-        }
+        #region Private Methods
 
         private UploadFileResult GetUploadResult(File uploadedFile, AddFile model)
         {
@@ -219,5 +235,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return result;
         }
+
+        #endregion Private Methods
     }
 }

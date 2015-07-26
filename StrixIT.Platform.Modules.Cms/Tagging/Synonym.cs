@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="Synonym.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -30,16 +31,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class Synonym : ValidationBase
     {
-        /// <summary>
-        /// Gets or sets the Id of the Term this Synonym is for.
-        /// </summary>
-        [StrixRequired]
-        public Guid TermId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Term this Synonym is for.
-        /// </summary>
-        public Term Term { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the name of the Entity.
@@ -47,5 +39,18 @@ namespace StrixIT.Platform.Modules.Cms
         [StrixRequired]
         [StringLength(250, MinimumLength = 2)]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Term this Synonym is for.
+        /// </summary>
+        public Term Term { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Id of the Term this Synonym is for.
+        /// </summary>
+        [StrixRequired]
+        public Guid TermId { get; set; }
+
+        #endregion Public Properties
     }
 }

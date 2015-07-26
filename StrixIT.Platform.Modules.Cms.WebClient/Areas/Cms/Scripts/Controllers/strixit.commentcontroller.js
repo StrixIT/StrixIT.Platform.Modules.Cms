@@ -261,7 +261,6 @@
                 var currentComment = commentsToSearch[n];
 
                 if (currentComment.id == id) {
-
                     if (parent) {
                         var index = parent.childComments.indexOf(currentComment);
 

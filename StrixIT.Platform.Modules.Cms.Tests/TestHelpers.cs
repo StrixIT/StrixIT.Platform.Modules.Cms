@@ -4,22 +4,24 @@
 //// </auto-generated>
 ////------------------------------------------------------------------------------
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public static class TestHelpers
     {
-        public static Guid CurrentUserId = Guid.NewGuid();
-        public static Guid CurrentUserCurrentGroupId = Guid.NewGuid();
+        #region Public Fields
+
         public static string CurrentCulture = "en";
+        public static Guid CurrentUserCurrentGroupId = Guid.NewGuid();
+        public static Guid CurrentUserId = Guid.NewGuid();
         public static string DutchCulture = "nl";
+
+        #endregion Public Fields
+
+        #region Public Methods
 
         public static List<Mock> MockUtilities()
         {
@@ -48,5 +50,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
             return mocks;
         }
+
+        #endregion Public Methods
     }
 }

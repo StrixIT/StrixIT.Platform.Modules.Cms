@@ -9,16 +9,26 @@ using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests.Service
 {
     [TestClass]
     public class SearchTests
     {
-        Mock<IEntityHelper> _entityHelperMock = new Mock<IEntityHelper>();
-        Mock<IPlatformDataSource> _sourceMock = new Mock<IPlatformDataSource>();
+        #region Private Fields
+
+        private Mock<IEntityHelper> _entityHelperMock = new Mock<IEntityHelper>();
+        private Mock<IPlatformDataSource> _sourceMock = new Mock<IPlatformDataSource>();
+
+        #endregion Private Fields
+
+        #region Public Methods
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            EntityHelper.SetHelper(null);
+        }
 
         [TestInitialize]
         public void Init()
@@ -28,23 +38,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
             DependencyInjector.Injector = dependencyInjectorMock.Object;
             EntityHelper.SetHelper(_entityHelperMock.Object);
             Setup();
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            EntityHelper.SetHelper(null);
-        }
-
-        // Todo: create tests for html processing.
-        [TestMethod]
-        public void SearchShouldReturnASearchResultForAllSearchableEntityTypes()
-        {
-            var service = new SearchService(_sourceMock.Object);
-            var result = service.Search(null);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Data.Select(d => d.TypeName).Distinct().Count());
-            Assert.AreEqual(6, result.Data.Count);
         }
 
         [TestMethod]
@@ -65,6 +58,21 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
             Assert.AreEqual(3, result.Data.Select(d => d.TypeName).Distinct().Count());
             Assert.AreEqual(3, result.Data.Count);
         }
+
+        // Todo: create tests for html processing.
+        [TestMethod]
+        public void SearchShouldReturnASearchResultForAllSearchableEntityTypes()
+        {
+            var service = new SearchService(_sourceMock.Object);
+            var result = service.Search(null);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Data.Select(d => d.TypeName).Distinct().Count());
+            Assert.AreEqual(6, result.Data.Count);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private void Setup()
         {
@@ -114,5 +122,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
             _sourceMock.Setup(s => s.Query(typeof(Document))).Returns(documentList.AsQueryable());
             _sourceMock.Setup(s => s.Query(typeof(MailContent))).Returns(mailContentList.AsQueryable());
         }
+
+        #endregion Private Methods
     }
 }

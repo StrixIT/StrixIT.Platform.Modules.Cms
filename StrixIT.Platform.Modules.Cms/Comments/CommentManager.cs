@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CommentManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,39 +17,37 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
-using StructureMap;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CommentManager : ICommentManager
     {
+        #region Private Fields
+
         private const string GETCOMMENTQUERY = "EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) And IsCurrentVersion";
 
         private IPlatformDataSource _dataSource;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public CommentManager(IPlatformDataSource dataSource)
         {
             this._dataSource = dataSource;
         }
 
-        public IList<Comment> GetComments(Guid entityId)
-        {
-            return this.GetComments(entityId, null);
-        }
+        #endregion Public Constructors
 
-        public IList<Comment> GetComments(Guid entityId, string culture)
-        {
-            culture = culture ?? StrixPlatform.CurrentCultureCode;
-            var query = this._dataSource.Query<Comment>().Where(co => co.EntityId == entityId && (culture == null || co.EntityCulture.ToLower() == culture.ToLower()));
-            return query.ToList();
-        }
+        #region Public Methods
 
         public Comment AddComment(Guid entityTypeId, Comment comment)
         {
@@ -96,27 +95,6 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        public Comment EditComment(Comment comment)
-        {
-            if (comment == null)
-            {
-                throw new ArgumentNullException("comment");
-            }
-
-            var theComment = this._dataSource.Query<Comment>().FirstOrDefault(c => c.Id == comment.Id);
-
-            if (theComment == null)
-            {
-                Logger.Log(string.Format("No comment found with id {0}", comment.Id), LogLevel.Error);
-                return null;
-            }
-
-            theComment.Text = comment.Text;
-            theComment.UpdatedByUserId = StrixPlatform.User.Id;
-            theComment.UpdatedOn = DateTime.Now;
-            return theComment;
-        }
-
         public bool DeleteComment(Comment comment, Guid entityTypeId)
         {
             if (comment == null)
@@ -159,9 +137,44 @@ namespace StrixIT.Platform.Modules.Cms
             return true;
         }
 
+        public Comment EditComment(Comment comment)
+        {
+            if (comment == null)
+            {
+                throw new ArgumentNullException("comment");
+            }
+
+            var theComment = this._dataSource.Query<Comment>().FirstOrDefault(c => c.Id == comment.Id);
+
+            if (theComment == null)
+            {
+                Logger.Log(string.Format("No comment found with id {0}", comment.Id), LogLevel.Error);
+                return null;
+            }
+
+            theComment.Text = comment.Text;
+            theComment.UpdatedByUserId = StrixPlatform.User.Id;
+            theComment.UpdatedOn = DateTime.Now;
+            return theComment;
+        }
+
+        public IList<Comment> GetComments(Guid entityId)
+        {
+            return this.GetComments(entityId, null);
+        }
+
+        public IList<Comment> GetComments(Guid entityId, string culture)
+        {
+            culture = culture ?? StrixPlatform.CurrentCultureCode;
+            var query = this._dataSource.Query<Comment>().Where(co => co.EntityId == entityId && (culture == null || co.EntityCulture.ToLower() == culture.ToLower()));
+            return query.ToList();
+        }
+
         public bool HasChildComments(long commentId)
         {
             return this._dataSource.Query<Comment>().Any(c => c.ParentId.HasValue && c.ParentId.Value == commentId);
         }
+
+        #endregion Public Methods
     }
 }

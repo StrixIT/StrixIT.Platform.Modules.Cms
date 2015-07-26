@@ -240,7 +240,6 @@ function changedRowType() {
 	var rowtype = getSelectValue(formObj, 'rowtype');
 
 	setActionforRowType(formObj, rowtype);
-
 }
 
 function setActionforRowType(formObj, rowtype) {

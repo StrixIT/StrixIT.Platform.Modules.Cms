@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailContentViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,13 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,6 +32,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class MailContentViewModel : EntityViewModel
     {
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the mail body.
+        /// </summary>
+        [AllowHtml]
+        public string Body { get; set; }
+
         /// <summary>
         /// Gets or sets the mail from address.
         /// </summary>
@@ -44,10 +53,9 @@ namespace StrixIT.Platform.Modules.Cms
         public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the mail body.
+        /// Gets or sets the mail's mail template.
         /// </summary>
-        [AllowHtml]
-        public string Body { get; set; }
+        public MailContentTemplateViewModel Template { get; set; }
 
         /// <summary>
         /// Gets or sets the mail template id.
@@ -55,13 +63,10 @@ namespace StrixIT.Platform.Modules.Cms
         public Guid TemplateId { get; set; }
 
         /// <summary>
-        /// Gets or sets the mail's mail template.
-        /// </summary>
-        public MailContentTemplateViewModel Template { get; set; }
-
-        /// <summary>
         /// Gets or sets a select list with all availabe templates for editing.
         /// </summary>
         public List<MailContentTemplateListModel> Templates { get; set; }
+
+        #endregion Public Properties
     }
 }

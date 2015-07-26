@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IAudit.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,6 +29,8 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IAudit
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the id of the user who created this content.
         /// </summary>
@@ -46,5 +50,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets the date and time this content was last updated.
         /// </summary>
         DateTime UpdatedOn { get; set; }
+
+        #endregion Public Properties
     }
 }

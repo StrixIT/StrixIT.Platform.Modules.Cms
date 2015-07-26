@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ServiceManagerService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,21 +17,32 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class ServiceManagerService : IServiceManagerService
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
 
         private IEntityServiceManager _manager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public ServiceManagerService(IPlatformDataSource dataSource, IEntityServiceManager manager)
         {
             this._dataSource = dataSource;
             this._manager = manager;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public EntityServiceCollection GetServiceActionRecords()
         {
@@ -44,5 +56,7 @@ namespace StrixIT.Platform.Modules.Cms
             this._dataSource.SaveChanges();
             return result;
         }
+
+        #endregion Public Methods
     }
 }

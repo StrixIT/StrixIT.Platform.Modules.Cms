@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="SelectRelationDto.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -28,15 +30,17 @@ namespace StrixIT.Platform.Modules.Cms
     /// <typeparam name="TKey">The type of the relation primary key</typeparam>
     public class SelectRelationDto<TKey> where TKey : struct
     {
-        /// <summary>
-        /// Gets or sets the relation id.
-        /// </summary>
-        public TKey? Id { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the entity id.
         /// </summary>
         public Guid? EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the relation id.
+        /// </summary>
+        public TKey? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the relation.
@@ -47,5 +51,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets a value indicating whether the relation is selected.
         /// </summary>
         public bool Selected { get; set; }
+
+        #endregion Public Properties
     }
 }

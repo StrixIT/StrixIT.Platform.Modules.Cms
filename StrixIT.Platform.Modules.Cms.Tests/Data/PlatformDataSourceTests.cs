@@ -5,25 +5,14 @@
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Reflection;
 
 namespace StrixIT.Platform.Modules.Cms.Tests.Data
 {
     [TestClass]
     public class PlatformDataSourceTests
     {
-        [TestInitialize]
-        public void Init()
-        {
-            TestHelpers.MockUtilities();
-            Logger.LoggingService = new Mock<ILoggingService>().Object;
-        }
+        #region Public Methods
 
         [TestCleanup]
         public void Cleanup()
@@ -39,37 +28,45 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Data
         }
 
         [TestMethod]
-        public void GetModifiedPropertyValuesShouldReturnAllModifiedScalarProperties()
+        public void GetManyToManyRelationValuesShouldReturnAllManyToManyKeyValues()
         {
             //var source = new TestDataSource();
-            //var date = DateTime.Now.AddDays(-5);
+            //var entity = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data" };
+            //entity.Info = new PersonalInfo { Name = "Test", Description = "Description", Address = new Address { Street = "Wall street", City = "New York" } };
+            //entity.Siblings = new List<CompositeKeyEntity>();
+            //var siblingA = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data sibling A" };
+            //siblingA.Info = new PersonalInfo { Address = new Address() };
+            //entity.Siblings.Add(siblingA);
+            //entity.OtherSiblings = new List<CompositeKeyEntity>();
+            //var siblingB = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data sibling B" };
+            //siblingB.Info = new PersonalInfo { Address = new Address() };
+            //entity.OtherSiblings.Add(siblingB);
+            //source.Save(entity);
+            //source.SaveChanges();
 
-            //var testEntity = new TestEntity
+            //// When the relations change, modified properties should be found.
+            //var siblingAValues = source.GetExistingManyToManyRelations(entity, "Siblings").Cast<CompositeKeyEntity>().ToList().First();
+            //var siblingBValues = source.GetExistingManyToManyRelations(entity, "OtherSiblings").Cast<CompositeKeyEntity>().ToList().First();
+            //Assert.AreEqual(siblingA.Id, siblingAValues.Id);
+            //Assert.AreEqual(siblingA.Culture, siblingAValues.Culture);
+            //Assert.AreEqual(siblingA.VersionNumber, siblingAValues.VersionNumber);
+            //Assert.AreEqual(siblingB.Id, siblingBValues.Id);
+            //Assert.AreEqual(siblingB.Culture, siblingBValues.Culture);
+            //Assert.AreEqual(siblingB.VersionNumber, siblingBValues.VersionNumber);
+
+            //// Cleanup
+            //source = new TestDataSource();
+            //entity = source.Query<CompositeKeyEntity>().Include(c => c.Siblings).Include(c => c.OtherSiblings).First(e => e.Id == entity.Id && e.Culture == entity.Culture && e.VersionNumber == entity.VersionNumber);
+            //entity.Siblings.Clear();
+            //entity.OtherSiblings.Clear();
+
+            //foreach (var item in source.Query<CompositeKeyEntity>().Where(e => !(e.Id == entity.Id && e.Culture == entity.Culture && e.VersionNumber == entity.VersionNumber)))
             //{
-            //    Name = "Test generated 1",
-            //    Number = 1,
-            //    Date = date,
-            //    Description = "Description"
-            //};
+            //    source.Delete(item);
+            //}
 
-            //source.Save(testEntity);
+            //source.Delete(entity);
             //source.SaveChanges();
-
-            //testEntity.Number = 2;
-            //var newDate = DateTime.Now;
-            //testEntity.Date = newDate;
-
-            //var result = source.GetModifiedPropertyValues(testEntity);
-            //source.Delete(testEntity);
-            //source.SaveChanges();
-
-            //Assert.AreEqual(2, result.Count);
-            //Assert.AreEqual("Number", result[0].PropertyName);
-            //Assert.AreEqual((long)1, result[0].OldValue);
-            //Assert.AreEqual((long)2, result[0].NewValue);
-            //Assert.AreEqual("Date", result[1].PropertyName);
-            //Assert.AreEqual(date, result[1].OldValue);
-            //Assert.AreEqual(newDate, result[1].NewValue);
             Assert.Inconclusive("Implement");
         }
 
@@ -167,46 +164,47 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Data
         }
 
         [TestMethod]
-        public void GetManyToManyRelationValuesShouldReturnAllManyToManyKeyValues()
+        public void GetModifiedPropertyValuesShouldReturnAllModifiedScalarProperties()
         {
             //var source = new TestDataSource();
-            //var entity = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data" };
-            //entity.Info = new PersonalInfo { Name = "Test", Description = "Description", Address = new Address { Street = "Wall street", City = "New York" } };
-            //entity.Siblings = new List<CompositeKeyEntity>();
-            //var siblingA = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data sibling A" };
-            //siblingA.Info = new PersonalInfo { Address = new Address() };
-            //entity.Siblings.Add(siblingA);
-            //entity.OtherSiblings = new List<CompositeKeyEntity>();
-            //var siblingB = new CompositeKeyEntity { Id = Guid.NewGuid(), Culture = "en", VersionNumber = 1, Data = "data sibling B" };
-            //siblingB.Info = new PersonalInfo { Address = new Address() };
-            //entity.OtherSiblings.Add(siblingB);
-            //source.Save(entity);
-            //source.SaveChanges();
+            //var date = DateTime.Now.AddDays(-5);
 
-            //// When the relations change, modified properties should be found.
-            //var siblingAValues = source.GetExistingManyToManyRelations(entity, "Siblings").Cast<CompositeKeyEntity>().ToList().First();
-            //var siblingBValues = source.GetExistingManyToManyRelations(entity, "OtherSiblings").Cast<CompositeKeyEntity>().ToList().First();
-            //Assert.AreEqual(siblingA.Id, siblingAValues.Id);
-            //Assert.AreEqual(siblingA.Culture, siblingAValues.Culture);
-            //Assert.AreEqual(siblingA.VersionNumber, siblingAValues.VersionNumber);
-            //Assert.AreEqual(siblingB.Id, siblingBValues.Id);
-            //Assert.AreEqual(siblingB.Culture, siblingBValues.Culture);
-            //Assert.AreEqual(siblingB.VersionNumber, siblingBValues.VersionNumber);
-
-            //// Cleanup
-            //source = new TestDataSource();
-            //entity = source.Query<CompositeKeyEntity>().Include(c => c.Siblings).Include(c => c.OtherSiblings).First(e => e.Id == entity.Id && e.Culture == entity.Culture && e.VersionNumber == entity.VersionNumber);
-            //entity.Siblings.Clear();
-            //entity.OtherSiblings.Clear();
-
-            //foreach (var item in source.Query<CompositeKeyEntity>().Where(e => !(e.Id == entity.Id && e.Culture == entity.Culture && e.VersionNumber == entity.VersionNumber)))
+            //var testEntity = new TestEntity
             //{
-            //    source.Delete(item);
-            //}
+            //    Name = "Test generated 1",
+            //    Number = 1,
+            //    Date = date,
+            //    Description = "Description"
+            //};
 
-            //source.Delete(entity);
+            //source.Save(testEntity);
             //source.SaveChanges();
+
+            //testEntity.Number = 2;
+            //var newDate = DateTime.Now;
+            //testEntity.Date = newDate;
+
+            //var result = source.GetModifiedPropertyValues(testEntity);
+            //source.Delete(testEntity);
+            //source.SaveChanges();
+
+            //Assert.AreEqual(2, result.Count);
+            //Assert.AreEqual("Number", result[0].PropertyName);
+            //Assert.AreEqual((long)1, result[0].OldValue);
+            //Assert.AreEqual((long)2, result[0].NewValue);
+            //Assert.AreEqual("Date", result[1].PropertyName);
+            //Assert.AreEqual(date, result[1].OldValue);
+            //Assert.AreEqual(newDate, result[1].NewValue);
             Assert.Inconclusive("Implement");
         }
+
+        [TestInitialize]
+        public void Init()
+        {
+            TestHelpers.MockUtilities();
+            Logger.LoggingService = new Mock<ILoggingService>().Object;
+        }
+
+        #endregion Public Methods
     }
 }

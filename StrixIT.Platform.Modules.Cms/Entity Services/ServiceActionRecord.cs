@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ServiceActionRecord.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,10 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
-using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,25 +29,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class ServiceActionRecord
     {
-        /// <summary>
-        /// Gets or sets the entity service record id.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity type id for this service record.
-        /// </summary>
-        public Guid EntityTypeId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity type for this service record.
-        /// </summary>
-        public string EntityType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the service name for this service record.
-        /// </summary>
-        public string Service { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the action name for this service record.
@@ -54,8 +37,30 @@ namespace StrixIT.Platform.Modules.Cms
         public string Action { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity type for this service record.
+        /// </summary>
+        public string EntityType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity type id for this service record.
+        /// </summary>
+        public Guid EntityTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity service record id.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this record is selected.
         /// </summary>
         public bool Selected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service name for this service record.
+        /// </summary>
+        public string Service { get; set; }
+
+        #endregion Public Properties
     }
 }

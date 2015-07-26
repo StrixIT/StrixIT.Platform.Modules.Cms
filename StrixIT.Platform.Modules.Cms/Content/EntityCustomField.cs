@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityCustomField.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,10 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class EntityCustomField : CustomField
     {
-        /// <summary>
-        /// Gets or sets the entity type id the custom field is for.
-        /// </summary>
-        public Guid EntityTypeId { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the entity type the custom field is for.
@@ -39,13 +38,20 @@ namespace StrixIT.Platform.Modules.Cms
         public EntityType EntityType { get; set; }
 
         /// <summary>
-        /// Gets or sets the group id the custom field is defined for.
+        /// Gets or sets the entity type id the custom field is for.
         /// </summary>
-        public Guid GroupId { get; set; }
+        public Guid EntityTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the group the custom field is defined for.
         /// </summary>
         public GroupData Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group id the custom field is defined for.
+        /// </summary>
+        public Guid GroupId { get; set; }
+
+        #endregion Public Properties
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityListModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,25 +29,22 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public abstract class EntityListModel : AuditViewModel
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the content entity id.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the content entity url.
+        /// Gets or sets the date and time of the last comment for this content.
         /// </summary>
-        public string Url { get; set; }
+        public DateTime? LastCommentDate { get; set; }
 
         /// <summary>
         /// Gets or sets the content name.
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date and time of the last comment for this content.
-        /// </summary>
-        public DateTime? LastCommentDate { get; set; }
 
         /// <summary>
         /// Gets or sets the number of comments for this content.
@@ -56,5 +55,12 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets the content sort order.
         /// </summary>
         public int? SortOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content entity url.
+        /// </summary>
+        public string Url { get; set; }
+
+        #endregion Public Properties
     }
 }

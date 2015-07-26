@@ -221,6 +221,5 @@
             $scope.showFile = $scope.entityImage || ($scope.showIcon && entity[$scope.settings.fileIdPropertyName] && entity[$scope.settings.fileIdPropertyName]!= strixIT.config.emptyGuid);
             $scope.showUploader = !$scope.showFile || ($scope.entityImage && $scope.entityImage == $scope.defaultPath);
         }
-
     }]);
 })()

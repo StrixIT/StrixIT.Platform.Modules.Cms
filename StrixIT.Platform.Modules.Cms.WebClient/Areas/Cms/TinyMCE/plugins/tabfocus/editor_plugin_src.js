@@ -103,7 +103,6 @@
 				ed.onKeyDown.add(tabCancel);
 			} else
 				ed.onKeyDown.add(tabHandler);
-
 		},
 
 		getInfo : function() {

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FileManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,29 +17,40 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class FileManager : IFileManager
     {
-        private static string _uploadFolder = StrixCms.Config.Files.UploadFolder;
+        #region Private Fields
+
         private static string[] _allowedExtensions = StrixCms.Config.Files.AllowedFileTypes.ToLower().Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
+        private static string _uploadFolder = StrixCms.Config.Files.UploadFolder;
         private IPlatformDataSource _dataSource;
         private IImageConverter _imageConverter;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public FileManager(IPlatformDataSource dataSource, IImageConverter imageConverter)
         {
             this._dataSource = dataSource;
             this._imageConverter = imageConverter;
         }
+
+        #endregion Public Constructors
+
+        #region Private Properties
 
         private static string CurrentStorageYearMonth
         {
@@ -49,39 +61,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        public string[] GetExtensions(string type)
-        {
-            return GetExtensionsForFileType(type).Split(',').Trim().ToLower().ToArray();
-        }
+        #endregion Private Properties
 
-        public bool IsImage(string filePath)
-        {
-            return IsType(filePath, "image");
-        }
-
-        public bool IsVideo(string filePath)
-        {
-            return IsType(filePath, "video");
-        }
-
-        public bool IsAudio(string filePath)
-        {
-            return IsType(filePath, "audio");
-        }
-
-        public bool IsDocument(string filePath)
-        {
-            return IsType(filePath, "document");
-        }
-
-        public DocumentType GetDocumentType(string extension)
-        {
-            return this.IsImage(extension) ? DocumentType.Image :
-                        this.IsVideo(extension) ? DocumentType.Video :
-                        this.IsAudio(extension) ? DocumentType.Audio :
-                        this.IsDocument(extension) ? DocumentType.Document :
-                        DocumentType.Unknown;
-        }
+        #region Public Methods
 
         public bool CheckAccessFile(string url)
         {
@@ -107,6 +89,73 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return true;
+        }
+
+        public void Delete(Guid fileId)
+        {
+            if (fileId == Guid.Empty)
+            {
+                throw new ArgumentNullException("fileId");
+            }
+
+            var file = this._dataSource.Query<File>().FirstOrDefault(f => f.Id == fileId);
+
+            if (file != null)
+            {
+                this.Delete(file);
+            }
+        }
+
+        public void Delete(File file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException("file");
+            }
+
+            if (file.GroupId == StrixPlatform.User.GroupId)
+            {
+                try
+                {
+                    this._dataSource.Delete(file);
+                    string directory = System.IO.Path.Combine(StrixPlatform.Environment.MapPath(file.Folder), file.Path);
+                    this._dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex.Message, ex, LogLevel.Fatal);
+                    throw;
+                }
+            }
+        }
+
+        public File Get(Guid id)
+        {
+            return this._dataSource.Query<File>().FirstOrDefault(f => f.Id == id);
+        }
+
+        public DocumentType GetDocumentType(string extension)
+        {
+            return this.IsImage(extension) ? DocumentType.Image :
+                        this.IsVideo(extension) ? DocumentType.Video :
+                        this.IsAudio(extension) ? DocumentType.Audio :
+                        this.IsDocument(extension) ? DocumentType.Document :
+                        DocumentType.Unknown;
+        }
+
+        public string[] GetExtensions(string type)
+        {
+            return GetExtensionsForFileType(type).Split(',').Trim().ToLower().ToArray();
+        }
+
+        public bool IsAudio(string filePath)
+        {
+            return IsType(filePath, "audio");
+        }
+
+        public bool IsDocument(string filePath)
+        {
+            return IsType(filePath, "document");
         }
 
         public bool IsFileAllowed(string name)
@@ -140,9 +189,14 @@ namespace StrixIT.Platform.Modules.Cms
             return true;
         }
 
-        public File Get(Guid id)
+        public bool IsImage(string filePath)
         {
-            return this._dataSource.Query<File>().FirstOrDefault(f => f.Id == id);
+            return IsType(filePath, "image");
+        }
+
+        public bool IsVideo(string filePath)
+        {
+            return IsType(filePath, "video");
         }
 
         public File Save(SaveFileArguments arguments)
@@ -284,56 +338,9 @@ namespace StrixIT.Platform.Modules.Cms
             return files;
         }
 
-        public void Delete(Guid fileId)
-        {
-            if (fileId == Guid.Empty)
-            {
-                throw new ArgumentNullException("fileId");
-            }
+        #endregion Public Methods
 
-            var file = this._dataSource.Query<File>().FirstOrDefault(f => f.Id == fileId);
-
-            if (file != null)
-            {
-                this.Delete(file);
-            }
-        }
-
-        public void Delete(File file)
-        {
-            if (file == null)
-            {
-                throw new ArgumentNullException("file");
-            }
-
-            if (file.GroupId == StrixPlatform.User.GroupId)
-            {
-                try
-                {
-                    this._dataSource.Delete(file);
-                    string directory = System.IO.Path.Combine(StrixPlatform.Environment.MapPath(file.Folder), file.Path);
-                    this._dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex.Message, ex, LogLevel.Fatal);
-                    throw;
-                }
-            }
-        }
-
-        private static bool IsType(string filePath, string type)
-        {
-            string extension = filePath.Split('.').Last();
-
-            if (extension != null)
-            {
-                string typeExtensions = GetExtensionsForFileType(type);
-                return typeExtensions.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToLower().Any(e => e.ToLower() == extension.ToLower());
-            }
-
-            return false;
-        }
+        #region Private Methods
 
         private static string GetExtensionsForFileType(string fileType)
         {
@@ -369,6 +376,19 @@ namespace StrixIT.Platform.Modules.Cms
             return typeExtensions;
         }
 
+        private static bool IsType(string filePath, string type)
+        {
+            string extension = filePath.Split('.').Last();
+
+            if (extension != null)
+            {
+                string typeExtensions = GetExtensionsForFileType(type);
+                return typeExtensions.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToLower().Any(e => e.ToLower() == extension.ToLower());
+            }
+
+            return false;
+        }
+
         private File CreateFile(File file)
         {
             file.Folder = _uploadFolder;
@@ -378,5 +398,7 @@ namespace StrixIT.Platform.Modules.Cms
             this._dataSource.Save(file);
             return file;
         }
+
+        #endregion Private Methods
     }
 }

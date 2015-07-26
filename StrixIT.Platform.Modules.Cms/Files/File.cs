@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="File.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,13 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,42 +32,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class File : ValidationBase
     {
-        /// <summary>
-        /// Gets or sets the file id.
-        /// </summary>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the group this file belongs to.
-        /// </summary>
-        [StrixRequiredWithMembershipAttribute]
-        public Guid GroupId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the group this file belongs to.
-        /// </summary>
-        public GroupData Group { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path of the file within the upload folder.
-        /// </summary>
-        [StrixRequired]
-        [StringLength(200)]
-        public string Folder { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path of the file within the upload folder.
-        /// </summary>
-        [StrixRequired]
-        [StringLength(300)]
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the file without extension.
-        /// </summary>
-        [StrixRequired]
-        [StringLength(200)]
-        public string FileName { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the file extension.
@@ -76,6 +42,36 @@ namespace StrixIT.Platform.Modules.Cms
         public string Extension { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the file without extension.
+        /// </summary>
+        [StrixRequired]
+        [StringLength(200)]
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path of the file within the upload folder.
+        /// </summary>
+        [StrixRequired]
+        [StringLength(200)]
+        public string Folder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group this file belongs to.
+        /// </summary>
+        public GroupData Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of the group this file belongs to.
+        /// </summary>
+        [StrixRequiredWithMembershipAttribute]
+        public Guid GroupId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file id.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the file before it was uploaded.
         /// </summary>
         [StrixNotDefault]
@@ -83,15 +79,26 @@ namespace StrixIT.Platform.Modules.Cms
         public string OriginalName { get; set; }
 
         /// <summary>
+        /// Gets or sets the path of the file within the upload folder.
+        /// </summary>
+        [StrixRequired]
+        [StringLength(300)]
+        public string Path { get; set; }
+
+        /// <summary>
         /// Gets or sets the size of the File in bytes.
         /// </summary>
         public long? Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the date this file was uploaded.
+        /// Gets or sets the tags for this file. Used to track file usage.
         /// </summary>
-        [StrixRequired]
-        public DateTime UploadedOn { get; set; }
+        public ICollection<Term> Tags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user who uploaded this file.
+        /// </summary>
+        public UserData UploadedByUser { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the user who uploaded this file.
@@ -100,13 +107,11 @@ namespace StrixIT.Platform.Modules.Cms
         public Guid UploadedByUserId { get; set; }
 
         /// <summary>
-        /// Gets or sets the user who uploaded this file.
+        /// Gets or sets the date this file was uploaded.
         /// </summary>
-        public UserData UploadedByUser { get; set; }
+        [StrixRequired]
+        public DateTime UploadedOn { get; set; }
 
-        /// <summary>
-        /// Gets or sets the tags for this file. Used to track file usage.
-        /// </summary>
-        public ICollection<Term> Tags { get; set; }
+        #endregion Public Properties
     }
 }

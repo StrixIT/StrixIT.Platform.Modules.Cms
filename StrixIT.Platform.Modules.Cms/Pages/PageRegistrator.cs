@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PageRegistrator.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,8 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StrixIT.Platform.Web;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,16 +30,20 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class PageRegistrator : IPageRegistrator
     {
+        #region Private Fields
+
+        private static ConcurrentBag<ContentLocator> _contentLocators = new ConcurrentBag<ContentLocator>();
         private static object _lockObject = new object();
         private static ConcurrentDictionary<string, string> _pageLocations = new ConcurrentDictionary<string, string>();
-        private static ConcurrentBag<ContentLocator> _contentLocators = new ConcurrentBag<ContentLocator>();
+
+        #endregion Private Fields
+
+        #region Public Properties
 
         public IList<ContentLocator> ContentLocators
         {
@@ -43,6 +51,15 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 return _contentLocators.ToList();
             }
+        }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        public bool IsLocationRegistered(string location)
+        {
+            return _pageLocations.Any(l => l.Key == location.ToLower());
         }
 
         public void LocatePages()
@@ -64,11 +81,6 @@ namespace StrixIT.Platform.Modules.Cms
                     _pageLocations.GetOrAdd(url.ToLower(), folder);
                 }
             }
-        }
-
-        public bool IsLocationRegistered(string location)
-        {
-            return _pageLocations.Any(l => l.Key == location.ToLower());
         }
 
         public void RegisterAllPages(HttpContextBase httpContext, RouteData routeData)
@@ -106,13 +118,18 @@ namespace StrixIT.Platform.Modules.Cms
             return locator;
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private void RenderPage(HttpContextBase httpContext, RouteData routeData, string pagePath)
         {
             var location = _pageLocations.Where(p => p.Key == pagePath).Select(p => p.Value).FirstOrDefault();
 
             if (location == null)
             {
-                // If no page is found for this location, rerun LocatePages to pick up any newly added pages.
+                // If no page is found for this location, rerun LocatePages to pick up any newly
+                // added pages.
                 lock (_lockObject)
                 {
                     this.LocatePages();
@@ -143,5 +160,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
         }
+
+        #endregion Private Methods
     }
 }

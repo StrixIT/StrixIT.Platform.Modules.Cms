@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="SearchService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,25 +17,34 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class SearchService : ISearchService
     {
+        #region Private Fields
+
         private IPlatformDataSource _source;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public SearchService(IPlatformDataSource source)
         {
             this._source = source;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public SearchResult Search(FilterOptions options)
         {
@@ -72,7 +82,7 @@ namespace StrixIT.Platform.Modules.Cms
                     }
 
                     int addedItems = 0;
-                    var entries = query.Skip(itemsToSkip).Take(itemsToGet).Select<SearchItem>("new (Entity.Id, Name, Entity.Url)").ToList();          
+                    var entries = query.Skip(itemsToSkip).Take(itemsToGet).Select<SearchItem>("new (Entity.Id, Name, Entity.Url)").ToList();
 
                     foreach (var entry in entries)
                     {
@@ -98,5 +108,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return result;
         }
+
+        #endregion Public Methods
     }
 }

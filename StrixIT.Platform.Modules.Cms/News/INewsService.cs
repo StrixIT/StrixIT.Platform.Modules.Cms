@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="INewsService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -25,10 +27,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface INewsService : IEntityService<NewsViewModel>
     {
+        #region Public Methods
+
         /// <summary>
         /// Gets the latest news.
         /// </summary>
         /// <returns>The latest news view model</returns>
         NewsViewModel GetLatest();
+
+        #endregion Public Methods
     }
 }

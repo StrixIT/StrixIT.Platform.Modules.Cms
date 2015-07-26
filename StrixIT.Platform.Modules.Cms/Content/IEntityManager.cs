@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IEntityManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -34,7 +35,8 @@ namespace StrixIT.Platform.Modules.Cms
         #region IsNameAvailable
 
         /// <summary>
-        /// Checks whether the specified name is available for the content of the specified type with the specified id.
+        /// Checks whether the specified name is available for the content of the specified type
+        /// with the specified id.
         /// </summary>
         /// <param name="contentType">The content type to check the name for</param>
         /// <param name="name">The name to check</param>
@@ -43,7 +45,8 @@ namespace StrixIT.Platform.Modules.Cms
         bool IsNameAvailable(Type contentType, string name, Guid id);
 
         /// <summary>
-        /// Checks whether the specified name is available for the content of the specified type with the specified id.
+        /// Checks whether the specified name is available for the content of the specified type
+        /// with the specified id.
         /// </summary>
         /// <param name="contentType">The content type to check the name for</param>
         /// <param name="name">The name to check</param>
@@ -52,24 +55,9 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>True if the name is available, false otherwise</returns>
         bool IsNameAvailable(Type contentType, string name, Guid id, string culture);
 
-        #endregion
+        #endregion IsNameAvailable
 
         #region Get
-
-        /// <summary>
-        /// Gets the many-to-many relation property names for an entity type.
-        /// </summary>
-        /// <param name="entityType">The entity type to get the relation names for</param>
-        /// <returns>The many-to-many relation names</returns>
-        string[] GetManyToManyRelations(Type entityType);
-
-        /// <summary>
-        /// Gets the values of a many-to-many relation of the entity.
-        /// </summary>
-        /// <param name="entity">The entity to get the relation values for</param>
-        /// <param name="propertyName">The property name of the relation</param>
-        /// <returns>The relation values</returns>
-        IList GetExistingManyToManyRelations(object entity, string propertyName);
 
         /// <summary>
         /// Gets an entity by its id, with the current content for the current culture.
@@ -99,7 +87,8 @@ namespace StrixIT.Platform.Modules.Cms
         T Get<T>(Guid id, string culture, int versionNumber) where T : class, IContent;
 
         /// <summary>
-        /// Gets an entity by its id, with the current content for the specified culture and including the specified relations.
+        /// Gets an entity by its id, with the current content for the specified culture and
+        /// including the specified relations.
         /// </summary>
         /// <typeparam name="T">The type of the entity to get</typeparam>
         /// <param name="id">The id of the entity to get</param>
@@ -109,7 +98,8 @@ namespace StrixIT.Platform.Modules.Cms
         T Get<T>(Guid id, string culture, string relationsToInclude) where T : class, IContent;
 
         /// <summary>
-        /// Gets an entity by its id, with the the specified version of the content for the specified culture and including the specified relations.
+        /// Gets an entity by its id, with the the specified version of the content for the
+        /// specified culture and including the specified relations.
         /// </summary>
         /// <typeparam name="T">The type of the entity to get</typeparam>
         /// <param name="id">The id of the entity to get</param>
@@ -120,7 +110,8 @@ namespace StrixIT.Platform.Modules.Cms
         T Get<T>(Guid id, string culture, int versionNumber, string relationsToInclude) where T : class, IContent;
 
         /// <summary>
-        /// Gets an entity of the specified type by its id, with the the specified version of the content for the specified culture and including the specified relations.
+        /// Gets an entity of the specified type by its id, with the the specified version of the
+        /// content for the specified culture and including the specified relations.
         /// </summary>
         /// <param name="entityType">The type of the entity to get</param>
         /// <param name="id">The id of the entity to get</param>
@@ -168,7 +159,8 @@ namespace StrixIT.Platform.Modules.Cms
         T Get<T>(string url, string culture, string relationsToInclude) where T : class, IContent;
 
         /// <summary>
-        /// Gets an entity by its url, with the specified version of the content for the specified culture and including the specified relations.
+        /// Gets an entity by its url, with the specified version of the content for the specified
+        /// culture and including the specified relations.
         /// </summary>
         /// <typeparam name="T">The type of the entity to get</typeparam>
         /// <param name="url">The url of the entity to get</param>
@@ -179,7 +171,8 @@ namespace StrixIT.Platform.Modules.Cms
         T Get<T>(string url, string culture, int versionNumber, string relationsToInclude) where T : class, IContent;
 
         /// <summary>
-        /// Gets an entity of the specified type by its url, with the the specified version of the content for the specified culture and including the specified relations.
+        /// Gets an entity of the specified type by its url, with the the specified version of the
+        /// content for the specified culture and including the specified relations.
         /// </summary>
         /// <param name="entityType">The type of the entity to get</param>
         /// <param name="url">The url of the entity to get</param>
@@ -198,20 +191,36 @@ namespace StrixIT.Platform.Modules.Cms
         string[] GetAvailableCultures(Type entityType, Guid entityId);
 
         /// <summary>
+        /// Gets the values of a many-to-many relation of the entity.
+        /// </summary>
+        /// <param name="entity">The entity to get the relation values for</param>
+        /// <param name="propertyName">The property name of the relation</param>
+        /// <returns>The relation values</returns>
+        IList GetExistingManyToManyRelations(object entity, string propertyName);
+
+        /// <summary>
+        /// Gets a lookup for an entity type, which is a dictionary containing the entity ids and
+        /// their names.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type to get the lookup for</typeparam>
+        /// <returns>The lookup</returns>
+        IList<SelectRelationDto<Guid>> GetLookup<TEntity>() where TEntity : class, IContent;
+
+        /// <summary>
+        /// Gets the many-to-many relation property names for an entity type.
+        /// </summary>
+        /// <param name="entityType">The entity type to get the relation names for</param>
+        /// <returns>The many-to-many relation names</returns>
+        string[] GetManyToManyRelations(Type entityType);
+
+        /// <summary>
         /// Gets the next sort order number for an entity type.
         /// </summary>
         /// <typeparam name="T">The type of the entity to get the sort order for</typeparam>
         /// <returns>The next sort order number</returns>
         int GetNextSortOrder<T>() where T : class, IContent;
 
-        /// <summary>
-        /// Gets a lookup for an entity type, which is a dictionary containing the entity ids and their names.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type to get the lookup for</typeparam>
-        /// <returns>The lookup</returns>
-        IList<SelectRelationDto<Guid>> GetLookup<TEntity>() where TEntity : class, IContent;
-
-        #endregion
+        #endregion Get
 
         #region Query
 
@@ -247,7 +256,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The query</returns>
         IQueryable<T> QueryCurrent<T>(string includes) where T : class, IContent;
 
-        #endregion
+        #endregion Query
 
         #region Save
 
@@ -256,24 +265,28 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         /// <typeparam name="T">The type of the entity to save</typeparam>
         /// <param name="entity">The entity to save</param>
-        /// <param name="includes">The relations to include when loading the existing entity, if it exists. This is useful if
-        /// you need to work with these relations after the default saving process is completed</param>
+        /// <param name="includes">
+        /// The relations to include when loading the existing entity, if it exists. This is useful
+        /// if you need to work with these relations after the default saving process is completed
+        /// </param>
         /// <returns>A result to indicate whether the save was successful</returns>
         T Save<T>(T entity, string includes) where T : class, IContent;
 
-        #endregion
+        #endregion Save
 
         #region Delete
 
         /// <summary>
-        /// Deletes the entity of the specified type with the specified id and its content from the data source.
+        /// Deletes the entity of the specified type with the specified id and its content from the
+        /// data source.
         /// </summary>
         /// <typeparam name="T">The type of the entity to delete</typeparam>
         /// <param name="id">The id of the entity to delete</param>
         void Delete<T>(Guid id) where T : class, IContent;
 
         /// <summary>
-        /// Deletes the content for the entity of the specified type with the specified id for the specified culture from the data source.
+        /// Deletes the content for the entity of the specified type with the specified id for the
+        /// specified culture from the data source.
         /// </summary>
         /// <typeparam name="T">The type of the entity to delete</typeparam>
         /// <param name="id">The id of the entity to delete</param>
@@ -281,7 +294,8 @@ namespace StrixIT.Platform.Modules.Cms
         void Delete<T>(Guid id, string culture) where T : class, IContent;
 
         /// <summary>
-        /// Deletes the content for the entity of the specified type with the specified id and version number for the specified culture from the data source.
+        /// Deletes the content for the entity of the specified type with the specified id and
+        /// version number for the specified culture from the data source.
         /// </summary>
         /// <typeparam name="T">The type of the entity to delete</typeparam>
         /// <param name="id">The id of the entity to delete</param>
@@ -290,8 +304,10 @@ namespace StrixIT.Platform.Modules.Cms
         void Delete<T>(Guid id, string culture, int versionNumber) where T : class, IContent;
 
         /// <summary>
-        /// Deletes the content for the entity of the specified type with the specified id and version number for the specified culture from the data source.
-        /// If the trash bin is enabled, the log message is stored with the content to view the reason for deletion in the trashbin.
+        /// Deletes the content for the entity of the specified type with the specified id and
+        /// version number for the specified culture from the data source. If the trash bin is
+        /// enabled, the log message is stored with the content to view the reason for deletion in
+        /// the trashbin.
         /// </summary>
         /// <typeparam name="T">The type of the entity to delete</typeparam>
         /// <param name="id">The id of the entity to delete</param>
@@ -301,8 +317,10 @@ namespace StrixIT.Platform.Modules.Cms
         void Delete<T>(Guid id, string culture, int versionNumber, string log) where T : class, IContent;
 
         /// <summary>
-        /// Deletes the content for the entity of the specified type with the specified id and version number for the specified culture from the data source.
-        /// If the trash bin is enabled, the log message is stored with the content to view the reason for deletion in the trashbin.
+        /// Deletes the content for the entity of the specified type with the specified id and
+        /// version number for the specified culture from the data source. If the trash bin is
+        /// enabled, the log message is stored with the content to view the reason for deletion in
+        /// the trashbin.
         /// </summary>
         /// <param name="entityType">The type of the entity to delete</param>
         /// <param name="id">The id of the entity to delete</param>
@@ -311,6 +329,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="log">The log message</param>
         void Delete(Type entityType, Guid id, string culture, int versionNumber, string log);
 
-        #endregion
+        #endregion Delete
     }
 }

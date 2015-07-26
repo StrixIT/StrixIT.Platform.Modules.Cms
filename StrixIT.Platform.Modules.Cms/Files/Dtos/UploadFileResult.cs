@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="UploadFileResult.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,15 +29,17 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class UploadFileResult
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the upload was successful.
-        /// </summary>
-        public bool Succeeded { get; set; }
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the upload result message.
+        /// Gets or sets the document type.
         /// </summary>
-        public string Message { get; set; }
+        public DocumentType DocumentType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file extension.
+        /// </summary>
+        public string Extension { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the file created.
@@ -48,13 +52,15 @@ namespace StrixIT.Platform.Modules.Cms
         public string Image { get; set; }
 
         /// <summary>
-        /// Gets or sets the document type.
+        /// Gets or sets the upload result message.
         /// </summary>
-        public DocumentType DocumentType { get; set; }
+        public string Message { get; set; }
 
         /// <summary>
-        /// Gets or sets the file extension.
+        /// Gets or sets a value indicating whether the upload was successful.
         /// </summary>
-        public string Extension { get; set; }
+        public bool Succeeded { get; set; }
+
+        #endregion Public Properties
     }
 }

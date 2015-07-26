@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,18 +17,26 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Linq;
-using System.Web.Mvc;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class MailService : EntityService<MailContentViewModel>, IMailService
     {
-        public MailService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache) { }
+        #region Public Constructors
+
+        public MailService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        {
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public MailContent GetMailContent(string culture, string name)
         {
@@ -58,6 +67,10 @@ namespace StrixIT.Platform.Modules.Cms
             return mail;
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected override EntityViewModel Get(Type modelType, Guid? id, string url, string culture, int versionNumber, string relationsToInclude, bool useFallBack = false)
         {
             var model = base.Get(modelType, id, url, culture, versionNumber, "Template", useFallBack) as MailContentViewModel;
@@ -72,8 +85,12 @@ namespace StrixIT.Platform.Modules.Cms
             return model;
         }
 
+        #endregion Protected Methods
+
+        #region Private Methods
+
         private void GetTemplates(MailContentViewModel model, string culture)
-        {    
+        {
             model.Templates = this.Manager.Query<MailContentTemplate>().Where(t => t.IsCurrentVersion && t.Culture.ToLower() == culture.ToLower()).Select(t => new MailContentTemplateListModel { Id = t.Id, Name = t.Name }).ToList();
 
             if (model.TemplateId == Guid.Empty && !model.Templates.IsEmpty())
@@ -81,5 +98,7 @@ namespace StrixIT.Platform.Modules.Cms
                 model.TemplateId = model.Templates.First().Id;
             }
         }
+
+        #endregion Private Methods
     }
 }

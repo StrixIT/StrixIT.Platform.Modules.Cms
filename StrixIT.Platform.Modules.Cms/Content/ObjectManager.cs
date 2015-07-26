@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ObjectManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,23 +17,34 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Linq;
 using System.Linq.Dynamic;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class ObjectManager : IObjectManager
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public ObjectManager(IPlatformDataSource dataSource)
         {
             this._dataSource = dataSource;
         }
+
+        #endregion Public Constructors
+
+        #region Protected Properties
 
         protected IPlatformDataSource DataSource
         {
@@ -40,6 +52,15 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 return this._dataSource;
             }
+        }
+
+        #endregion Protected Properties
+
+        #region Public Methods
+
+        public virtual void Delete<T>(T entity) where T : class
+        {
+            this._dataSource.Delete(entity);
         }
 
         public T Get<T>(object id) where T : class
@@ -110,9 +131,6 @@ namespace StrixIT.Platform.Modules.Cms
             return this._dataSource.Save(entity);
         }
 
-        public virtual void Delete<T>(T entity) where T : class
-        {
-            this._dataSource.Delete(entity);
-        }
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CommentViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,13 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -31,40 +32,27 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class CommentViewModel
     {
-        /// <summary>
-        /// Gets or sets the comment Id.
-        /// </summary>
-        public long Id { get; set; }
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the id of the entity type the comment is for.
+        /// Gets or sets a value indicating whether the user can delete this comment.
         /// </summary>
-        public Guid EntityTypeId { get; set; }
+        public bool CanDelete { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the entity the comment is for.
+        /// Gets or sets a value indicating whether the user can edit this comment.
         /// </summary>
-        public Guid EntityId { get; set; }
+        public bool CanEdit { get; set; }
 
         /// <summary>
-        /// Gets or sets the parent Id of this comment.
+        /// Gets or sets a value indicating whether the user can respond to this comment.
         /// </summary>
-        public long? ParentId { get; set; }
+        public bool CanRespond { get; set; }
 
         /// <summary>
-        /// Gets or sets the the culture of the entity this comment is for.
+        /// Gets or sets the child comments of this comment.
         /// </summary>
-        public string EntityCulture { get; set; }
-
-        /// <summary>
-        /// Gets or sets the version of the entity this comment is for.
-        /// </summary>
-        public int EntityVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the user who created this version.
-        /// </summary>
-        public Guid CreatedByUserId { get; set; }
+        public ICollection<CommentViewModel> ChildComments { get; set; }
 
         /// <summary>
         /// Gets or sets name of the user who created this comment.
@@ -77,24 +65,44 @@ namespace StrixIT.Platform.Modules.Cms
         public string CreatedByEmail { get; set; }
 
         /// <summary>
+        /// Gets or sets the id of the user who created this version.
+        /// </summary>
+        public Guid CreatedByUserId { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time this comment was created.
         /// </summary>
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the user who last updated this version.
+        /// Gets or sets the the culture of the entity this comment is for.
         /// </summary>
-        public Guid UpdatedByUserId { get; set; }
+        public string EntityCulture { get; set; }
 
         /// <summary>
-        /// Gets or sets name of the user who last updated this comment.
+        /// Gets or sets the id of the entity the comment is for.
         /// </summary>
-        public string UpdatedBy { get; set; }
+        public Guid EntityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the date and time this comment was last updated.
+        /// Gets or sets the id of the entity type the comment is for.
         /// </summary>
-        public DateTime? UpdatedOn { get; set; }
+        public Guid EntityTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the entity this comment is for.
+        /// </summary>
+        public int EntityVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the comment Id.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent Id of this comment.
+        /// </summary>
+        public long? ParentId { get; set; }
 
         /// <summary>
         /// Gets or sets the comment text.
@@ -104,23 +112,20 @@ namespace StrixIT.Platform.Modules.Cms
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the child comments of this comment.
+        /// Gets or sets name of the user who last updated this comment.
         /// </summary>
-        public ICollection<CommentViewModel> ChildComments { get; set; }
+        public string UpdatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user can edit this comment.
+        /// Gets or sets the id of the user who last updated this version.
         /// </summary>
-        public bool CanEdit { get; set; }
+        public Guid UpdatedByUserId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user can delete this comment.
+        /// Gets or sets the date and time this comment was last updated.
         /// </summary>
-        public bool CanDelete { get; set; }
+        public DateTime? UpdatedOn { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the user can respond to this comment.
-        /// </summary>
-        public bool CanRespond { get; set; }
+        #endregion Public Properties
     }
 }

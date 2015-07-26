@@ -995,7 +995,6 @@
 				DOM.add(n, 'span', {}, '&#160;');
 			}
 
-
 			if (s.theme_advanced_resizing) {
 				DOM.add(td, 'a', {id : ed.id + '_resize', href : 'javascript:;', onclick : "return false;", 'class' : 'mceResize', tabIndex:"-1"});
 

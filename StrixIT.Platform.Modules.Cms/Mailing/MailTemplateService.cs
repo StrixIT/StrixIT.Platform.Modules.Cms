@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="MailTemplateService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,17 +17,26 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class MailTemplateService : EntityService<MailContentTemplateViewModel>
     {
-        public MailTemplateService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache) { }
+        #region Public Constructors
+
+        public MailTemplateService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        {
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public override SaveResult<MailContentTemplateViewModel> Save(MailContentTemplateViewModel model, bool saveChanges)
         {
@@ -54,6 +64,10 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected override void Delete(Type viewModelType, Guid id, string culture, int versionNumber, string log, bool saveChanges)
         {
             // Get and delete all mails using this template before trying to delete the template itself.
@@ -74,5 +88,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             base.Delete(typeof(MailContentTemplateViewModel), id, culture, versionNumber, log, true);
         }
+
+        #endregion Protected Methods
     }
 }

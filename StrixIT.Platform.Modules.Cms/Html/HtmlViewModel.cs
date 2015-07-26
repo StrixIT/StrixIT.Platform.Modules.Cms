@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="HtmlViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System.Web.Mvc;
 
@@ -27,10 +29,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class HtmlViewModel : EntityViewModel
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the Html body.
         /// </summary>
         [AllowHtml]
         public string Body { get; set; }
+
+        #endregion Public Properties
     }
 }

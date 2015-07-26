@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PlatformBaseViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Linq;
+#endregion Apache License
+
 using Newtonsoft.Json;
 using StrixIT.Platform.Core;
+using System;
+using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -30,13 +32,19 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public abstract class PlatformBaseViewModel : ValidationBase
     {
+        #region Private Fields
+
         /// <summary>
         /// The entity type this view model is for.
         /// </summary>
         private Type _entityType;
 
+        #endregion Private Fields
+
+        #region Protected Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlatformBaseViewModel" /> class.
+        /// Initializes a new instance of the <see cref="PlatformBaseViewModel"/> class.
         /// </summary>
         protected PlatformBaseViewModel()
         {
@@ -44,6 +52,22 @@ namespace StrixIT.Platform.Modules.Cms
             this.AdminRoles = new string[] { PlatformConstants.ADMINROLE };
             this.EditRoles = CmsRoleNames.EDITORROLES.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
         }
+
+        #endregion Protected Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the names of the roles that are allowed to administer this object.
+        /// </summary>
+        [JsonIgnore]
+        public string[] AdminRoles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the names of the roles that are allowed to edit this object.
+        /// </summary>
+        [JsonIgnore]
+        public string[] EditRoles { get; set; }
 
         /// <summary>
         /// Gets the entity type this view model is for.
@@ -57,16 +81,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// Gets or sets the names of the roles that are allowed to administer this object.
-        /// </summary>
-        [JsonIgnore]
-        public string[] AdminRoles { get; set; }
-
-        /// <summary>
-        /// Gets or sets the names of the roles that are allowed to edit this object.
-        /// </summary>
-        [JsonIgnore]
-        public string[] EditRoles { get; set; }
+        #endregion Public Properties
     }
 }

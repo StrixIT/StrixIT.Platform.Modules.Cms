@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="VocabularyController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,19 +17,28 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Web.Mvc;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     [StrixAuthorization(Roles = CmsRoleNames.EDITORROLES)]
     public class VocabularyController : BaseCrudController<Guid, VocabularyViewModel>
     {
-        public VocabularyController(ITaxonomyService service) : base(service) { }
+        #region Public Constructors
+
+        public VocabularyController(ITaxonomyService service) : base(service)
+        {
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
 
         private ITaxonomyService Service
         {
@@ -38,11 +48,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        public override ActionResult Index()
-        {
-            var config = new VocabularyListConfiguration(StrixPlatform.User);
-            return this.View(config);
-        }
+        #endregion Private Properties
+
+        #region Public Methods
 
         public override ActionResult Get(string id)
         {
@@ -65,11 +73,19 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Json(list);
         }
 
+        public override ActionResult Index()
+        {
+            var config = new VocabularyListConfiguration(StrixPlatform.User);
+            return this.View(config);
+        }
+
         [HttpPost]
         public JsonResult SaveTag(TermViewModel model)
         {
             var result = this.Service.SaveTag(model);
             return this.Json(result.Success);
         }
+
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PlatformDataSourceFactory.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System.Data.Entity.Infrastructure;
 
@@ -27,9 +29,13 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class PlatformDataSourceFactory : IDbContextFactory<PlatformDataSource>
     {
+        #region Public Methods
+
         public PlatformDataSource Create()
         {
             return PlatformDataSource.CreateForMigrations();
         }
+
+        #endregion Public Methods
     }
 }

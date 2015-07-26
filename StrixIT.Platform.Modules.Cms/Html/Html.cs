@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="Html.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.ComponentModel.DataAnnotations;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,16 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class Html : ContentBase, IContent
     {
-        /// <summary>
-        /// Gets or sets the entity id.
-        /// </summary>
-        [StrixRequired]
-        public Guid EntityId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity.
-        /// </summary>
-        public PlatformEntity Entity { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the html body text.
@@ -46,5 +38,18 @@ namespace StrixIT.Platform.Modules.Cms
         [Rte]
         [StrixRequired]
         public string Body { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity.
+        /// </summary>
+        public PlatformEntity Entity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity id.
+        /// </summary>
+        [StrixRequired]
+        public Guid EntityId { get; set; }
+
+        #endregion Public Properties
     }
 }

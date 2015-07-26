@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="HtmlListModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using Newtonsoft.Json;
 
@@ -27,10 +29,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class HtmlListModel : EntityListModel
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the Html body.
         /// </summary>
         [JsonIgnore]
         public string Body { get; set; }
+
+        #endregion Public Properties
     }
 }

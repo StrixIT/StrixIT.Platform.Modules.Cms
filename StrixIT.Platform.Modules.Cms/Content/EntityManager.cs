@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,27 +17,36 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StrixIT.Platform.Web;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class EntityManager : ObjectManager, IEntityManager
     {
+        #region Private Fields
+
         private static readonly string[] PropertiesToIgnoreForVersioning = new string[] { "UpdatedByUserId", "UpdatedOn", "PublishedOn", "NumberOfComments", "LastCommentDate", "VersionLog", "SortOrder", "DeletedByUserId", "DeletedOn" };
         private ICacheService _cache;
 
-        public EntityManager(IPlatformDataSource dataSource, ICacheService cache) : base(dataSource) 
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public EntityManager(IPlatformDataSource dataSource, ICacheService cache) : base(dataSource)
         {
             this._cache = cache;
         }
+
+        #endregion Public Constructors
 
         #region IsNameAvailable
 
@@ -70,19 +80,9 @@ namespace StrixIT.Platform.Modules.Cms
             return !this.DataSource.Query(contentType).Where("Name.ToLower().Equals(@0) AND Culture.ToLower().Equals(@1) AND !EntityId.Equals(@2)", name.ToLower(), culture.ToLower(), id).Any();
         }
 
-        #endregion
+        #endregion IsNameAvailable
 
         #region Get
-
-        public string[] GetManyToManyRelations(Type entityType)
-        {
-            return this.DataSource.GetManyToManyRelations(entityType);
-        }
-
-        public IList GetExistingManyToManyRelations(object entity, string propertyName)
-        {
-            return this.DataSource.GetExistingManyToManyRelations(entity, propertyName);
-        }
 
         public override object Get(Type objectType, object id)
         {
@@ -172,9 +172,9 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Query(entityType).Where("EntityId.Equals(@0) AND IsCurrentVersion", entityId).Select("Culture").Cast<string>().ToArray();
         }
 
-        public int GetNextSortOrder<T>() where T : class, IContent
+        public IList GetExistingManyToManyRelations(object entity, string propertyName)
         {
-            return this.GetNextSortOrder(typeof(T));
+            return this.DataSource.GetExistingManyToManyRelations(entity, propertyName);
         }
 
         public IList<SelectRelationDto<Guid>> GetLookup<TEntity>() where TEntity : class, IContent
@@ -197,7 +197,17 @@ namespace StrixIT.Platform.Modules.Cms
             return list[culture].ToList();
         }
 
-        #endregion
+        public string[] GetManyToManyRelations(Type entityType)
+        {
+            return this.DataSource.GetManyToManyRelations(entityType);
+        }
+
+        public int GetNextSortOrder<T>() where T : class, IContent
+        {
+            return this.GetNextSortOrder(typeof(T));
+        }
+
+        #endregion Get
 
         #region Query
 
@@ -238,7 +248,7 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Query<T>(null, includes, true);
         }
 
-        #endregion
+        #endregion Query
 
         #region Save
 
@@ -355,7 +365,7 @@ namespace StrixIT.Platform.Modules.Cms
             return theContent as T;
         }
 
-        #endregion
+        #endregion Save
 
         #region Delete
 
@@ -426,9 +436,21 @@ namespace StrixIT.Platform.Modules.Cms
             this._cache.Delete(string.Format(CmsConstants.LOOKUPPERCULTURE, entityType.Name));
         }
 
-        #endregion
+        #endregion Delete
 
         #region Protected Methods
+
+        protected virtual int GetNextSortOrder(Type entityType)
+        {
+            if (!typeof(IContent).IsAssignableFrom(entityType))
+            {
+                throw new NotSupportedException("The entity type must implement IContent to use this method.");
+            }
+
+            string culture = StrixPlatform.CurrentCultureCode.ToLower();
+            var lastSortOrder = this.Query(entityType).Where("IsCurrentVersion AND Culture.Equals(@0)", culture).Select("SortOrder").Cast<int?>().Max();
+            return lastSortOrder.HasValue ? lastSortOrder.Value + 1 : 1;
+        }
 
         protected virtual IQueryable<T> Query<T>(string tag, string includes, bool currentOnly) where T : class, IContent
         {
@@ -469,19 +491,7 @@ namespace StrixIT.Platform.Modules.Cms
             return query;
         }
 
-        protected virtual int GetNextSortOrder(Type entityType)
-        {
-            if (!typeof(IContent).IsAssignableFrom(entityType))
-            {
-                throw new NotSupportedException("The entity type must implement IContent to use this method.");
-            }
-
-            string culture = StrixPlatform.CurrentCultureCode.ToLower();
-            var lastSortOrder = this.Query(entityType).Where("IsCurrentVersion AND Culture.Equals(@0)", culture).Select("SortOrder").Cast<int?>().Max();
-            return lastSortOrder.HasValue ? lastSortOrder.Value + 1 : 1;
-        }
-
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
@@ -494,8 +504,9 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// If the content has an entity id, check whether a platform entity with this id exists. If the content has no entity id or no
-        /// platform entity with the id exists, create a new platform entity.
+        /// If the content has an entity id, check whether a platform entity with this id exists. If
+        /// the content has no entity id or no platform entity with the id exists, create a new
+        /// platform entity.
         /// </summary>
         /// <param name="entityType">The type of the entity to create</param>
         /// <param name="currentUserId">The id of the currently active user creating the entity</param>
@@ -511,6 +522,80 @@ namespace StrixIT.Platform.Modules.Cms
             };
 
             return entity;
+        }
+
+        /// <summary>
+        /// Gets the file values for mapping content.
+        /// </summary>
+        /// <param name="entityType">The entity type of the content</param>
+        /// <param name="first">The source content</param>
+        /// <param name="second">The target content</param>
+        /// <returns>A dictionary containing the file property names and values</returns>
+        private static IDictionary<string, object> GetFileValues(Type entityType, object first, object second)
+        {
+            Dictionary<string, object> fileValues = new Dictionary<string, object>();
+            var fileProperties = entityType.GetProperties().Where(p => p.GetAttribute<FileUploadAttribute>() != null).Select(p => p.Name).ToArray();
+
+            foreach (var prop in fileProperties)
+            {
+                var firstVal = first.GetPropertyValue(prop);
+                var secondVal = second.GetPropertyValue(prop);
+
+                if (firstVal == null && secondVal != null)
+                {
+                    fileValues.Add(prop, secondVal);
+                }
+                else
+                {
+                    fileValues.Add(prop, null);
+                }
+            }
+
+            return fileValues;
+        }
+
+        /// <summary>
+        /// Gets the relation values for mapping content.
+        /// </summary>
+        /// <param name="entityType">The entity type of the content</param>
+        /// <param name="first">The source content</param>
+        /// <param name="second">The target content</param>
+        /// <returns>A dictionary containing the relation property names and values</returns>
+        private static IDictionary<string, object> GetRelationValues(Type entityType, object first, object second)
+        {
+            Dictionary<string, object> relationValues = new Dictionary<string, object>();
+
+            var relationProperties = entityType.GetProperties().Where(p =>
+            {
+                if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && !p.PropertyType.Equals(typeof(string)))
+                {
+                    var genericArguments = p.PropertyType.GenericTypeArguments;
+
+                    if (genericArguments.Length == 1 && typeof(ValidationBase).IsAssignableFrom(genericArguments.First()))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }).Select(p => p.Name).ToArray();
+
+            foreach (var prop in relationProperties)
+            {
+                var firstVal = first.GetPropertyValue(prop) as IEnumerable<ValidationBase>;
+                var secondVal = second.GetPropertyValue(prop);
+
+                if (firstVal != null && firstVal.Any(v => !v.IsValid) && secondVal != null)
+                {
+                    relationValues.Add(prop, ((IEnumerable<ValidationBase>)secondVal).ToList());
+                }
+                else
+                {
+                    relationValues.Add(prop, null);
+                }
+            }
+
+            return relationValues;
         }
 
         /// <summary>
@@ -596,77 +681,76 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Gets the file values for mapping content.
+        /// Create new content for an entity.
         /// </summary>
-        /// <param name="entityType">The entity type of the content</param>
-        /// <param name="first">The source content</param>
-        /// <param name="second">The target content</param>
-        /// <returns>A dictionary containing the file property names and values</returns>
-        private static IDictionary<string, object> GetFileValues(Type entityType, object first, object second)
+        /// <param name="entityType">The entity type for which to create the content</param>
+        /// <param name="content">The content to use as source</param>
+        /// <param name="entity">The entity to create the content for</param>
+        /// <param name="currentUserId">The id of the currently active user creating the content</param>
+        /// <returns>The new content</returns>
+        private IContent CreateNewContent(Type entityType, IContent content, PlatformEntity entity, Guid currentUserId)
         {
-            Dictionary<string, object> fileValues = new Dictionary<string, object>();
-            var fileProperties = entityType.GetProperties().Where(p => p.GetAttribute<FileUploadAttribute>() != null).Select(p => p.Name).ToArray();
+            var theContent = this.Get(entityType, null) as IContent;
 
-            foreach (var prop in fileProperties)
+            if (!string.IsNullOrWhiteSpace(content.Culture))
             {
-                var firstVal = first.GetPropertyValue(prop);
-                var secondVal = second.GetPropertyValue(prop);
-
-                if (firstVal == null && secondVal != null)
-                {
-                    fileValues.Add(prop, secondVal);
-                }
-                else
-                {
-                    fileValues.Add(prop, null);
-                }
+                theContent.Culture = content.Culture;
             }
 
-            return fileValues;
+            theContent.Id = Guid.NewGuid();
+            theContent.Name = content.Name;
+
+            if (string.IsNullOrWhiteSpace(content.Entity.Url) && !string.IsNullOrWhiteSpace(content.Name))
+            {
+                theContent.Entity.Url = theContent.Name;
+            }
+
+            theContent.EntityId = entity.Id;
+            theContent.Entity = entity;
+            theContent.CreatedByUserId = currentUserId;
+            theContent.CreatedOn = DateTime.Now;
+            theContent.UpdatedByUserId = currentUserId;
+            theContent.UpdatedOn = theContent.CreatedOn;
+            return theContent;
         }
 
         /// <summary>
-        /// Gets the relation values for mapping content.
+        /// If versioning is active, the content is not a draft and there are modified properties,
+        /// create a new version for the content.
         /// </summary>
-        /// <param name="entityType">The entity type of the content</param>
-        /// <param name="first">The source content</param>
-        /// <param name="second">The target content</param>
-        /// <returns>A dictionary containing the relation property names and values</returns>
-        private static IDictionary<string, object> GetRelationValues(Type entityType, object first, object second)
+        /// <param name="contentType">The entity type for which to create the version</param>
+        /// <param name="content">The content to use as source</param>
+        /// <param name="modifiedPropertyValues">The modified property values</param>
+        /// <returns>The content version</returns>
+        private IContent CreateNewVersion(Type contentType, IContent content, IList<ModifiedPropertyValue> modifiedPropertyValues)
         {
-            Dictionary<string, object> relationValues = new Dictionary<string, object>();
+            var isDraft = content.IsCurrentVersion && content.PublishedOn == null;
 
-            var relationProperties = entityType.GetProperties().Where(p =>
+            if (EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions) && !isDraft)
             {
-                if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && !p.PropertyType.Equals(typeof(string)))
+                if (!modifiedPropertyValues.IsEmpty())
                 {
-                    var genericArguments = p.PropertyType.GenericTypeArguments;
+                    // Get the new version number to use.
+                    var versionQuery = this.DataSource.Query(contentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) AND PublishedOn.HasValue", content.EntityId, content.Culture);
+                    var versionNumber = versionQuery.Select("VersionNumber").Cast<int>().Max();
 
-                    if (genericArguments.Length == 1 && typeof(ValidationBase).IsAssignableFrom(genericArguments.First()))
-                    {
-                        return true;
-                    }
-                }
+                    // Create a new version with a new id.
+                    var theContent = content.Map(contentType) as IContent;
+                    theContent.Id = Guid.NewGuid();
+                    theContent.VersionNumber = versionNumber + 1;
+                    theContent.IsCurrentVersion = true;
 
-                return false;
-            }).Select(p => p.Name).ToArray();
-
-            foreach (var prop in relationProperties)
-            {
-                var firstVal = first.GetPropertyValue(prop) as IEnumerable<ValidationBase>;
-                var secondVal = second.GetPropertyValue(prop);
-
-                if (firstVal != null && firstVal.Any(v => !v.IsValid) && secondVal != null)
-                {
-                    relationValues.Add(prop, ((IEnumerable<ValidationBase>)secondVal).ToList());
-                }
-                else
-                {
-                    relationValues.Add(prop, null);
+                    // Undo the changes made to the old version by ignoring the currently loaded
+                    // version and fetching a fresh one from the database. Then, set the IsCurrent
+                    // flag on the old version to false.
+                    this.DataSource.Ignore(content);
+                    content = this.Get(contentType, content.EntityId, content.Culture, content.VersionNumber, null);
+                    content.IsCurrentVersion = false;
+                    return theContent;
                 }
             }
 
-            return relationValues;
+            return content;
         }
 
         /// <summary>
@@ -693,7 +777,8 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Deletes the content with the specified version number for the specified culture for an entity from the data source.
+        /// Deletes the content with the specified version number for the specified culture for an
+        /// entity from the data source.
         /// </summary>
         /// <param name="query">The query for the entity content</param>
         /// <param name="culture">The culture to delete the content for</param>
@@ -747,7 +832,8 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Gets the content with the specified version number for the specified culture for an entity by its url or platform id, including the specified relations.
+        /// Gets the content with the specified version number for the specified culture for an
+        /// entity by its url or platform id, including the specified relations.
         /// </summary>
         /// <param name="entityType">The type of the entity to get the content for</param>
         /// <param name="id">The entity platform id</param>
@@ -803,40 +889,6 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Create new content for an entity.
-        /// </summary>
-        /// <param name="entityType">The entity type for which to create the content</param>
-        /// <param name="content">The content to use as source</param>
-        /// <param name="entity">The entity to create the content for</param>
-        /// <param name="currentUserId">The id of the currently active user creating the content</param>
-        /// <returns>The new content</returns>
-        private IContent CreateNewContent(Type entityType, IContent content, PlatformEntity entity, Guid currentUserId)
-        {
-            var theContent = this.Get(entityType, null) as IContent;
-
-            if (!string.IsNullOrWhiteSpace(content.Culture))
-            {
-                theContent.Culture = content.Culture;
-            }
-
-            theContent.Id = Guid.NewGuid();
-            theContent.Name = content.Name;
-
-            if (string.IsNullOrWhiteSpace(content.Entity.Url) && !string.IsNullOrWhiteSpace(content.Name))
-            {
-                theContent.Entity.Url = theContent.Name;
-            }
-
-            theContent.EntityId = entity.Id;
-            theContent.Entity = entity;
-            theContent.CreatedByUserId = currentUserId;
-            theContent.CreatedOn = DateTime.Now;
-            theContent.UpdatedByUserId = currentUserId;
-            theContent.UpdatedOn = theContent.CreatedOn;
-            return theContent;
-        }
-
-        /// <summary>
         /// Creates a content translation for an entity.
         /// </summary>
         /// <param name="entityType">The entity type for which to create the translation</param>
@@ -846,7 +898,8 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (EntityHelper.IsServiceActive(entityType, EntityServiceActions.Translations))
             {
-                // try to get the content for the default culture or any culture, copy it, and update the culture.
+                // try to get the content for the default culture or any culture, copy it, and
+                // update the culture.
                 var query = this.DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", content.EntityId);
                 var list = query.GetList();
 
@@ -859,7 +912,8 @@ namespace StrixIT.Platform.Modules.Cms
 
                 if (theContent != null)
                 {
-                    // Copy the content, then map the new values to the copy. Give the new version a new id and version number.
+                    // Copy the content, then map the new values to the copy. Give the new version a
+                    // new id and version number.
                     theContent = theContent.Map(entityType) as IContent;
                     var culture = content.Culture;
                     MapContent(entityType, content, theContent);
@@ -881,43 +935,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// If versioning is active, the content is not a draft and there are modified properties, create a new version for the content.
-        /// </summary>
-        /// <param name="contentType">The entity type for which to create the version</param>
-        /// <param name="content">The content to use as source</param>
-        /// <param name="modifiedPropertyValues">The modified property values</param>
-        /// <returns>The content version</returns>
-        private IContent CreateNewVersion(Type contentType, IContent content, IList<ModifiedPropertyValue> modifiedPropertyValues)
-        {
-            var isDraft = content.IsCurrentVersion && content.PublishedOn == null;
-
-            if (EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions) && !isDraft)
-            {
-                if (!modifiedPropertyValues.IsEmpty())
-                {
-                    // Get the new version number to use.
-                    var versionQuery = this.DataSource.Query(contentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) AND PublishedOn.HasValue", content.EntityId, content.Culture);
-                    var versionNumber = versionQuery.Select("VersionNumber").Cast<int>().Max();
-
-                    // Create a new version with a new id.
-                    var theContent = content.Map(contentType) as IContent;
-                    theContent.Id = Guid.NewGuid();
-                    theContent.VersionNumber = versionNumber + 1;
-                    theContent.IsCurrentVersion = true;
-
-                    // Undo the changes made to the old version by ignoring the currently loaded version and fetching a
-                    // fresh one from the database. Then, set the IsCurrent flag on the old version to false.
-                    this.DataSource.Ignore(content);
-                    content = this.Get(contentType, content.EntityId, content.Culture, content.VersionNumber, null);
-                    content.IsCurrentVersion = false;
-                    return theContent;
-                }
-            }
-
-            return content;
-        }
-
-        #endregion
+        #endregion Private Methods
     }
 }

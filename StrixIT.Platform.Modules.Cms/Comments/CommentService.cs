@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CommentService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,25 +17,47 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CommentService : ICommentService
     {
-        private IPlatformDataSource _dataSource;
+        #region Private Fields
 
         private ICommentManager _commentManager;
+        private IPlatformDataSource _dataSource;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public CommentService(IPlatformDataSource dataSource, ICommentManager commentManager)
         {
             this._dataSource = dataSource;
             this._commentManager = commentManager;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        public bool DeleteComment(CommentViewModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException("model");
+            }
+
+            var result = this._commentManager.DeleteComment(model.Map<Comment>(), model.EntityTypeId);
+            this._dataSource.SaveChanges();
+            return result;
         }
 
         public CommentListModel GetComments(Guid entityId)
@@ -84,17 +107,9 @@ namespace StrixIT.Platform.Modules.Cms
             return model;
         }
 
-        public bool DeleteComment(CommentViewModel model)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException("model");
-            }
+        #endregion Public Methods
 
-            var result = this._commentManager.DeleteComment(model.Map<Comment>(), model.EntityTypeId);
-            this._dataSource.SaveChanges();
-            return result;
-        }
+        #region Private Methods
 
         private IList<CommentViewModel> CreateCommentTree(ICollection<Comment> comments, long? parentId)
         {
@@ -120,5 +135,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return list;
         }
+
+        #endregion Private Methods
     }
 }

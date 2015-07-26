@@ -4,16 +4,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using StrixIT.Platform.Core;
-using System.Data.Entity;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public class TestPlatformDataSource : PlatformDataSource
     {
+        #region Public Constructors
+
         public TestPlatformDataSource(IFileSystemWrapper wrapper, ICacheService cache)
             : base(wrapper, cache)
         {
             Configuration.LazyLoadingEnabled = true;
         }
+
+        #endregion Public Constructors
     }
 }

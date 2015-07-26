@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PageRegistration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,19 +17,37 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Web;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public static class PageRegistration
     {
+        #region Private Fields
+
         private static IPageRegistrator _registrator;
+
+        #endregion Private Fields
+
+        #region Public Properties
+
+        /// <summary>
+        /// Gets the list of loaded content locators.
+        /// </summary>
+        public static IList<ContentLocator> ContentLocators
+        {
+            get
+            {
+                return Registrator.ContentLocators;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the page registrator.
@@ -50,24 +69,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// Gets the list of loaded content locators.
-        /// </summary>
-        public static IList<ContentLocator> ContentLocators
-        {
-            get
-            {
-                return Registrator.ContentLocators;
-            }
-        }
+        #endregion Public Properties
 
-        /// <summary>
-        /// Locates all custom page files for use when registering pages.
-        /// </summary>
-        public static void LocatePages()
-        {
-            Registrator.LocatePages();
-        }
+        #region Public Methods
 
         /// <summary>
         /// Gets a value indicating whether a custom file page is registered for a url.
@@ -80,10 +84,22 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
+        /// Locates all custom page files for use when registering pages.
+        /// </summary>
+        public static void LocatePages()
+        {
+            Registrator.LocatePages();
+        }
+
+        /// <summary>
         /// Registers all pages for which a file page is located with the Cms.
         /// </summary>
-        /// <param name="httpContext">The HttpContext to use for rendering the page during the registration process</param>
-        /// <param name="routeData">The RouteData to use for rendering the page during the registration process</param>
+        /// <param name="httpContext">
+        /// The HttpContext to use for rendering the page during the registration process
+        /// </param>
+        /// <param name="routeData">
+        /// The RouteData to use for rendering the page during the registration process
+        /// </param>
         public static void RegisterAllPages(HttpContextBase httpContext, RouteData routeData)
         {
             Registrator.RegisterAllPages(httpContext, routeData);
@@ -92,8 +108,12 @@ namespace StrixIT.Platform.Modules.Cms
         /// <summary>
         /// Registers a page for which a file page is located with the Cms.
         /// </summary>
-        /// <param name="httpContext">The HttpContext to use for rendering the page during the registration process</param>
-        /// <param name="routeData">The RouteData to use for rendering the page during the registration process</param>
+        /// <param name="httpContext">
+        /// The HttpContext to use for rendering the page during the registration process
+        /// </param>
+        /// <param name="routeData">
+        /// The RouteData to use for rendering the page during the registration process
+        /// </param>
         /// <param name="pagePath">The file page path to register</param>
         public static void RegisterPage(HttpContextBase httpContext, RouteData routeData, string pagePath)
         {
@@ -104,11 +124,13 @@ namespace StrixIT.Platform.Modules.Cms
         /// Registers custom content used on a custom page.
         /// </summary>
         /// <param name="helper">The html helper to use</param>
-        /// <param name="options">The options of the content </param>
+        /// <param name="options">The options of the content</param>
         /// <returns>The content locator for this url</returns>
         public static ContentLocator RegisterUrl(HtmlHelper helper, DisplayOptions options)
         {
             return Registrator.RegisterUrl(helper, options);
         }
+
+        #endregion Public Methods
     }
 }

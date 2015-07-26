@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="NewsService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,18 +17,27 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class NewsService : EntityService<NewsViewModel>, INewsService
     {
-        public NewsService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache) { }
+        #region Public Constructors
+
+        public NewsService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        {
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public NewsViewModel GetLatest()
         {
@@ -46,6 +56,10 @@ namespace StrixIT.Platform.Modules.Cms
 
             return list;
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private static string GetSummary(string summary, string body)
         {
@@ -73,5 +87,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return summary;
             }
         }
+
+        #endregion Private Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="TaxonomyManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,26 +17,35 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StrixIT.Platform.Web;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class TaxonomyManager : ITaxonomyManager
     {
+        #region Private Fields
+
         private IPlatformDataSource _dataSource;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public TaxonomyManager(IPlatformDataSource dataSource)
         {
             this._dataSource = dataSource;
         }
+
+        #endregion Public Constructors
 
         #region Tag
 
@@ -91,7 +101,7 @@ namespace StrixIT.Platform.Modules.Cms
             return result;
         }
 
-        #endregion
+        #endregion Tag
 
         #region Get Tags
 
@@ -173,7 +183,7 @@ namespace StrixIT.Platform.Modules.Cms
                                                                         || v.Name.ToLower() == vocabularyName.ToLower())).SelectMany(v => v.Terms);
         }
 
-        #endregion
+        #endregion Get Tags
 
         #region Create Tags
 
@@ -225,7 +235,7 @@ namespace StrixIT.Platform.Modules.Cms
             return term;
         }
 
-        #endregion
+        #endregion Create Tags
 
         #region Get Vocabulary
 
@@ -237,16 +247,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return this._dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Id == id);
-        }
-
-        public Vocabulary GetVocabularyByUrl(string url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                throw new ArgumentNullException("url");
-            }
-
-            return this._dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Url.ToLower() == url.ToLower());
         }
 
         public Vocabulary GetVocabulary(string vocabularyName)
@@ -288,12 +288,22 @@ namespace StrixIT.Platform.Modules.Cms
             return vocabulary;
         }
 
+        public Vocabulary GetVocabularyByUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentNullException("url");
+            }
+
+            return this._dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Url.ToLower() == url.ToLower());
+        }
+
         public IQueryable<Vocabulary> VocabularyQuery()
         {
             return this._dataSource.Query<Vocabulary>().Where(v => !v.IsSystemVocabulary);
         }
 
-        #endregion
+        #endregion Get Vocabulary
 
         #region Create Vocabulary
 
@@ -339,7 +349,7 @@ namespace StrixIT.Platform.Modules.Cms
             return vocabulary;
         }
 
-        #endregion
+        #endregion Create Vocabulary
 
         #region Delete Tags
 
@@ -365,7 +375,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        #endregion
+        #endregion Delete Tags
 
         #region Delete Vocabulary
 
@@ -375,7 +385,7 @@ namespace StrixIT.Platform.Modules.Cms
             this._dataSource.Delete(vocabulary);
         }
 
-        #endregion
+        #endregion Delete Vocabulary
 
         #region Tag Files
 
@@ -393,7 +403,8 @@ namespace StrixIT.Platform.Modules.Cms
 
             var theTag = this.GetTag(CoreVocabulary.FileUse.ToString(), tag);
 
-            // Save the tag to the data source to reset its deleted status, in case the tag is marked as deleted.
+            // Save the tag to the data source to reset its deleted status, in case the tag is
+            // marked as deleted.
             this._dataSource.Save(theTag);
 
             var files = this._dataSource.Query<File>().Include(f => f.Tags).Where(f => fileNames.Contains(f.FileName.ToLower())).ToList();
@@ -441,7 +452,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        #endregion
+        #endregion Tag Files
 
         #region Private Functions
 
@@ -509,6 +520,6 @@ namespace StrixIT.Platform.Modules.Cms
             return true;
         }
 
-        #endregion
+        #endregion Private Functions
     }
 }

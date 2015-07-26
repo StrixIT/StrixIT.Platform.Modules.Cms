@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,23 +17,40 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Configuration;
-using System.Collections.Generic;
-using System.Linq;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class CmsConfiguration
     {
-        private static IDictionary<string, string> _settings = ModuleManager.AppSettings.ContainsKey(CmsConstants.CMS) ? ModuleManager.AppSettings[CmsConstants.CMS] : ModuleManager.AppSettings[PlatformConstants.PLATFORM];
+        #region Private Fields
+
         private static FilesConfiguration _files = new FilesConfiguration();
+        private static IDictionary<string, string> _settings = ModuleManager.AppSettings.ContainsKey(CmsConstants.CMS) ? ModuleManager.AppSettings[CmsConstants.CMS] : ModuleManager.AppSettings[PlatformConstants.PLATFORM];
         private static bool? _usesSqlCompactDatabase = null;
 
+        #endregion Private Fields
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets a value indicating whether a summary can be added to a news item. If false, summaries are generated.
+        /// Gets the Files configuration section.
+        /// </summary>
+        public FilesConfiguration Files
+        {
+            get
+            {
+                return _files;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a summary can be added to a news item. If false,
+        /// summaries are generated.
         /// </summary>
         public bool UseNewsSummary
         {
@@ -59,15 +77,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// Gets the Files configuration section.
-        /// </summary>
-        public FilesConfiguration Files
-        {
-            get
-            {
-                return _files;
-            }
-        }
+        #endregion Public Properties
     }
 }

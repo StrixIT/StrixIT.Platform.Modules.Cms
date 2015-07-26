@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="AuthenticatedCacheAttribute.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Web;
@@ -26,12 +28,14 @@ using System.Web.UI;
 namespace StrixIT.Platform.Modules.Cms
 {
     /// <summary>
-    /// An attribute to allow caching when authentication is needed. It is used to prevent caching items when a user is authenticated,
-    /// and then serving the cached file to a non-authenticated user.
+    /// An attribute to allow caching when authentication is needed. It is used to prevent caching
+    /// items when a user is authenticated, and then serving the cached file to a non-authenticated user.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class AuthenticatedCacheAttribute : OutputCacheAttribute
     {
+        #region Public Methods
+
         public override void OnResultExecuting(ResultExecutingContext filterContext)
         {
             if (filterContext == null)
@@ -56,6 +60,10 @@ namespace StrixIT.Platform.Modules.Cms
             base.OnResultExecuting(filterContext);
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private void IgnoreUnAuthenticated(HttpContext context, object data, ref HttpValidationStatus validationStatus)
         {
             if (context.User.Identity.IsAuthenticated)
@@ -67,5 +75,7 @@ namespace StrixIT.Platform.Modules.Cms
                 validationStatus = HttpValidationStatus.IgnoreThisRequest;
             }
         }
+
+        #endregion Private Methods
     }
 }

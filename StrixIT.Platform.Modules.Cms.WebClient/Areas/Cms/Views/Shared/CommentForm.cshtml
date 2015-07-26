@@ -70,7 +70,6 @@
     <div class="cms-comment-data" ng-show="!loading">
         <ul class="cms-comment-list">
             <li ng-repeat="comment in getScopeComments()" ng-include="'commenttemplate'">
-
             </li>
         </ul>
         @if (Request.IsAuthenticated)

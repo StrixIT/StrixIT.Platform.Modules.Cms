@@ -4,50 +4,39 @@
 //// </auto-generated>
 ////------------------------------------------------------------------------------
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public class EntityServiceMock<TModel> where TModel : EntityViewModel
     {
-        private IEntityService<TModel> _service;
-        private EntityManagerMock _entityManagerMock = new EntityManagerMock();
-        private TaxonomyManagerMock _taxonomyManagerMock = new TaxonomyManagerMock();
-        private DataSourceMock _dataSourceMock = new DataSourceMock();
+        #region Private Fields
+
         private Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
+        private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private EntityManagerMock _entityManagerMock = new EntityManagerMock();
+        private IEntityService<TModel> _service;
+        private TaxonomyManagerMock _taxonomyManagerMock = new TaxonomyManagerMock();
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EntityServiceMock()
         {
             _service = Activator.CreateInstance(typeof(EntityService<>).MakeGenericType(typeof(TModel)), _dataSourceMock.Mock.Object, _entityManagerMock.EntityManager, _taxonomyManagerMock.TaxonomyManager, _cacheMock.Object) as IEntityService<TModel>;
         }
 
-        public IEntityService<TModel> EntityService
-        {
-            get
-            {
-                return _service;
-            }
-        }
+        #endregion Public Constructors
 
-        public EntityManagerMock EntityManagerMock
-        {
-            get
-            {
-                return _entityManagerMock;
-            }
-        }
+        #region Public Properties
 
-        public TaxonomyManagerMock TaxonomyManagerMock
+        public Mock<ICacheService> CacheMock
         {
             get
             {
-                return _taxonomyManagerMock;
+                return _cacheMock;
             }
         }
 
@@ -59,12 +48,30 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
-        public Mock<ICacheService> CacheMock
+        public EntityManagerMock EntityManagerMock
         {
             get
             {
-                return _cacheMock;
+                return _entityManagerMock;
             }
         }
+
+        public IEntityService<TModel> EntityService
+        {
+            get
+            {
+                return _service;
+            }
+        }
+
+        public TaxonomyManagerMock TaxonomyManagerMock
+        {
+            get
+            {
+                return _taxonomyManagerMock;
+            }
+        }
+
+        #endregion Public Properties
     }
 }

@@ -9,7 +9,6 @@
  */
 
 (function() {
-
 	tinymce.create('tinymce.plugins.ExampleDependencyPlugin', {
 		/**
 		 * Initializes the plugin, this will be executed after the plugin has been created.
@@ -21,7 +20,6 @@
 		 */
 		init : function(ed, url) {
 		},
-
 
 		/**
 		 * Returns information about the plugin as a name/value array.

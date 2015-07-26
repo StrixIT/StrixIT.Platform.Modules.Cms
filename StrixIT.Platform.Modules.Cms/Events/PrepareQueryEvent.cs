@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PrepareQueryEvent.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.Linq;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,15 +30,19 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class PrepareQueryEvent : IPlatformEvent
     {
+        #region Public Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrepareQueryEvent" /> class.
+        /// Initializes a new instance of the <see cref="PrepareQueryEvent"/> class.
         /// </summary>
         /// <param name="query">The current query</param>
         /// <param name="filter">The current filter options</param>
-        public PrepareQueryEvent(IQueryable query, FilterOptions filter) : this(query, filter, true) { }
+        public PrepareQueryEvent(IQueryable query, FilterOptions filter) : this(query, filter, true)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrepareQueryEvent" /> class.
+        /// Initializes a new instance of the <see cref="PrepareQueryEvent"/> class.
         /// </summary>
         /// <param name="query">The current query</param>
         /// <param name="filter">The current filter options</param>
@@ -48,10 +54,9 @@ namespace StrixIT.Platform.Modules.Cms
             this.Page = page;
         }
 
-        /// <summary>
-        /// Gets or sets the query.
-        /// </summary>
-        public IQueryable Query { get; set; }
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
         /// Gets the filter options.
@@ -62,5 +67,12 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets a value indicating whether the query is to be paged.
         /// </summary>
         public bool Page { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the query.
+        /// </summary>
+        public IQueryable Query { get; set; }
+
+        #endregion Public Properties
     }
 }

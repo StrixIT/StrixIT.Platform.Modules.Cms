@@ -121,7 +121,6 @@
 
                             tinyMCE.execCommand('mceRemoveEditor', false, editorElement.id);
                             tinyMCE.execCommand('mceAddEditor', false, editorElement.id);
-
                         }
                     }, 50);
                 }

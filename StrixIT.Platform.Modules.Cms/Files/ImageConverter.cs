@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ImageConverter.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,21 +17,24 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StructureMap;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Web;
-using StructureMap;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class ImageConverter : IImageConverter
     {
+        #region Public Methods
+
         public string GetThumbPath(string path, int width, int height)
         {
             var physicalPath = StrixPlatform.Environment.MapPath(path);
@@ -49,6 +53,33 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return thumbPath;
+        }
+
+        public string ImageAsBase64(string path, int width, int height, bool keepAspectRatio = true)
+        {
+            if (!IsImage(path))
+            {
+                return null;
+            }
+
+            var fullPath = StrixPlatform.Environment.MapPath(path);
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return null;
+            }
+
+            var thumbDirectory = this.GetThumbDirectory();
+
+            byte[] image = this.GetImage(fullPath, thumbDirectory, width, height, keepAspectRatio);
+
+            if (image == null || image.Count() == 0)
+            {
+                Logger.Log(string.Format("The image {0} could not be found.", fullPath));
+                return null;
+            }
+
+            return string.Format("data:image/{0};base64,{1}", Path.GetExtension(path), Convert.ToBase64String(image));
         }
 
         public string ImageAsPath(string path, int width, int height, bool keepAspectRatio = true)
@@ -84,33 +115,6 @@ namespace StrixIT.Platform.Modules.Cms
             return virtualPath;
         }
 
-        public string ImageAsBase64(string path, int width, int height, bool keepAspectRatio = true)
-        {
-            if (!IsImage(path))
-            {
-                return null;
-            }
-
-            var fullPath = StrixPlatform.Environment.MapPath(path);
-
-            if (!System.IO.File.Exists(fullPath))
-            {
-                return null;
-            }
-
-            var thumbDirectory = this.GetThumbDirectory();
-
-            byte[] image = this.GetImage(fullPath, thumbDirectory, width, height, keepAspectRatio);
-
-            if (image == null || image.Count() == 0)
-            {
-                Logger.Log(string.Format("The image {0} could not be found.", fullPath));
-                return null;
-            }
-
-            return string.Format("data:image/{0};base64,{1}", Path.GetExtension(path), Convert.ToBase64String(image));
-        }
-
         public byte[] Resize(string path, int width, int height, bool overwrite = false, bool keepAspectRatio = true)
         {
             if (path == null)
@@ -121,6 +125,110 @@ namespace StrixIT.Platform.Modules.Cms
             var directory = this.GetSecureDirectory(StrixPlatform.Environment.MapPath(Path.GetDirectoryName(path)));
             string fullPath = Path.Combine(directory, Path.GetFileName(path));
             return Resize(System.IO.File.ReadAllBytes(fullPath), new Size(width, height), fullPath, overwrite, keepAspectRatio);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static byte[] CreateThumb(string fullPath, string thumbPath, int width, int height, bool keepAspectRatio = true)
+        {
+            byte[] image = null;
+            byte[] data = System.IO.File.ReadAllBytes(fullPath);
+
+            try
+            {
+                image = Resize(data, new Size(width, height), thumbPath, false, keepAspectRatio);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(string.Format("An error occurred while trying to resize image {0}.", fullPath), ex, LogLevel.Error);
+                throw;
+            }
+
+            return image;
+        }
+
+        private static ImageFormat GetFormat(string extension)
+        {
+            ImageFormat format;
+            switch (extension.ToLower())
+            {
+                case "bmp":
+                    {
+                        format = ImageFormat.Bmp;
+                    }
+
+                    break;
+
+                case "emf":
+                    {
+                        format = ImageFormat.Emf;
+                    }
+
+                    break;
+
+                case "exif":
+                    {
+                        format = ImageFormat.Exif;
+                    }
+
+                    break;
+
+                case "gif":
+                    {
+                        format = ImageFormat.Gif;
+                    }
+
+                    break;
+
+                case "ico":
+                case "icon":
+                    {
+                        format = ImageFormat.Icon;
+                    }
+
+                    break;
+
+                case "jpg":
+                case "jpeg":
+                    {
+                        format = ImageFormat.Jpeg;
+                    }
+
+                    break;
+
+                case "png":
+                    {
+                        format = ImageFormat.Png;
+                    }
+
+                    break;
+
+                case "tif":
+                case "tiff":
+                    {
+                        format = ImageFormat.Tiff;
+                    }
+
+                    break;
+
+                case "wmf":
+                    {
+                        format = ImageFormat.Wmf;
+                    }
+
+                    break;
+
+                default:
+                    {
+                        format = ImageFormat.Jpeg;
+                    }
+
+                    break;
+            }
+
+            return format;
         }
 
         private static bool IsImage(string extension)
@@ -209,98 +317,6 @@ namespace StrixIT.Platform.Modules.Cms
             return data;
         }
 
-        private static ImageFormat GetFormat(string extension)
-        {
-            ImageFormat format;
-            switch (extension.ToLower())
-            {
-                case "bmp":
-                    {
-                        format = ImageFormat.Bmp;
-                    }
-
-                    break;
-                case "emf":
-                    {
-                        format = ImageFormat.Emf;
-                    }
-
-                    break;
-                case "exif":
-                    {
-                        format = ImageFormat.Exif;
-                    }
-
-                    break;
-                case "gif":
-                    {
-                        format = ImageFormat.Gif;
-                    }
-
-                    break;
-                case "ico":
-                case "icon":
-                    {
-                        format = ImageFormat.Icon;
-                    }
-
-                    break;
-                case "jpg":
-                case "jpeg":
-                    {
-                        format = ImageFormat.Jpeg;
-                    }
-
-                    break;
-
-                case "png":
-                    {
-                        format = ImageFormat.Png;
-                    }
-
-                    break;
-                case "tif":
-                case "tiff":
-                    {
-                        format = ImageFormat.Tiff;
-                    }
-
-                    break;
-                case "wmf":
-                    {
-                        format = ImageFormat.Wmf;
-                    }
-
-                    break;
-                default:
-                    {
-                        format = ImageFormat.Jpeg;
-                    }
-
-                    break;
-            }
-
-            return format;
-        }
-
-        private static byte[] CreateThumb(string fullPath, string thumbPath, int width, int height, bool keepAspectRatio = true)
-        {
-            byte[] image = null;
-            byte[] data = System.IO.File.ReadAllBytes(fullPath);
-
-            try
-            {
-                image = Resize(data, new Size(width, height), thumbPath, false, keepAspectRatio);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(string.Format("An error occurred while trying to resize image {0}.", fullPath), ex, LogLevel.Error);
-                throw;
-            }
-
-            return image;
-        }
-
         private byte[] GetImage(string fullPath, string thumbDirectory, int width, int height, bool keepAspectRatio = true)
         {
             var thumbPath = this.GetThumbPath(fullPath, thumbDirectory, width, height);
@@ -317,6 +333,37 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return image;
+        }
+
+        private string GetSecureDirectory(string directory)
+        {
+            if (StrixCms.Config.Files.SecureFiles && !directory.ToLower().Contains(string.Format("\\{0}", CmsConstants.SECURE).ToLower()))
+            {
+                directory = directory + string.Format("\\{0}", CmsConstants.SECURE);
+            }
+
+            if (!StrixPlatform.User.IsInMainGroup)
+            {
+                directory = directory + "\\" + StrixPlatform.User.GroupName;
+            }
+
+            return directory;
+        }
+
+        private string GetThumbDirectory()
+        {
+            string thumbDirectory;
+
+            if (HttpContext.Current != null)
+            {
+                thumbDirectory = StrixCms.Config.Files.ThumbDirectory;
+            }
+            else
+            {
+                thumbDirectory = Path.Combine(StrixPlatform.Environment.WorkingDirectory, StrixCms.Config.Files.ThumbDirectory).Replace("/", "\\");
+            }
+
+            return this.GetSecureDirectory(thumbDirectory);
         }
 
         private string GetThumbPath(string fullPath, string thumbDirectory, int width, int height)
@@ -338,35 +385,6 @@ namespace StrixIT.Platform.Modules.Cms
             return string.Format("{0}\\{1}_{2}_{3}.{4}", thumbPhysicalPath, pathWithoutExtension, width, height, extension).Replace("..", ".");
         }
 
-        private string GetThumbDirectory()
-        {
-            string thumbDirectory;
-
-            if (HttpContext.Current != null)
-            {
-                thumbDirectory = StrixCms.Config.Files.ThumbDirectory;
-            }
-            else
-            {
-                thumbDirectory = Path.Combine(StrixPlatform.Environment.WorkingDirectory, StrixCms.Config.Files.ThumbDirectory).Replace("/", "\\");
-            }
-
-            return this.GetSecureDirectory(thumbDirectory);
-        }
-
-        private string GetSecureDirectory(string directory)
-        {
-            if (StrixCms.Config.Files.SecureFiles && !directory.ToLower().Contains(string.Format("\\{0}", CmsConstants.SECURE).ToLower()))
-            {
-                directory = directory + string.Format("\\{0}", CmsConstants.SECURE);
-            }
-
-            if (!StrixPlatform.User.IsInMainGroup)
-            {
-                directory = directory + "\\" + StrixPlatform.User.GroupName;
-            }
-
-            return directory;
-        }
+        #endregion Private Methods
     }
 }

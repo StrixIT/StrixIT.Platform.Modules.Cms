@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="StrixCms.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -30,8 +31,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public static class StrixCms
     {
+        #region Private Fields
+
         private static CmsConfiguration _cmsConfig;
         private static IPlatformHelper _helper;
+
+        #endregion Private Fields
+
+        #region Public Properties
 
         /// <summary>
         /// Gets the tools configuration section.
@@ -60,6 +67,10 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
+        #endregion Public Properties
+
+        #region Private Properties
+
         private static IPlatformHelper Helper
         {
             get
@@ -73,14 +84,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        /// <summary>
-        /// Set the platform helper to use.
-        /// </summary>
-        /// <param name="helper">The helper</param>
-        public static void SetHelper(IPlatformHelper helper)
-        {
-            _helper = helper;
-        }
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a service to the platform, along with a list of actions it supports.
@@ -93,23 +99,19 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Gets the name of the user with the specified id.
+        /// Clears the cached group name dictionary.
         /// </summary>
-        /// <param name="id">The user id</param>
-        /// <returns>The user name</returns>
-        public static string GetUserName(Guid id)
+        public static void ClearGroupNameDictionary()
         {
-            return Helper.GetUserName(id);
+            Helper.ClearGroupNameDictionary();
         }
 
         /// <summary>
-        /// Gets the email of the user with the specified id.
+        /// Clears the cached user name dictionary.
         /// </summary>
-        /// <param name="id">The user id</param>
-        /// <returns>The user email</returns>
-        public static string GetUserEmail(Guid id)
+        public static void ClearUserNameDictionary()
         {
-            return Helper.GetUserEmail(id);
+            Helper.ClearUserNameDictionary();
         }
 
         /// <summary>
@@ -123,19 +125,34 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Clears the cached user name dictionary.
+        /// Gets the email of the user with the specified id.
         /// </summary>
-        public static void ClearUserNameDictionary()
+        /// <param name="id">The user id</param>
+        /// <returns>The user email</returns>
+        public static string GetUserEmail(Guid id)
         {
-            Helper.ClearUserNameDictionary();
+            return Helper.GetUserEmail(id);
         }
 
         /// <summary>
-        /// Clears the cached group name dictionary.
+        /// Gets the name of the user with the specified id.
         /// </summary>
-        public static void ClearGroupNameDictionary()
+        /// <param name="id">The user id</param>
+        /// <returns>The user name</returns>
+        public static string GetUserName(Guid id)
         {
-            Helper.ClearGroupNameDictionary();
+            return Helper.GetUserName(id);
         }
+
+        /// <summary>
+        /// Set the platform helper to use.
+        /// </summary>
+        /// <param name="helper">The helper</param>
+        public static void SetHelper(IPlatformHelper helper)
+        {
+            _helper = helper;
+        }
+
+        #endregion Public Methods
     }
 }

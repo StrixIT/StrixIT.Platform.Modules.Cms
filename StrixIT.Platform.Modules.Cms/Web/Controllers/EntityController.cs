@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,14 +17,14 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
+using System;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -34,10 +35,16 @@ namespace StrixIT.Platform.Modules.Cms
     [StrixAuthorization(Roles = CmsRoleNames.EDITORROLES)]
     public abstract class EntityController<TModel> : BaseCrudController<Guid, TModel> where TModel : EntityViewModel, new()
     {
+        #region Private Fields
+
         private ICommentService _commentService;
 
+        #endregion Private Fields
+
+        #region Protected Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityController{TModel}" /> class.
+        /// Initializes a new instance of the <see cref="EntityController{TModel}"/> class.
         /// </summary>
         /// <param name="entityService">The entity service to use</param>
         /// <param name="commentService">The comment service to use</param>
@@ -46,6 +53,10 @@ namespace StrixIT.Platform.Modules.Cms
         {
             this._commentService = commentService;
         }
+
+        #endregion Protected Constructors
+
+        #region Protected Properties
 
         /// <summary>
         /// Gets the entity service used.
@@ -58,6 +69,87 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
+        #endregion Protected Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Checks whether an entity with the specified name and id other than the entity itself
+        /// already exists.
+        /// </summary>
+        /// <param name="value">The name value</param>
+        /// <param name="id">The entity id</param>
+        /// <returns>True if no other entity with this id and name exists, false otherwise</returns>
+        [HttpPost]
+        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
+        public override JsonResult CheckName(string value, Guid? id)
+        {
+            return base.CheckName(value, id);
+        }
+
+        /// <summary>
+        /// Gets the entity edit view.
+        /// </summary>
+        /// <returns>The edit view</returns>
+        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
+        public override ActionResult Edit()
+        {
+            return base.Edit();
+        }
+
+        /// <summary>
+        /// Edits an entity.
+        /// </summary>
+        /// <param name="model">The entity view model</param>
+        /// <returns>The edit result as Json</returns>
+        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
+        public override JsonResult Edit(TModel model)
+        {
+            return base.Edit(model);
+        }
+
+        /// <summary>
+        /// Gets an entity as json.
+        /// </summary>
+        /// <param name="id">The id of the entity to get</param>
+        /// <returns>The entity</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public override ActionResult Get(string id)
+        {
+            if (!this.CheckIsAccessAllowed())
+            {
+                return new HttpStatusCodeResult(401);
+            }
+
+            return this.Json(this.GetModel(id, null, null, true));
+        }
+
+        /// <summary>
+        /// Gets content asynchronously.
+        /// </summary>
+        /// <param name="entityId">The content entity id</param>
+        /// <param name="culture">The content culture</param>
+        /// <param name="versionNumber">The content version number</param>
+        /// <returns>The content as Json</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public virtual ActionResult GetEntity(string entityId, string culture, int? versionNumber)
+        {
+            if (string.IsNullOrWhiteSpace(entityId))
+            {
+                return null;
+            }
+
+            if (!this.CheckIsAccessAllowed())
+            {
+                return new HttpStatusCodeResult(401);
+            }
+
+            var model = this.GetModel(entityId, culture, versionNumber);
+            return this.Json(model);
+        }
+
         /// <summary>
         /// Gets the index view, which displays a list of entities.
         /// </summary>
@@ -67,6 +159,8 @@ namespace StrixIT.Platform.Modules.Cms
             var config = new EntityListConfiguration<TModel>(StrixPlatform.User);
             return this.View(config);
         }
+
+        #endregion Public Methods
 
         #region Content
 
@@ -103,18 +197,6 @@ namespace StrixIT.Platform.Modules.Cms
         }
 
         /// <summary>
-        /// Displays the tags for an entity as a partial.
-        /// </summary>
-        /// <param name="url">The url of the content to display the tags for</param>
-        /// <returns>The tags partial</returns>
-        [ChildActionOnly]
-        [AllowAnonymous]
-        public virtual ActionResult DisplayTags(string url)
-        {
-            return this.DisplayWidget(EntityServiceActions.AllowFixedTagging, url, "Tags", x => this.Service.GetTags(x));
-        }
-
-        /// <summary>
         /// Displays the comments for an entity as a partial.
         /// </summary>
         /// <param name="url">The url of the content to display the comments for</param>
@@ -126,71 +208,30 @@ namespace StrixIT.Platform.Modules.Cms
             return this.DisplayWidget(EntityServiceActions.AllowComments, url, "CommentForm", x => x);
         }
 
-        #endregion
-
         /// <summary>
-        /// Checks whether an entity with the specified name and id other than the entity itself already exists.
+        /// Displays the tags for an entity as a partial.
         /// </summary>
-        /// <param name="value">The name value</param>
-        /// <param name="id">The entity id</param>
-        /// <returns>True if no other entity with this id and name exists, false otherwise</returns>
-        [HttpPost]
-        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
-        public override JsonResult CheckName(string value, Guid? id)
+        /// <param name="url">The url of the content to display the tags for</param>
+        /// <returns>The tags partial</returns>
+        [ChildActionOnly]
+        [AllowAnonymous]
+        public virtual ActionResult DisplayTags(string url)
         {
-            return base.CheckName(value, id);
+            return this.DisplayWidget(EntityServiceActions.AllowFixedTagging, url, "Tags", x => this.Service.GetTags(x));
         }
 
-        /// <summary>
-        /// Gets an entity as json.
-        /// </summary>
-        /// <param name="id">The id of the entity to get</param>
-        /// <returns>The entity</returns>
-        [HttpPost]
+        #endregion Content
+
         [AllowAnonymous]
-        public override ActionResult Get(string id)
+        public ActionResult Item(string url)
         {
             if (!this.CheckIsAccessAllowed())
             {
                 return new HttpStatusCodeResult(401);
             }
 
-            return this.Json(this.GetModel(id, null, null, true));
-        }
-
-        /// <summary>
-        /// Gets the entity edit view.
-        /// </summary>
-        /// <returns>The edit view</returns>
-        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
-        public override ActionResult Edit()
-        {
-            return base.Edit();
-        }
-
-        /// <summary>
-        /// Gets content asynchronously.
-        /// </summary>
-        /// <param name="entityId">The content entity id</param>
-        /// <param name="culture">The content culture</param>
-        /// <param name="versionNumber">The content version number</param>
-        /// <returns>The content as Json</returns>
-        [HttpPost]
-        [AllowAnonymous]
-        public virtual ActionResult GetEntity(string entityId, string culture, int? versionNumber)
-        {
-            if (string.IsNullOrWhiteSpace(entityId))
-            {
-                return null;
-            }
-
-            if (!this.CheckIsAccessAllowed())
-            {
-                return new HttpStatusCodeResult(401);
-            }
-
-            var model = this.GetModel(entityId, culture, versionNumber);
-            return this.Json(model);
+            var model = this.Service.GetCached(url);
+            return this.View(model);
         }
 
         /// <summary>
@@ -208,29 +249,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return base.List(options);
-        }
-
-        /// <summary>
-        /// Edits an entity.
-        /// </summary>
-        /// <param name="model">The entity view model</param>
-        /// <returns>The edit result as Json</returns>
-        [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
-        public override JsonResult Edit(TModel model)
-        {
-            return base.Edit(model);
-        }
-
-        [AllowAnonymous]
-        public ActionResult Item(string url)
-        {
-            if (!this.CheckIsAccessAllowed())
-            {
-                return new HttpStatusCodeResult(401);
-            }
-
-            var model = this.Service.GetCached(url);
-            return this.View(model);
         }
 
         #region Versions
@@ -260,7 +278,7 @@ namespace StrixIT.Platform.Modules.Cms
             return this.Json(model);
         }
 
-        #endregion
+        #endregion Versions
 
         #region protected Methods
 
@@ -275,8 +293,8 @@ namespace StrixIT.Platform.Modules.Cms
 
             var map = EntityHelper.GetObjectMap(typeof(TModel));
 
-            // Todo: use injected request and response
-            // If anonymous access is not enabled for this entity type, return 401.
+            // Todo: use injected request and response If anonymous access is not enabled for this
+            // entity type, return 401.
             if (!Request.IsAuthenticated && !EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.AllowAnonymousAccess))
             {
                 result = false;
@@ -335,38 +353,9 @@ namespace StrixIT.Platform.Modules.Cms
             return model;
         }
 
-        #endregion
+        #endregion protected Methods
 
         #region Private Methods
-
-        private void UpdateContentLocator()
-        {
-            ViewBag.ModelType = typeof(TModel);
-            var locator = PageRegistration.ContentLocators.FirstOrDefault(l => l.ContentTypeName == null);
-
-            if (locator != null)
-            {
-                var map = EntityHelper.GetObjectMap(typeof(TModel));
-                locator.ContentTypeName = map.ContentType.FullName;
-            }
-        }
-
-        private string GetContentUrl(string url)
-        {
-            var childUrl = (string)HttpContext.Items[CmsConstants.CHILDURL];
-            var itemUrl = (string)HttpContext.Items[CmsConstants.ITEMURL];
-
-            if (!string.IsNullOrWhiteSpace(childUrl))
-            {
-                url = string.Format("{0}/{1}", url, childUrl);
-            }
-            else if (!string.IsNullOrWhiteSpace(itemUrl))
-            {
-                url = itemUrl;
-            }
-
-            return url;
-        }
 
         private ActionResult DisplayWidget(string serviceName, string url, string view, Func<Guid, object> modelFunc)
         {
@@ -387,6 +376,35 @@ namespace StrixIT.Platform.Modules.Cms
             return null;
         }
 
-        #endregion
+        private string GetContentUrl(string url)
+        {
+            var childUrl = (string)HttpContext.Items[CmsConstants.CHILDURL];
+            var itemUrl = (string)HttpContext.Items[CmsConstants.ITEMURL];
+
+            if (!string.IsNullOrWhiteSpace(childUrl))
+            {
+                url = string.Format("{0}/{1}", url, childUrl);
+            }
+            else if (!string.IsNullOrWhiteSpace(itemUrl))
+            {
+                url = itemUrl;
+            }
+
+            return url;
+        }
+
+        private void UpdateContentLocator()
+        {
+            ViewBag.ModelType = typeof(TModel);
+            var locator = PageRegistration.ContentLocators.FirstOrDefault(l => l.ContentTypeName == null);
+
+            if (locator != null)
+            {
+                var map = EntityHelper.GetObjectMap(typeof(TModel));
+                locator.ContentTypeName = map.ContentType.FullName;
+            }
+        }
+
+        #endregion Private Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IFileManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,12 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IFileManager
     {
-        /// <summary>
-        /// Gets a value indicating whether uploading the file name supplied is allowed.
-        /// </summary>
-        /// <param name="name">The name of the file to check</param>
-        /// <returns>True if the file is valid for uploading, false otherwise</returns>
-        bool IsFileAllowed(string name);
+        #region Public Methods
 
         /// <summary>
         /// Check whether a user can access a file.
@@ -44,12 +40,30 @@ namespace StrixIT.Platform.Modules.Cms
         bool CheckAccessFile(string url);
 
         /// <summary>
-        /// Gets a value indicating whether uploading the file name supplied is allowed.
+        /// Deletes a file.
         /// </summary>
-        /// <param name="name">The name of the file to check</param>
-        /// <param name="additionalAllowedExtensions">The additonally allowed extensions</param>
-        /// <returns>True if the file is valid for uploading, false otherwise</returns>
-        bool IsFileAllowed(string name, string[] additionalAllowedExtensions);
+        /// <param name="file">The file to delete</param>
+        void Delete(File file);
+
+        /// <summary>
+        /// Deletes a file by its id.
+        /// </summary>
+        /// <param name="fileId">The id of the file to delete</param>
+        void Delete(Guid fileId);
+
+        /// <summary>
+        /// Gets a file by its id.
+        /// </summary>
+        /// <param name="id">The id of the file to get</param>
+        /// <returns>The file</returns>
+        File Get(Guid id);
+
+        /// <summary>
+        /// Gets the document type based on an extension.
+        /// </summary>
+        /// <param name="extension">The extension</param>
+        /// <returns>The document type</returns>
+        DocumentType GetDocumentType(string extension);
 
         /// <summary>
         /// Gets the extensions for a document type (image, video, audio or document)
@@ -57,20 +71,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="type">The type to get the extensions for</param>
         /// <returns>The extensions</returns>
         string[] GetExtensions(string type);
-
-        /// <summary>
-        /// Checks whether the file extension to see whether the file is an image
-        /// </summary>
-        /// <param name="filePath">The file path to check</param>
-        /// <returns>True if the file is an image, false otherwise</returns>
-        bool IsImage(string filePath);
-
-        /// <summary>
-        /// Checks whether the file extension to see whether the file is a video
-        /// </summary>
-        /// <param name="filePath">The file path to check</param>
-        /// <returns>True if the file is a video, false otherwise</returns>
-        bool IsVideo(string filePath);
 
         /// <summary>
         /// Checks whether the file extension to see whether the file is an audio file
@@ -87,18 +87,33 @@ namespace StrixIT.Platform.Modules.Cms
         bool IsDocument(string filePath);
 
         /// <summary>
-        /// Gets the document type based on an extension.
+        /// Gets a value indicating whether uploading the file name supplied is allowed.
         /// </summary>
-        /// <param name="extension">The extension</param>
-        /// <returns>The document type</returns>
-        DocumentType GetDocumentType(string extension);
+        /// <param name="name">The name of the file to check</param>
+        /// <returns>True if the file is valid for uploading, false otherwise</returns>
+        bool IsFileAllowed(string name);
 
         /// <summary>
-        /// Gets a file by its id.
+        /// Gets a value indicating whether uploading the file name supplied is allowed.
         /// </summary>
-        /// <param name="id">The id of the file to get</param>
-        /// <returns>The file</returns>
-        File Get(Guid id);
+        /// <param name="name">The name of the file to check</param>
+        /// <param name="additionalAllowedExtensions">The additonally allowed extensions</param>
+        /// <returns>True if the file is valid for uploading, false otherwise</returns>
+        bool IsFileAllowed(string name, string[] additionalAllowedExtensions);
+
+        /// <summary>
+        /// Checks whether the file extension to see whether the file is an image
+        /// </summary>
+        /// <param name="filePath">The file path to check</param>
+        /// <returns>True if the file is an image, false otherwise</returns>
+        bool IsImage(string filePath);
+
+        /// <summary>
+        /// Checks whether the file extension to see whether the file is a video
+        /// </summary>
+        /// <param name="filePath">The file path to check</param>
+        /// <returns>True if the file is a video, false otherwise</returns>
+        bool IsVideo(string filePath);
 
         /// <summary>
         /// Saves a file.
@@ -114,16 +129,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>A list of new File entities for the uploaded files</returns>
         IList<File> SaveMany(SaveFileArguments arguments);
 
-        /// <summary>
-        /// Deletes a file.
-        /// </summary>
-        /// <param name="file">The file to delete</param>
-        void Delete(File file);
-
-        /// <summary>
-        /// Deletes a file by its id.
-        /// </summary>
-        /// <param name="fileId">The id of the file to delete</param>
-        void Delete(Guid fileId);
+        #endregion Public Methods
     }
 }

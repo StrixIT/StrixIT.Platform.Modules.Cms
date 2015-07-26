@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="GetContentHandler.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,18 +17,21 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StrixIT.Platform.Web;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using StrixIT.Platform.Core;
-using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class GetContentHandler : IHandlePlatformEvent<GetContentEvent>
     {
+        #region Public Methods
+
         public void Handle(GetContentEvent args)
         {
             var locator = PageRegistration.RegisterUrl(args.Helper, args.Options);
@@ -44,24 +48,9 @@ namespace StrixIT.Platform.Modules.Cms
             args.Result = args.Helper.Action(args.Options.Action, args.Options.Controller, htmlAttributes);
         }
 
-        private void SetBasicItems(HtmlHelper helper, DisplayOptions options)
-        {
-            helper.ViewContext.HttpContext.Items[CmsConstants.MODULE] = null;
-            helper.ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL] = null;
-            helper.ViewContext.HttpContext.Items[CmsConstants.DISPLAYTYPE] = null;
-            helper.ViewContext.HttpContext.Items[CmsConstants.ITEMURL] = null;
-            helper.ViewContext.HttpContext.Items[CmsConstants.CHILDURL] = null;
+        #endregion Public Methods
 
-            if (!string.IsNullOrWhiteSpace(options.Module) && helper.ViewContext.RouteData.Values[MvcConstants.AREA] == null)
-            {
-                helper.ViewContext.HttpContext.Items[CmsConstants.MODULE] = options.Module;
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.ItemPageUrl))
-            {
-                helper.ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL] = options.ItemPageUrl;
-            }
-        }
+        #region Private Methods
 
         private ContentLocator GetLocator(string contentTypeName, string controller, string url)
         {
@@ -107,5 +96,26 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
         }
+
+        private void SetBasicItems(HtmlHelper helper, DisplayOptions options)
+        {
+            helper.ViewContext.HttpContext.Items[CmsConstants.MODULE] = null;
+            helper.ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL] = null;
+            helper.ViewContext.HttpContext.Items[CmsConstants.DISPLAYTYPE] = null;
+            helper.ViewContext.HttpContext.Items[CmsConstants.ITEMURL] = null;
+            helper.ViewContext.HttpContext.Items[CmsConstants.CHILDURL] = null;
+
+            if (!string.IsNullOrWhiteSpace(options.Module) && helper.ViewContext.RouteData.Values[MvcConstants.AREA] == null)
+            {
+                helper.ViewContext.HttpContext.Items[CmsConstants.MODULE] = options.Module;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.ItemPageUrl))
+            {
+                helper.ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL] = options.ItemPageUrl;
+            }
+        }
+
+        #endregion Private Methods
     }
 }

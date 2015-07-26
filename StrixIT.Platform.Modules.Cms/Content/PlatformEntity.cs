@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PlatformEntity.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,12 +17,13 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -30,17 +32,23 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class PlatformEntity : ValidationBase
     {
-        /// <summary>
-        /// Gets or sets the entity id.
-        /// </summary>
-        public Guid Id { get; set; }
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the Url of the entity.
+        /// Gets or sets the entity's comments.
         /// </summary>
-        [StrixRequired]
-        [StringLength(300)]
-        public string Url { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+
+        /// <summary>
+        /// Gets or sets the groups that are allowed to access this entity, in addition to the
+        /// user's own group.
+        /// </summary>
+        public ICollection<ContentSharedWithGroup> ContentSharedWithGroups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the EntityType of the entity.
+        /// </summary>
+        public EntityType EntityType { get; set; }
 
         /// <summary>
         /// Gets or sets the EntityTypeId of the entity.
@@ -49,9 +57,9 @@ namespace StrixIT.Platform.Modules.Cms
         public Guid EntityTypeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the EntityType of the entity.
+        /// Gets or sets the group this entity belongs to.
         /// </summary>
-        public EntityType EntityType { get; set; }
+        public GroupData Group { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the group this entity belongs to.
@@ -60,9 +68,20 @@ namespace StrixIT.Platform.Modules.Cms
         public Guid GroupId { get; set; }
 
         /// <summary>
-        /// Gets or sets the group this entity belongs to.
+        /// Gets or sets the entity id.
         /// </summary>
-        public GroupData Group { get; set; }
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the owning user allows other users with the
+        /// proper rights to access this content.
+        /// </summary>
+        public bool IsPrivate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user who owns this entity.
+        /// </summary>
+        public UserData OwnerUser { get; set; }
 
         /// <summary>
         /// Gets or sets the Id of the user who owns this entity.
@@ -71,28 +90,17 @@ namespace StrixIT.Platform.Modules.Cms
         public Guid OwnerUserId { get; set; }
 
         /// <summary>
-        /// Gets or sets the user who owns this entity.
-        /// </summary>
-        public UserData OwnerUser { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the owning user allows other users with the proper rights to access this content.
-        /// </summary>
-        public bool IsPrivate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the groups that are allowed to access this entity, in addition to the user's own group.
-        /// </summary>
-        public ICollection<ContentSharedWithGroup> ContentSharedWithGroups { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity's comments.
-        /// </summary>
-        public ICollection<Comment> Comments { get; set; }
-
-        /// <summary>
         /// Gets or sets the entity's tags.
         /// </summary>
         public ICollection<Term> Tags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Url of the entity.
+        /// </summary>
+        [StrixRequired]
+        [StringLength(300)]
+        public string Url { get; set; }
+
+        #endregion Public Properties
     }
 }

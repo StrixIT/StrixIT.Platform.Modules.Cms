@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CommentListModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
-using StrixIT.Platform.Modules.Cms;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -29,15 +30,12 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class CommentListModel
     {
-        /// <summary>
-        /// Gets or sets the comment id.
-        /// </summary>
-        public long Id { get; set; }
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the key of the entity the comment is for.
+        /// Gets or sets the list of child comments of this comment.
         /// </summary>
-        public Guid EntityId { get; set; }
+        public IList<CommentViewModel> ChildComments { get; set; }
 
         /// <summary>
         /// Gets or sets the culture id of the entity the comment is for.
@@ -45,13 +43,20 @@ namespace StrixIT.Platform.Modules.Cms
         public string Culture { get; set; }
 
         /// <summary>
+        /// Gets or sets the key of the entity the comment is for.
+        /// </summary>
+        public Guid EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the comment id.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the current version number of the entity the comment is for.
         /// </summary>
         public int VersionNumber { get; set; }
 
-        /// <summary>
-        /// Gets or sets the list of child comments of this comment.
-        /// </summary>
-        public IList<CommentViewModel> ChildComments { get; set; }
+        #endregion Public Properties
     }
 }

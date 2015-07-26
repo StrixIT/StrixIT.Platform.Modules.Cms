@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IPlatformHelper.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
@@ -25,10 +27,16 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public interface IPlatformHelper
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets the dictionary of services and their action lists currently supported by the platform.
         /// </summary>
         IDictionary<string, IList<string>> Services { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a service to the platform, along with a list of actions it supports.
@@ -38,18 +46,14 @@ namespace StrixIT.Platform.Modules.Cms
         void AddService(string name, IList<string> actions);
 
         /// <summary>
-        /// Gets the name of the user with the specified id.
+        /// Clears the cached group name dictionary.
         /// </summary>
-        /// <param name="id">The user id</param>
-        /// <returns>The user name</returns>
-        string GetUserName(Guid id);
+        void ClearGroupNameDictionary();
 
         /// <summary>
-        /// Gets the email of the user with the specified id.
+        /// Clears the cached user name dictionary.
         /// </summary>
-        /// <param name="id">The user id</param>
-        /// <returns>The user email</returns>
-        string GetUserEmail(Guid id);
+        void ClearUserNameDictionary();
 
         /// <summary>
         /// Gets the name of the group with the specified id.
@@ -59,13 +63,19 @@ namespace StrixIT.Platform.Modules.Cms
         string GetGroupName(Guid id);
 
         /// <summary>
-        /// Clears the cached user name dictionary.
+        /// Gets the email of the user with the specified id.
         /// </summary>
-        void ClearUserNameDictionary();
+        /// <param name="id">The user id</param>
+        /// <returns>The user email</returns>
+        string GetUserEmail(Guid id);
 
         /// <summary>
-        /// Clears the cached group name dictionary.
+        /// Gets the name of the user with the specified id.
         /// </summary>
-        void ClearGroupNameDictionary();
+        /// <param name="id">The user id</param>
+        /// <returns>The user name</returns>
+        string GetUserName(Guid id);
+
+        #endregion Public Methods
     }
 }

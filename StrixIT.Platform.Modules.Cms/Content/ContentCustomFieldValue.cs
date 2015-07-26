@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ContentCustomFieldValue.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,10 +30,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class ContentCustomFieldValue : CustomFieldValue<EntityCustomField>
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the id of the content this value belongs to.
         /// </summary>
         [StrixRequired]
         public Guid ContentId { get; set; }
+
+        #endregion Public Properties
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="DefaultEntityHelper.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,25 +17,31 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
+using StructureMap;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using StructureMap;
-using StrixIT.Platform.Core;
-using AutoMapper;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class DefaultEntityHelper : IEntityHelper
     {
+        #region Private Fields
+
+        private static ConcurrentBag<EntityType> _entityTypeList;
         private static bool _isInitialized = false;
         private static object _lockObject = new object();
-        private static ConcurrentBag<EntityType> _entityTypeList;
         private static ConcurrentBag<ObjectMap> _objectMaps = new ConcurrentBag<ObjectMap>();
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         [DefaultConstructor]
         public DefaultEntityHelper() : this(null) { }
@@ -52,6 +59,10 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         public IList<EntityType> EntityTypes
         {
             get
@@ -60,17 +71,9 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        public bool IsServiceActive(Type entityType, string action)
-        {
-            if (!typeof(IContent).IsAssignableFrom(entityType))
-            {
-                return false;
-            }
+        #endregion Public Properties
 
-            entityType = GetNonProxyType(entityType);
-            var type = this.EntityTypes.FirstOrDefault(t => t.Name == entityType.FullName);
-            return type.EntityTypeServiceActions != null && type.EntityTypeServiceActions.Any(a => a.GroupId == StrixPlatform.User.GroupId && a.Action.ToLower() == action.ToLower());
-        }
+        #region Public Methods
 
         public void ActivateServices(Type entityType, IEnumerable<string> actions)
         {
@@ -124,18 +127,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        public Guid GetEntityTypeId(Type entityType)
-        {
-            var type = this.EntityTypes.FirstOrDefault(t => t.Name == entityType.FullName);
-
-            if (type == null)
-            {
-                throw new ArgumentException(string.Format("No entity type found for type {0}", entityType.FullName));
-            }
-
-            return type.Id;
-        }
-
         public Type GetEntityType(Guid entityTypeId)
         {
             var type = this.EntityTypes.FirstOrDefault(t => t.Id == entityTypeId);
@@ -158,6 +149,28 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == type.Name);
+        }
+
+        public Guid GetEntityTypeId(Type entityType)
+        {
+            var type = this.EntityTypes.FirstOrDefault(t => t.Name == entityType.FullName);
+
+            if (type == null)
+            {
+                throw new ArgumentException(string.Format("No entity type found for type {0}", entityType.FullName));
+            }
+
+            return type.Id;
+        }
+
+        public string[] GetFileIdProperties(Type entityType)
+        {
+            return this.GetFileProperties(entityType, true);
+        }
+
+        public string[] GetFileProperties(Type entityType)
+        {
+            return this.GetFileProperties(entityType, false);
         }
 
         public ObjectMap GetObjectMap(Type entityType)
@@ -186,30 +199,45 @@ namespace StrixIT.Platform.Modules.Cms
             return map;
         }
 
-        public string[] GetFileProperties(Type entityType)
+        public bool IsServiceActive(Type entityType, string action)
         {
-            return this.GetFileProperties(entityType, false);
+            if (!typeof(IContent).IsAssignableFrom(entityType))
+            {
+                return false;
+            }
+
+            entityType = GetNonProxyType(entityType);
+            var type = this.EntityTypes.FirstOrDefault(t => t.Name == entityType.FullName);
+            return type.EntityTypeServiceActions != null && type.EntityTypeServiceActions.Any(a => a.GroupId == StrixPlatform.User.GroupId && a.Action.ToLower() == action.ToLower());
         }
 
-        public string[] GetFileIdProperties(Type entityType)
-        {
-            return this.GetFileProperties(entityType, true);
-        }
+        #endregion Public Methods
 
         #region Private Methods
 
-        private static void Init()
+        private static void CreateObjectMaps()
         {
-            lock (_lockObject)
-            {
-                if (_isInitialized)
-                {
-                    return;
-                }
+            var types = new List<Type>();
 
-                GetOrCreateEntityTypes();
-                CreateObjectMaps();
-                _isInitialized = true;
+            foreach (var assembly in ModuleManager.LoadedAssemblies)
+            {
+                types.AddRange(assembly.GetTypes().Where(ty => ty.IsClass
+                                                               && !ty.IsAbstract
+                                                               && !ty.IsGenericType
+                                                               && typeof(ValidationBase).IsAssignableFrom(ty)));
+            }
+
+            foreach (var type in types)
+            {
+                var viewModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "viewmodel")).FirstOrDefault();
+                var listModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "listmodel")).FirstOrDefault();
+                viewModelType = viewModelType != null ? viewModelType : listModelType;
+                listModelType = listModelType != null ? listModelType : viewModelType;
+
+                if (viewModelType != null || listModelType != null)
+                {
+                    _objectMaps.Add(new ObjectMap(type, viewModelType, listModelType));
+                }
             }
         }
 
@@ -270,29 +298,18 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
-        private static void CreateObjectMaps()
+        private static void Init()
         {
-            var types = new List<Type>();
-
-            foreach (var assembly in ModuleManager.LoadedAssemblies)
+            lock (_lockObject)
             {
-                types.AddRange(assembly.GetTypes().Where(ty => ty.IsClass
-                                                               && !ty.IsAbstract
-                                                               && !ty.IsGenericType
-                                                               && typeof(ValidationBase).IsAssignableFrom(ty)));
-            }
-
-            foreach (var type in types)
-            {
-                var viewModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "viewmodel")).FirstOrDefault();
-                var listModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "listmodel")).FirstOrDefault();
-                viewModelType = viewModelType != null ? viewModelType : listModelType;
-                listModelType = listModelType != null ? listModelType : viewModelType;
-
-                if (viewModelType != null || listModelType != null)
+                if (_isInitialized)
                 {
-                    _objectMaps.Add(new ObjectMap(type, viewModelType, listModelType));
+                    return;
                 }
+
+                GetOrCreateEntityTypes();
+                CreateObjectMaps();
+                _isInitialized = true;
             }
         }
 
@@ -314,6 +331,6 @@ namespace StrixIT.Platform.Modules.Cms
             return fileProperties.Union(nonDefaultFileProperties).Distinct().ToArray();
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

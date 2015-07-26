@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IEntityServiceManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
-using System.Collections.Generic;
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,6 +27,8 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IEntityServiceManager
     {
+        #region Public Methods
+
         /// <summary>
         /// Gets all entity service records for all entities.
         /// </summary>
@@ -40,5 +41,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="records">The entity service records modified</param>
         /// <returns>True if saving the changes was successful, false otherwise</returns>
         bool SaveActions(EntityServiceCollection records);
+
+        #endregion Public Methods
     }
 }

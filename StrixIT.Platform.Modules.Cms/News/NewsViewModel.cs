@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="NewsViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Web.Mvc;
@@ -28,11 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class NewsViewModel : EntityViewModel
     {
-        /// <summary>
-        /// Gets or sets the message summary.
-        /// </summary>
-        [AllowHtml]
-        public string Summary { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the message body.
@@ -44,5 +42,13 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets the expire time.
         /// </summary>
         public DateTime? ExpireTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message summary.
+        /// </summary>
+        [AllowHtml]
+        public string Summary { get; set; }
+
+        #endregion Public Properties
     }
 }

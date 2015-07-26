@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="VersionViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,10 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
-using StrixIT.Platform.Modules.Cms;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,20 +29,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class VersionViewModel
     {
-        /// <summary>
-        /// Gets or sets the id the version is for.
-        /// </summary>
-        public Guid EntityId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the version number.
-        /// </summary>
-        public int VersionNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the version is the current version.
-        /// </summary>
-        public bool IsCurrentVersion { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the name of the user who created this version.
@@ -54,8 +42,25 @@ namespace StrixIT.Platform.Modules.Cms
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
+        /// Gets or sets the id the version is for.
+        /// </summary>
+        public Guid EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the version is the current version.
+        /// </summary>
+        public bool IsCurrentVersion { get; set; }
+
+        /// <summary>
         /// Gets or sets the log text entered for the version.
         /// </summary>
         public string Log { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version number.
+        /// </summary>
+        public int VersionNumber { get; set; }
+
+        #endregion Public Properties
     }
 }

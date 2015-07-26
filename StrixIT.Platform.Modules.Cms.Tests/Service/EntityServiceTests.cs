@@ -5,25 +5,34 @@
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass]
     public class EntityServiceTests
     {
+        #region Private Fields
+
         private List<Mock> _mocks;
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         [ClassInitialize]
         public static void Init(TestContext context)
         {
             CmsInitializer.ConfigureEntityMaps();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Logger.LoggingService = null;
         }
 
         [TestInitialize]
@@ -38,11 +47,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Logger.LoggingService = new Mock<ILoggingService>().Object;
         }
 
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Logger.LoggingService = null;
-        }
+        #endregion Public Methods
 
         #region IsNameAvailable
 
@@ -54,19 +59,17 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.IsFalse(result);
         }
 
-        #endregion
+        #endregion IsNameAvailable
 
         #region Get
 
         [TestMethod]
-        public void GetNewShouldReturnProperlyFilledViewModel()
+        public void GetByIdWithCultureAndNonExistentVersionNumberShouldReturnEmptyViewModelWithEntityIdSet()
         {
             var mock = new EntityServiceMock<NewsViewModel>();
-            var model = mock.EntityService.Get(null);
+            var model = mock.EntityService.Get(EntityServicesTestData.FirstNewsEntityId, "en", 4);
             Assert.IsNotNull(model);
-            Assert.IsNotNull(model.Culture);
-            Assert.IsTrue(model.IsCurrentVersion);
-            Assert.AreNotEqual(0, model.VersionNumber);
+            Assert.AreEqual(EntityServicesTestData.FirstNewsEntityId, model.EntityId);
         }
 
         [TestMethod]
@@ -81,15 +84,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod]
-        public void GetByIdWithCultureAndNonExistentVersionNumberShouldReturnEmptyViewModelWithEntityIdSet()
-        {
-            var mock = new EntityServiceMock<NewsViewModel>();
-            var model = mock.EntityService.Get(EntityServicesTestData.FirstNewsEntityId, "en", 4);
-            Assert.IsNotNull(model);
-            Assert.AreEqual(EntityServicesTestData.FirstNewsEntityId, model.EntityId);
-        }
-
-        [TestMethod]
         public void GetByUrlWithCultureAndVersionNumberShouldReturnExistingEntity()
         {
             var mock = new EntityServiceMock<NewsViewModel>();
@@ -100,7 +94,18 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(2, model.VersionNumber);
         }
 
-        #endregion
+        [TestMethod]
+        public void GetNewShouldReturnProperlyFilledViewModel()
+        {
+            var mock = new EntityServiceMock<NewsViewModel>();
+            var model = mock.EntityService.Get(null);
+            Assert.IsNotNull(model);
+            Assert.IsNotNull(model.Culture);
+            Assert.IsTrue(model.IsCurrentVersion);
+            Assert.AreNotEqual(0, model.VersionNumber);
+        }
+
+        #endregion Get
 
         #region Cache
 
@@ -136,7 +141,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual("test", model.Url);
         }
 
-        #endregion
+        #endregion Cache
 
         #region List
 
@@ -149,9 +154,20 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(2, list.Length());
         }
 
-        #endregion
+        #endregion List
 
         #region Save
+
+        [TestMethod]
+        public void SaveExistingEntityShouldCorrectlySaveExistingEntity()
+        {
+            var mock = new EntityServiceMock<NewsViewModel>();
+            IContent news = null;
+            mock.EntityManagerMock.DataSourceMock.Mock.Setup(d => d.Save(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
+            var model = EntityServicesTestData.FirstNewsContentEn.Map<NewsViewModel>();
+            var result = mock.EntityService.Save(model);
+            Assert.IsTrue(result.Success);
+        }
 
         [TestMethod]
         public void SaveNewEntityShouldCorrectlyCreateNewEntity()
@@ -165,18 +181,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual("test", news.Entity.Url);
         }
 
-        [TestMethod]
-        public void SaveExistingEntityShouldCorrectlySaveExistingEntity()
-        {
-            var mock = new EntityServiceMock<NewsViewModel>();
-            IContent news = null;
-            mock.EntityManagerMock.DataSourceMock.Mock.Setup(d => d.Save(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
-            var model = EntityServicesTestData.FirstNewsContentEn.Map<NewsViewModel>();
-            var result = mock.EntityService.Save(model);
-            Assert.IsTrue(result.Success);
-        }
-
-        #endregion
+        #endregion Save
 
         #region Delete
 
@@ -196,7 +201,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             mock.EntityManagerMock.DataSourceMock.Mock.Verify(d => d.Delete<PlatformEntity>(It.IsAny<PlatformEntity>()), Times.Never());
         }
 
-        #endregion
+        #endregion Delete
 
         #region Versions
 
@@ -240,7 +245,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual("Test message", model.VersionLog);
         }
 
-        #endregion
+        #endregion Versions
 
         #region Update File Tags
 
@@ -313,7 +318,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(0, fileB.Tags.Count());
         }
 
-        #endregion
+        #endregion Update File Tags
 
         #region Private Methods
 
@@ -342,6 +347,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             return content.Map<V>();
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

@@ -47,7 +47,6 @@ function init() {
 		html += '</tr>';
 
 		document.getElementById('plugins_tab').style.display = '';
-
 	});
 
 	html += '</tbody>';

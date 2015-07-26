@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IObjectManager.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Linq;
@@ -28,6 +30,15 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IObjectManager
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Deletes the specified object from the data source.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to delete</typeparam>
+        /// <param name="entity">The object to delete</param>
+        void Delete<T>(T entity) where T : class;
+
         /// <summary>
         /// Gets an object by its id.
         /// </summary>
@@ -100,11 +111,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>A result to indicate whether the save was successful</returns>
         T Save<T>(T entity) where T : class;
 
-        /// <summary>
-        /// Deletes the specified object from the data source.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to delete</typeparam>
-        /// <param name="entity">The object to delete</param>
-        void Delete<T>(T entity) where T : class;
+        #endregion Public Methods
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="CmsRoleNames.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -25,6 +27,8 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public static class CmsRoleNames
     {
+        #region Public Fields
+
         /// <summary>
         /// All roles that have contributor rights.
         /// </summary>
@@ -39,5 +43,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// All roles that have user rights.
         /// </summary>
         public const string USERROLES = "Administrator, GroupAdministrator, Editor, Contributor, RegisteredUser";
+
+        #endregion Public Fields
     }
 }

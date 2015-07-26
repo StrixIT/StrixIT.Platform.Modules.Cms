@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="PageController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,23 +17,25 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System.IO;
-using System.Linq;
-using System.Web.Mvc;
-using StrixIT.Platform.Core;
+#endregion Apache License
+
 using StrixIT.Platform.Web;
+using System.IO;
+using System.Web.Mvc;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     /// <summary>
-    /// The controller for custom pages that have no controller themselves. This controller is used to allow users to add
-    /// views to the Cms Views folder without having a controller for them. They can just add a .cshtml file, and add widgets
-    /// to it using razor statements without the need to compile the application or use Visual Studio.
+    /// The controller for custom pages that have no controller themselves. This controller is used
+    /// to allow users to add views to the Cms Views folder without having a controller for them.
+    /// They can just add a .cshtml file, and add widgets to it using razor statements without the
+    /// need to compile the application or use Visual Studio.
     /// </summary>
     public class PageController : BaseController
     {
+        #region Public Methods
+
         /// <summary>
         /// Renders a custom page, if the url can be resolved. Otherwise, the 404 page is rendered.
         /// </summary>
@@ -67,5 +70,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return this.View("~/" + Web.Helpers.GetVirtualPath(viewPath));
         }
+
+        #endregion Public Methods
     }
 }

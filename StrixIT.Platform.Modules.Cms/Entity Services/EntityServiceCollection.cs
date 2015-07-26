@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityServiceCollection.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,12 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class EntityServiceCollection : List<Tuple<string, Guid, IList<ServiceActionRecord>>>
     {
-        public EntityServiceCollection() : base() { }
+        #region Public Constructors
+
+        public EntityServiceCollection() : base()
+        {
+        }
+
+        #endregion Public Constructors
     }
 }

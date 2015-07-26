@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="IDocumentService.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,9 +17,9 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -28,6 +29,8 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public interface IDocumentService : IEntityService<DocumentViewModel>
     {
+        #region Public Methods
+
         /// <summary>
         /// Creates many documents at once.
         /// </summary>
@@ -41,5 +44,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="url">The url of the document to get</param>
         /// <returns>The document</returns>
         DocumentViewModel GetForDownload(string url);
+
+        #endregion Public Methods
     }
 }

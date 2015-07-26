@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="TermViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 using System;
 
@@ -27,15 +29,12 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class TermViewModel
     {
+        #region Public Properties
+
         /// <summary>
         /// Gets or sets the term id.
         /// </summary>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the term vocabulary id.
-        /// </summary>
-        public Guid VocabularyId { get; set; }
 
         /// <summary>
         /// Gets or sets the term name.
@@ -43,13 +42,20 @@ namespace StrixIT.Platform.Modules.Cms
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the tag is selected.
+        /// </summary>
+        public bool Selected { get; set; }
+
+        /// <summary>
         /// Gets or sets the term url.
         /// </summary>
         public string Url { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the tag is selected.
+        /// Gets or sets the term vocabulary id.
         /// </summary>
-        public bool Selected { get; set; }
+        public Guid VocabularyId { get; set; }
+
+        #endregion Public Properties
     }
 }

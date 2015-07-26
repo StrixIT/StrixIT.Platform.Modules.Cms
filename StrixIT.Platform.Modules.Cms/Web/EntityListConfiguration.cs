@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityListConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,11 +17,12 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System.Collections.Generic;
 using System.Linq;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -30,14 +32,18 @@ namespace StrixIT.Platform.Modules.Cms
     /// <typeparam name="T">The entity view model type</typeparam>
     public class EntityListConfiguration<T> : ListConfiguration where T : EntityViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EntityListConfiguration{T}" /> class.
-        /// </summary>
-        /// <param name="userContext">The user context to use</param>
-        public EntityListConfiguration(IUserContext userContext) : this(userContext, null) { }
+        #region Public Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityListConfiguration{T}" /> class.
+        /// Initializes a new instance of the <see cref="EntityListConfiguration{T}"/> class.
+        /// </summary>
+        /// <param name="userContext">The user context to use</param>
+        public EntityListConfiguration(IUserContext userContext) : this(userContext, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityListConfiguration{T}"/> class.
         /// </summary>
         /// <param name="userContext">The user context to use</param>
         /// <param name="properties">The names of the properties to display in the list</param>
@@ -51,5 +57,7 @@ namespace StrixIT.Platform.Modules.Cms
             this.CanEdit = true;
             this.CanDelete = true;
         }
+
+        #endregion Public Constructors
     }
 }

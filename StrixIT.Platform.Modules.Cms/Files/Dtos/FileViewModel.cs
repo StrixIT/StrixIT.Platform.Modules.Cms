@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="FileViewModel.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -25,10 +27,12 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class FileViewModel : PlatformBaseViewModel
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the file path.
+        /// Gets or sets the file extension.
         /// </summary>
-        public string Path { get; set; }
+        public string Extension { get; set; }
 
         /// <summary>
         /// Gets or sets the file root folder id.
@@ -46,13 +50,15 @@ namespace StrixIT.Platform.Modules.Cms
         public string OriginalName { get; set; }
 
         /// <summary>
-        /// Gets or sets the file extension.
+        /// Gets or sets the file path.
         /// </summary>
-        public string Extension { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Gets or sets the file size in bytes.
         /// </summary>
         public long? Size { get; set; }
+
+        #endregion Public Properties
     }
 }

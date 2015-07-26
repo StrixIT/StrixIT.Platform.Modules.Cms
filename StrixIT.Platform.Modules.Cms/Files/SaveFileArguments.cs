@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="SaveFileArguments.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,7 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
+
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -25,25 +27,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class SaveFileArguments
     {
-        /// <summary>
-        /// Gets or sets the name of the file
-        /// </summary>
-        public string FileName { get; set; }
-
-        /// <summary>
-        /// Gets or sets a byte array containing the file data
-        /// </summary>
-        public byte[] FileData { get; set; }
-
-        /// <summary>
-        /// Gets or sets the maximum width the file can have. If the uploaded file is larger, it will be resized
-        /// </summary>
-        public int? MaxX { get; set; }
-
-        /// <summary>
-        /// Gets or sets the maximum height the file can have. If the uploaded file is larger, it will be resized
-        /// </summary>
-        public int? MaxY { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the custom width to resize the file to, if any
@@ -54,5 +38,29 @@ namespace StrixIT.Platform.Modules.Cms
         /// Gets or sets the custom height to resize the file to, if any
         /// </summary>
         public int? CustomY { get; set; }
+
+        /// <summary>
+        /// Gets or sets a byte array containing the file data
+        /// </summary>
+        public byte[] FileData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the file
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum width the file can have. If the uploaded file is larger, it
+        /// will be resized
+        /// </summary>
+        public int? MaxX { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum height the file can have. If the uploaded file is larger, it
+        /// will be resized
+        /// </summary>
+        public int? MaxY { get; set; }
+
+        #endregion Public Properties
     }
 }

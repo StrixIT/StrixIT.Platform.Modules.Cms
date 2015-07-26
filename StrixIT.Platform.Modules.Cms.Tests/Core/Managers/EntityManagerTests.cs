@@ -5,20 +5,29 @@
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using StrixIT.Platform.Modules.Cms;
 using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass]
     public class EntityManagerTests
     {
+        #region Private Fields
+
         private List<Mock> _mocks;
+
+        #endregion Private Fields
+
+        #region Public Methods
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Logger.LoggingService = null;
+        }
 
         [TestInitialize]
         public void Init()
@@ -26,11 +35,8 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             _mocks = TestHelpers.MockUtilities();
             Logger.LoggingService = new Mock<ILoggingService>().Object;
         }
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Logger.LoggingService = null;
-        }
+
+        #endregion Public Methods
 
         #region CheckName
 
@@ -64,9 +70,19 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(true, result);
         }
 
-        #endregion
+        #endregion CheckName
 
         #region New
+
+        [TestMethod]
+        public void GetNewEntityShouldReturnProperlyFilledEntity()
+        {
+            var mock = new EntityManagerMock();
+            var news = mock.EntityManager.Get<News>(null);
+            Assert.IsNotNull(news);
+            Assert.IsNotNull(news.Culture);
+            Assert.AreNotEqual(0, news.VersionNumber);
+        }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
@@ -84,44 +100,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.IsNotNull(result);
         }
 
-        [TestMethod]
-        public void GetNewEntityShouldReturnProperlyFilledEntity()
-        {
-            var mock = new EntityManagerMock();
-            var news = mock.EntityManager.Get<News>(null);
-            Assert.IsNotNull(news);
-            Assert.IsNotNull(news.Culture);
-            Assert.AreNotEqual(0, news.VersionNumber);
-        }
-
-        #endregion
+        #endregion New
 
         #region Get
-
-        [TestMethod()]
-        public void GetEntityByIdShouldReturnCorrectEntity()
-        {
-            var mock = new EntityManagerMock();
-            var manager = mock.EntityManager;
-            var entity = manager.Get<News>(EntityServicesTestData.FirstNewsEntityId);
-            Assert.IsNotNull(entity);
-            Assert.AreEqual("first-news", entity.Entity.Url);
-            Assert.AreEqual("First news", entity.Name);
-            Assert.AreEqual("en", entity.Culture);
-        }
-
-        [TestMethod()]
-        public void GetEntityByUrlShouldReturnCorrectEntity()
-        {
-            var mock = new EntityManagerMock();
-            var manager = mock.EntityManager;
-            var entity = manager.Get<News>(EntityServicesTestData.FirstNewsContentEn.Entity.Url);
-            Assert.IsNotNull(entity);
-            Assert.AreEqual("first-news", entity.Entity.Url);
-            Assert.AreEqual("First news", entity.Name);
-            Assert.AreEqual("en", entity.Culture);
-            Assert.AreEqual(1, entity.VersionNumber);
-        }
 
         [TestMethod()]
         public void GetEntityByIdAndCultureShouldReturnCorrectEntity()
@@ -149,18 +130,34 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(2, entity.VersionNumber);
         }
 
-        #endregion
-
-        #region Query
-
         [TestMethod()]
-        public void QueryShouldReturnAllNonDeletedContent()
+        public void GetEntityByIdShouldReturnCorrectEntity()
         {
             var mock = new EntityManagerMock();
             var manager = mock.EntityManager;
-            var result = manager.Query<News>();
-            Assert.AreEqual(7, result.Count());
+            var entity = manager.Get<News>(EntityServicesTestData.FirstNewsEntityId);
+            Assert.IsNotNull(entity);
+            Assert.AreEqual("first-news", entity.Entity.Url);
+            Assert.AreEqual("First news", entity.Name);
+            Assert.AreEqual("en", entity.Culture);
         }
+
+        [TestMethod()]
+        public void GetEntityByUrlShouldReturnCorrectEntity()
+        {
+            var mock = new EntityManagerMock();
+            var manager = mock.EntityManager;
+            var entity = manager.Get<News>(EntityServicesTestData.FirstNewsContentEn.Entity.Url);
+            Assert.IsNotNull(entity);
+            Assert.AreEqual("first-news", entity.Entity.Url);
+            Assert.AreEqual("First news", entity.Name);
+            Assert.AreEqual("en", entity.Culture);
+            Assert.AreEqual(1, entity.VersionNumber);
+        }
+
+        #endregion Get
+
+        #region Query
 
         [TestMethod()]
         public void QueryByTagShouldReturnAllNonDeletedCurrentContentWithTheCurrentCultureFilteredByTag()
@@ -171,9 +168,40 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(1, result.Count());
         }
 
-        #endregion
+        [TestMethod()]
+        public void QueryShouldReturnAllNonDeletedContent()
+        {
+            var mock = new EntityManagerMock();
+            var manager = mock.EntityManager;
+            var result = manager.Query<News>();
+            Assert.AreEqual(7, result.Count());
+        }
+
+        #endregion Query
 
         #region Process Path
+
+        [TestMethod()]
+        public void ProcessPathShouldAddIndexForAlreadyExistingPath()
+        {
+            var mock = new EntityManagerMock();
+            IContent news = null;
+            mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
+            var newsA = GetNew<News>();
+            newsA.Body = "News";
+            newsA.Entity.Url = "test";
+            var newsB = GetNew<News>();
+            newsB.Body = "News";
+            newsB.Entity.Url = "test-2";
+            mock.DataSourceMock.RegisterData<News>(new List<News> { newsA, newsB });
+            var entity = GetNew<News>();
+            entity.Name = "Test";
+            entity.Body = "News";
+            mock.EntityManager.Save(entity);
+            string expected = "test-3";
+            string actual = news.Entity.Url;
+            Assert.AreEqual(expected, actual);
+        }
 
         [TestMethod()]
         public void ProcessPathShouldCreateCorrectUrl()
@@ -190,47 +218,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
-        public void ProcessPathShouldAddIndexForAlreadyExistingPath()
-        {
-            var mock = new EntityManagerMock();
-            IContent news = null;
-            mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
-            var newsA = GetNew<News>();
-            newsA.Body = "News";
-            newsA.Entity.Url = "test";
-            var newsB = GetNew<News>();
-            newsB.Body = "News";
-            newsB.Entity.Url = "test-2";
-            mock.DataSourceMock.RegisterData<News>(new List<News> {  newsA, newsB });
-            var entity = GetNew<News>();
-            entity.Name = "Test";
-            entity.Body = "News";
-            mock.EntityManager.Save(entity);
-            string expected = "test-3";
-            string actual = news.Entity.Url;
-            Assert.AreEqual(expected, actual);
-        }
-
-        #endregion
+        #endregion Process Path
 
         #region Save
-
-        [TestMethod()]
-        public void ForNewContentANewEntityShouldBeCreated()
-        {
-            var mock = new EntityManagerMock();
-            IContent news = null;
-            mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
-            var entity = mock.EntityManager.Get<News>(null);
-            entity.Name = "Testing";
-            entity.Body = "News";
-            var result = mock.EntityManager.Save(entity);
-            mock.DataSourceMock.Mock.Verify(d => d.Save<IContent>(It.IsAny<IContent>()), Times.Once());
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(news.Entity);
-            Assert.AreNotEqual(Guid.Empty, news.EntityId);
-        }
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidOperationException))]
@@ -289,6 +279,22 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod()]
+        public void ForNewContentANewEntityShouldBeCreated()
+        {
+            var mock = new EntityManagerMock();
+            IContent news = null;
+            mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { news = n; return n; });
+            var entity = mock.EntityManager.Get<News>(null);
+            entity.Name = "Testing";
+            entity.Body = "News";
+            var result = mock.EntityManager.Save(entity);
+            mock.DataSourceMock.Mock.Verify(d => d.Save<IContent>(It.IsAny<IContent>()), Times.Once());
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(news.Entity);
+            Assert.AreNotEqual(Guid.Empty, news.EntityId);
+        }
+
+        [TestMethod()]
         public void UpdatingAModifiedContentItemWithVersioningActiveShouldCreateANewVersion()
         {
             var mock = new EntityManagerMock();
@@ -311,7 +317,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.IsTrue(version.IsCurrentVersion);
         }
 
-        #endregion
+        #endregion Save
 
         #region Delete
 
@@ -336,6 +342,25 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         [TestMethod]
+        public void DeleteContentByCultureAndVersionNumberDeletesTheContentForThatCultureAndVersionNumberWhenAlreadyMarkedAsDeletedWhenTrashIsActive()
+        {
+            var mock = new EntityManagerMock();
+            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
+            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
+            mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en", 3);
+            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(false);
+            mock.DataSourceMock.Mock.Verify(d => d.Delete(It.IsAny<IContent>()), Times.Once());
+        }
+
+        [TestMethod]
+        public void DeleteContentByCultureAndVersionNumberDeletesTheContentForThatCultureAndVersionNumberWhenTrashIsNotActive()
+        {
+            var mock = new EntityManagerMock();
+            mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en", 1);
+            mock.DataSourceMock.Mock.Verify(d => d.Delete(It.IsAny<IContent>()), Times.Once());
+        }
+
+        [TestMethod]
         public void DeleteContentByCultureDeletesAllTheContentForThatCultureWhenTrashIsNotActive()
         {
             var mock = new EntityManagerMock();
@@ -355,26 +380,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             Assert.IsFalse(undeleted);
         }
 
-        [TestMethod]
-        public void DeleteContentByCultureAndVersionNumberDeletesTheContentForThatCultureAndVersionNumberWhenTrashIsNotActive()
-        {
-            var mock = new EntityManagerMock();
-            mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en", 1);
-            mock.DataSourceMock.Mock.Verify(d => d.Delete(It.IsAny<IContent>()), Times.Once());
-        }
-
-        [TestMethod]
-        public void DeleteContentByCultureAndVersionNumberDeletesTheContentForThatCultureAndVersionNumberWhenAlreadyMarkedAsDeletedWhenTrashIsActive()
-        {
-            var mock = new EntityManagerMock();
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
-            mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en", 3);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(false);
-            mock.DataSourceMock.Mock.Verify(d => d.Delete(It.IsAny<IContent>()), Times.Once());
-        }
-
-        #endregion
+        #endregion Delete
 
         #region Private Methods
 
@@ -403,6 +409,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             return content;
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

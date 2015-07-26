@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ContentSharedWithGroup.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,11 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class ContentSharedWithGroup
     {
-        /// <summary>
-        /// Gets or sets the id of the entity shared.
-        /// </summary>
-        [StrixRequired]
-        public Guid EntityId { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the entity shared.
@@ -40,14 +38,22 @@ namespace StrixIT.Platform.Modules.Cms
         public PlatformEntity Entity { get; set; }
 
         /// <summary>
-        /// Gets or sets the group the entity is shared with.
+        /// Gets or sets the id of the entity shared.
         /// </summary>
         [StrixRequired]
-        public Guid GroupId { get; set; }
+        public Guid EntityId { get; set; }
 
         /// <summary>
         /// Gets or sets the group this entity is shared with.
         /// </summary>
         public GroupData Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group the entity is shared with.
+        /// </summary>
+        [StrixRequired]
+        public Guid GroupId { get; set; }
+
+        #endregion Public Properties
     }
 }

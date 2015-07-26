@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="ContentLocator.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,9 +17,8 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -27,19 +27,23 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class ContentLocator
     {
+        #region Public Properties
+
         /// <summary>
-        ///  Gets or sets the name of the type of the content.
+        /// Gets or sets the name of the type of the content.
         /// </summary>
         public string ContentTypeName { get; set; }
 
         /// <summary>
-        ///  Gets or sets the url of the page the content is located on.
+        /// Gets or sets the url of the content.
+        /// </summary>
+        public string ContentUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the url of the page the content is located on.
         /// </summary>
         public string PageUrl { get; set; }
 
-        /// <summary>
-        ///  Gets or sets the url of the content.
-        /// </summary>
-        public string ContentUrl { get; set; }
+        #endregion Public Properties
     }
 }

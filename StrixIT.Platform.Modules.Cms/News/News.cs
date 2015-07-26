@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="News.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,10 +17,11 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
-using System;
+#endregion Apache License
+
 using StrixIT.Platform.Core;
+using System;
 
 namespace StrixIT.Platform.Modules.Cms
 {
@@ -28,22 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class News : ContentBase, IContent
     {
-        /// <summary>
-        /// Gets or sets the entity id.
-        /// </summary>
-        [StrixRequired]
-        public Guid EntityId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity.
-        /// </summary>
-        public PlatformEntity Entity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the news summary.
-        /// </summary>
-        [Rte]
-        public string Summary { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the news body text.
@@ -53,9 +40,28 @@ namespace StrixIT.Platform.Modules.Cms
         public string Body { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity.
+        /// </summary>
+        public PlatformEntity Entity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity id.
+        /// </summary>
+        [StrixRequired]
+        public Guid EntityId { get; set; }
+
+        /// <summary>
         /// Gets or sets the news expire time. Used for news that has a limited scope, such as announcements.
         /// </summary>
         [StrixNotDefault]
         public DateTime? ExpireTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the news summary.
+        /// </summary>
+        [Rte]
+        public string Summary { get; set; }
+
+        #endregion Public Properties
     }
 }

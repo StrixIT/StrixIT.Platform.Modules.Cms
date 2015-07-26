@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="SearchController.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,22 +17,33 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System.Linq;
 using System.Web.Mvc;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     public class SearchController : Controller
     {
+        #region Private Fields
+
         private ISearchService _searchService;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public SearchController(ISearchService searchService)
         {
             this._searchService = searchService;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public ActionResult Index()
         {
@@ -52,5 +64,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             return this.Json(this._searchService.Search(options));
         }
+
+        #endregion Public Methods
     }
 }

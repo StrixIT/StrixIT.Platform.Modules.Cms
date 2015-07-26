@@ -1,4 +1,5 @@
 ﻿#region Apache License
+
 //-----------------------------------------------------------------------
 // <copyright file="EntityType.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
@@ -16,20 +17,33 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
-#endregion
 
+#endregion Apache License
+
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms
 {
     /// <summary>
-    /// A class that contains the basic information for an entity type as stored in the database. 
+    /// A class that contains the basic information for an entity type as stored in the database.
     /// </summary>
     public class EntityType : ValidationBase
     {
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the entity's custom fields.
+        /// </summary>
+        public ICollection<EntityCustomField> CustomFields { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service actions that entities of this type can use.
+        /// </summary>
+        public ICollection<EntityTypeServiceAction> EntityTypeServiceActions { get; set; }
+
         /// <summary>
         /// Gets or sets the Id of this EntityType.
         /// </summary>
@@ -47,14 +61,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         public ICollection<Vocabulary> Vocabularies { get; set; }
 
-        /// <summary>
-        /// Gets or sets the service actions that entities of this type can use.
-        /// </summary>
-        public ICollection<EntityTypeServiceAction> EntityTypeServiceActions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity's custom fields.
-        /// </summary>
-        public ICollection<EntityCustomField> CustomFields { get; set; }
+        #endregion Public Properties
     }
 }
