@@ -1,0 +1,155 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+
+@model PlatformBaseViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_ItemLayout.cshtml";
+    var type = (Type)ViewBag.ModelType;
+    bool IsAdmin = StrixPlatform.User.IsAdministrator;
+    bool canEdit = typeof(AuditViewModel).IsAssignableFrom(type);
+    var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
+    var hasName = type.HasProperty("Name");
+    var nameProperty = hasName ? "name" : "id";
+    var isEntityType = typeof(EntityViewModel).IsAssignableFrom(type);
+    bool isTranslatable = false, isVersionable = false, showComments = false, supportAccess = false, supportDrafts = false;
+    var showVersion = string.Format("{0}.versionNumber", typeName) + " && !" + string.Format("{0}.isCurrentVersion", typeName);
+    string editText = ResourceHelper.GetResource(typeof(Interface), string.Format("Edit{0}", typeName)) ?? DefaultInterface.Edit;
+
+    if (isEntityType)
+    {
+        var contentType = EntityHelper.GetObjectMap(type).ContentType;
+        isTranslatable = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.Translations);
+        isVersionable = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+        showComments = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowComments);
+        supportAccess = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.EntityTypeAccess);
+        supportDrafts = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.Drafts);
+    }
+}
+@RenderSection("css", false)
+@section Navigation {
+    <div class="inline" ng-show="!(@showVersion)">
+        <div class="inline" @if (canEdit) { @: ng-show="@string.Format("{0}.canEdit", typeName)"
+                                                                                                                                      }>
+            @if (supportDrafts)
+            {
+                <a ng-href="{{ ''@(Url.AdminLink("Details") + "?versionNumber={0}")'.replace('{0}', @string.Format("{0}.versionNumber", typeName)) }}">@Interface.ViewDraft</a>
+                @:|
+                }
+            @{ var url = isEntityType ? "url" : "id"; }
+            <a ng-href="{{ getLink('@Url.AdminLink(MvcConstants.EDIT)', '@url') }}">@editText</a> |
+        </div>
+        @if (IsAdmin)
+        {
+            <kendo-button ng-click="delete(@typeName)">@DefaultInterface.Delete</kendo-button>
+            @:|
+        }
+    </div>
+    <div class="inline" ng-show="@showVersion && @string.Format("{0}.canEdit", typeName)">
+        @*if (isDraft)
+            {
+            <a href="@string.Format("{0}/{1}?versionnumber()={2}", Url.Action("Edit"), entityModel.Url, versionNumber)">@string.Format("{0} {1}", editText, Interface.Draft.ToLower())</a>
+            @:|
+            }*@
+        @if (isEntityType)
+        {
+            <kendo-button ng-click="restoreVersion()">@Interface.RestoreVersion</kendo-button>
+            @:|
+            }
+        @if (isEntityType)
+        {
+            <a ng-click="backToVersionList()" href="#">@Interface.BackToVersionList</a>
+            @:|
+        }
+    </div>
+    @RenderSection("Navigation", false)
+    <a href="@string.Format("{0}/", Url.AdminLink(MvcConstants.INDEX)).Replace("/index/", string.Empty)">@DefaultInterface.BackToList</a>
+}
+<div ng-controller="entitycontroller">
+    <h1>
+        @*@RenderSection("Title", true)*@
+        @*if (isDraft)
+            {
+                @draftText
+            }*@
+        <span ng-bind-html="'@typeName.ToTitleCase()' + ' ' + @string.Format("{0}.{1}", typeName, nameProperty)"></span>
+        <span ng-show="@showVersion">{{ '@Interface.VersionNumber'.replace('{0}', @string.Format("{0}.versionNumber", typeName)) }}</span>
+    </h1>
+    <p ng-show="@string.Format("{0}.isCurrentVersion", typeName)">
+        {{ getUpdateText('@Interface.UpdatedByOn') }}
+    </p>
+    <div kendo-tab-strip id="tabstrip" class="details-tabs">
+        <ul>
+            <li class="k-state-active">@Interface.ContentView</li>
+            @RenderSection("Tab", false)
+            @if (isEntityType)
+            {
+                if (showComments)
+                {
+                    <li ng-show="!(@showVersion)" ng-click="loadComments($event)">@Interface.Comments</li>
+                }
+                if (IsAdmin)
+                {
+                    if (isVersionable)
+                    {
+                        <li ng-show="!(@showVersion)" ng-click="loadVersions()">@Interface.History</li>
+                    }
+                    if (supportAccess)
+                    {
+                        <li ng-show="!(@showVersion)">@Interface.Access</li>
+                    }
+                }
+            }
+        </ul>
+        <div id="detail">
+            <div ng-show="showTags()" class="content-tag-list pull-right">
+                <h4>@Interface.Tags</h4>
+                <ul id="detail-taglist">
+                    <li ng-repeat="tag in @string.Format("{0}.tags", typeName) | filter:!selected">{{ tag.name }}</li>
+                </ul>
+            </div>
+            @RenderSection("Content", true)
+            <div class="clearfix"></div>
+        </div>
+        @RenderSection("TabBody", false)
+        @if (isEntityType)
+        {
+            if (showComments)
+            {
+                <div ng-show="!(@showVersion)" id="discussion">
+                    @Html.Partial("CommentForm", Model)
+                </div>
+            }
+            if (IsAdmin)
+            {
+                <div ng-show="!(@showVersion)" id="history">
+                    @Html.Partial("~/Areas/Cms/Views/Version/VersionList.cshtml")
+                </div>
+                if (supportAccess)
+                {
+                    <div ng-show="!(@showVersion)" id="permission">
+                        <h2>
+                            @Interface.Access
+                        </h2>
+                    </div>
+                }
+            }
+        }
+    </div>
+    @Html.Partial("ConfirmationModal", new ConfirmationConfig { Id = "confirmdelete" })
+    @Html.Partial("ConfirmationModal", new ConfirmationConfig { Id = "confirmrestoreversion", Title = Interface.RestoreVersionTitle, Body = Interface.ConfirmRestoreVersion, ConfirmMethod = "confirmRestoreVersion" })
+</div>

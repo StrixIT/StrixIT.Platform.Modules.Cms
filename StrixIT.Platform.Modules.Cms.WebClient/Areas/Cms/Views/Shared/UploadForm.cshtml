@@ -1,0 +1,149 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+
+@model AddFile
+@{
+    var titleText = Model.Mode != FileUploadMode.MultiUpload ? Interface.UploadFile : Interface.UploadFiles;
+    var browseText = Model.Mode != FileUploadMode.MultiUpload ? Interface.SelectSingleFile : Interface.SelectArchive;
+    var settingsName = (((Type)ViewBag.ModelType).Name + "-" + Model.FileIdPropertyName).ToLower();
+    var imageProperty = ((Type)ViewBag.ModelType).GetProperties().FirstOrDefault(p => p.GetAttribute<ImageAttribute>() != null);
+    var imageName = imageProperty != null ? (imageProperty.Name + "Path").ToCamelCase() : string.Empty;
+    System.Web.Configuration.HttpRuntimeSection section = System.Configuration.ConfigurationManager.GetSection("system.web/httpRuntime") as System.Web.Configuration.HttpRuntimeSection;
+    var maxLength = section.MaxRequestLength;
+}
+<style>
+    .btn-file {
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 999px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+
+    #unzip-instructions {
+        margin-top: 5px;
+    }
+</style>
+<script type="text/javascript">
+    if (!strixIT.fileUpload) {
+        strixIT.fileUpload = {};
+    }
+
+    strixIT.fileUpload['@settingsName'] = {
+        unzip: @Model.Unzip.ToString().ToLower(),
+        mode: '@Model.Mode',
+        fileIdPropertyName: '@Model.FileIdPropertyName.ToCamelCase()',
+        filePath: '@imageName',
+        maxHeight: @Model.MaxHeight,
+        maxWidth: @Model.MaxWidth,
+        customHeight: @Model.CustomHeight,
+        customWidth: @Model.CustomWidth,
+        displayHeight: @Model.DisplayHeight,
+        displayWidth: @Model.DisplayWidth,
+        keepAspectRatio: @Model.KeepAspectRatio.ToString().ToLower(),
+        maxFileSize: @Model.MaxFileSize,
+        fileTypes: '@Model.FileTypes',
+        terms: JSON.parse(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Terms)),
+        title: '@(Model.ShowTitle ? titleText : string.Empty)',
+        browse: '@browseText',
+        uploadCallback: '@Model.CallbackFunctionName',
+        defaultImage: '@Model.DefaultImage',
+        maxSize: @maxLength
+    }
+</script>
+<div class="cms-uploadform" ng-controller="uploadcontroller" ng-init="initUpload('@(settingsName)')">
+    <div class="uploadedview" ng-show="showFile">
+        <div class="table-responsive">
+            <table class="table no-border">
+                <tbody>
+                    <tr>
+                        <td rowspan="2">
+                            <img ng-hide="showIcon" ng-src="{{ entityImage }}" alt="{{ entityName }}" />
+                            <div class="fileicon" ng-show="showIcon"><i ng-class="iconToShow"></i></div>
+                        </td>
+                        <td>@Interface.OriginalFileName</td>
+                        <td>{{ uploadedFile.originalName }}</td>
+                    </tr>
+                    <tr>
+                        <td>@Interface.FileUploadedOn</td>
+                        <td>{{ uploadedFile.uploadedOn | kendoDateTime }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <kendo-button ng-show="showDeleteLink" ng-click="deleteFile()">@Interface.DeleteFile</kendo-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="uploadview" ng-show="showUploader">
+        <input type="hidden" name="unzip" value="{{ settings.unzip }}" />
+        <input type="hidden" name="customWidth" id="customWidth" value="{{ settings.customWidth }}" />
+        <input type="hidden" name="customHeight" id="customHeight" value="{{ settings.customHeight }}" />
+        <input type="hidden" name="displayWidth" value="{{ settings.displayWidth }}" />
+        <input type="hidden" name="displayHeight" value="{{ settings.displayHeight }}" />
+        <input type="hidden" name="maxWidth" value="{{ settings.maxWidth }}" />
+        <input type="hidden" name="maxHeight" value="{{ settings.maxHeight }}" />
+        <input type="hidden" name="keepAspectRatio" value="{{ settings.keepAspectRatio }}" />
+        <h4 ng-show="settings.title">
+            {{ settings.title }}
+        </h4>
+        @if (Model.Mode == FileUploadMode.MultiUpload)
+        {
+            <p class="unzip-instructions">
+                @Interface.ZippedFileInstructions
+            </p>
+        }
+        <p>{{ '@Interface.FileTypesAllowed'.replace('{0}', settings.fileTypes) }}</p>
+        <p>@string.Format(Interface.MaxFileSize, maxLength / 1024)</p>
+        <span class="k-button  btn-file">
+            {{ settings.browse }} <input type="file" class="fileuploader" name="fileuploader" onchange="angular.element(this).scope().selectFile(this)" />
+        </span>
+        <input type="button" class="k-button k-primary fileuploadbutton inline" value="@Interface.Upload" ng-disabled="!fileSelected" ng-click="saveFile()" />
+        <span ng-show="selectFileMessageVisible" class="k-widget k-tooltip k-tooltip-validation k-invalid-msg" role="alert"><span class="k-icon k-warning"> </span> @Interface.PleaseSelectAFile</span>
+        @if (Model.Mode == FileUploadMode.MultiUpload)
+        {
+            <div class="margin-top">
+                <strix-cms-editor editor-label="@Interface.ExtractZip">
+                    <input type="checkbox" class="checkbox" ng-model="settings.unzip" />
+                </strix-cms-editor>
+            </div>
+        }
+        <p ng-show="fileSelected">{{ '@Interface.SelectedFile'.replace('{0}', selectedFile) }}</p>
+    </div>
+    <div class="processuploads" ng-show="savingFile">
+        <span class="ajaxloader">
+            <img ng-src="{{ getLoadingImage() }}" />@Interface.ProcessingUpload
+        </span>
+    </div>
+    @Html.Partial("ConfirmationModal", new ConfirmationConfig { Id = "confirmdeletefile", Title = Interface.DeleteFile, Body = Interface.ConfirmDeleteFile, ConfirmMethod = "confirmDeleteFile" })
+</div>

@@ -1,0 +1,49 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+
+@model VocabularyViewModel
+@{
+    Layout = "~/Areas/Cms/Views/Shared/_ContentForm.cshtml";
+}
+@section FormContent
+{
+    <div class="row" ng-cloak>
+        <div class="col-sm-2">
+            <label>
+                @Interface.Tags
+            </label>
+        </div>
+        <div class="col-sm-10">
+            <div id="tagcontainer" ng-controller="taxonomycontroller" ng-init="init(vocabulary.id)" ng-show="!isNew(vocabulary)">
+                <ul id="taglist">
+                    <li ng-repeat="tag in tags">
+                        <span ng-bind-html="tag.name"></span>
+                    </li>
+                </ul>
+                <div id="tagform">
+                    <input type="text" class="k-textbox" ng-model="newTag.name" ng-show-html maxlength="250" />
+                </div>
+                <div>
+                    <kendo-button ng-click="addTag()" class="k-primary margin-top">@Interface.AddTag</kendo-button>
+                </div>
+            </div>
+
+            <div id="newvocabularymessage" ng-show="isNew(vocabulary)">@Interface.NoTagsAvailable</div>
+        </div>
+    </div>
+}

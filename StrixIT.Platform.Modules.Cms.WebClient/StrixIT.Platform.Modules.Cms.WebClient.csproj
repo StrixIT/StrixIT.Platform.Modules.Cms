@@ -134,10 +134,46 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Areas\Cms\Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Areas\Cms\Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Areas\Cms\Web.Test.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Properties\PublishProfiles\Web deploy to file system.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Test.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Areas\Admin\Scripts\strixit.itemcontroller.js" />
     <Content Include="Areas\Admin\Scripts\strixit.listcontroller.js" />
     <Content Include="Areas\Admin\Styles\admin.css" />
     <Content Include="Areas\Admin\Styles\admin.min.css" />
+    <Content Include="Areas\Admin\Views\Admin\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\Alerts.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\ConfirmationModal.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\Template.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_ItemLayout.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_ListLayout.cshtml" />
+    <Content Include="Areas\Admin\Views\Web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Cms\bin\nl\StrixIT.Platform.Modules.Cms.resources.dll" />
     <Content Include="Areas\Cms\bin\StrixIT.Platform.Modules.Cms.dll" />
     <Content Include="Areas\Cms\Scripts\Controllers\strixit.commentcontroller.js" />
@@ -421,42 +457,6 @@
     <Content Include="Areas\Cms\TinyMCE\utils\form_utils.js" />
     <Content Include="Areas\Cms\TinyMCE\utils\mctabs.js" />
     <Content Include="Areas\Cms\TinyMCE\utils\validate.js" />
-    <Content Include="Libraries\nl\StrixIT.Platform.Core.resources.dll" />
-    <Content Include="Libraries\nl\StrixIT.Platform.Web.resources.dll" />
-    <Content Include="Libraries\StrixIT.Platform.Core.dll" />
-    <Content Include="Libraries\StrixIT.Platform.Web.dll" />
-    <Content Include="License.txt" />
-    <Content Include="ReadMe.txt" />
-    <Content Include="Scripts\StrixIT\Directives\EnumDropDown\enum-drop-down.html" />
-    <Content Include="Scripts\StrixIT\Directives\EnumDropDown\strixit.enumdropdown.js" />
-    <Content Include="Scripts\StrixIT\Directives\ShowInputHtml\strixit.showinputhtml.js" />
-    <Content Include="Scripts\StrixIT\Filters\strixit.bytes.js" />
-    <Content Include="Scripts\StrixIT\Services\strixit.entityservice.js" />
-    <Content Include="Scripts\StrixIT\Services\strixit.exceptionhandler.js" />
-    <Content Include="Styles\fonts\fontawesome-webfont.eot" />
-    <Content Include="Styles\fonts\fontawesome-webfont.ttf" />
-    <Content Include="Styles\fonts\fontawesome-webfont.woff" />
-    <Content Include="Styles\fonts\fontawesome-webfont.woff2" />
-    <Content Include="Styles\fonts\FontAwesome.otf" />
-    <Content Include="Styles\Kendo\images\kendoui.ttf" />
-    <Content Include="Styles\Kendo\images\kendoui.woff" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\NotFound.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Shared\_MasterLayout.cshtml" />
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="packages.config" />
-    <Content Include="Areas\Admin\Views\Admin\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\Alerts.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\ConfirmationModal.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\Template.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\_ListLayout.cshtml" />
-    <Content Include="Areas\Admin\Views\Web.config" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\_ItemLayout.cshtml" />
     <Content Include="Areas\Cms\Views\Document\CreateMany.cshtml" />
     <Content Include="Areas\Cms\Views\Document\Details.cshtml" />
     <Content Include="Areas\Cms\Views\Document\Edit.cshtml" />
@@ -496,30 +496,15 @@
     <Content Include="Areas\Cms\Views\Web.config" />
     <Content Include="Areas\Cms\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Cms\Web.config" />
-    <None Include="Areas\Cms\Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Areas\Cms\Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Areas\Cms\Web.Test.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Properties\PublishProfiles\Web deploy to file system.pubxml" />
-    <Content Include="Views\Shared\LanguagePicker.cshtml" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Test.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Libraries\nl\StrixIT.Platform.Core.resources.dll" />
+    <Content Include="Libraries\nl\StrixIT.Platform.Web.resources.dll" />
+    <Content Include="Libraries\StrixIT.Platform.Core.dll" />
+    <Content Include="Libraries\StrixIT.Platform.Web.dll" />
+    <Content Include="License.txt" />
+    <Content Include="packages.config" />
+    <Content Include="ReadMe.txt" />
     <Content Include="Scripts\Angular\angular.js" />
     <Content Include="Scripts\Angular\Services\angular-cookies.js" />
     <Content Include="Scripts\Angular\Services\angular-route.js" />
@@ -560,12 +545,18 @@
     <Content Include="Scripts\StrixIT\Controllers\strixit.navigationcontroller.js" />
     <Content Include="Scripts\StrixIT\Directives\CmsEditor\cms-editor.html" />
     <Content Include="Scripts\StrixIT\Directives\CmsEditor\strixit.cmseditor.js" />
+    <Content Include="Scripts\StrixIT\Directives\EnumDropDown\enum-drop-down.html" />
+    <Content Include="Scripts\StrixIT\Directives\EnumDropDown\strixit.enumdropdown.js" />
     <Content Include="Scripts\StrixIT\Directives\Search\strixit.search.js" />
+    <Content Include="Scripts\StrixIT\Directives\ShowInputHtml\strixit.showinputhtml.js" />
+    <Content Include="Scripts\StrixIT\Filters\strixit.bytes.js" />
     <Content Include="Scripts\StrixIT\Filters\strixit.kendodate.js" />
     <Content Include="Scripts\StrixIT\Modules\strixit.adminmoduleconfig.js" />
     <Content Include="Scripts\StrixIT\Modules\strixit.adminmoduleroutes.js" />
     <Content Include="Scripts\StrixIT\Modules\strixit.moduleconfig.js" />
     <Content Include="Scripts\StrixIT\Services\strixit.dataservice.js" />
+    <Content Include="Scripts\StrixIT\Services\strixit.entityservice.js" />
+    <Content Include="Scripts\StrixIT\Services\strixit.exceptionhandler.js" />
     <Content Include="Scripts\StrixIT\Services\strixit.responseinterceptor.js" />
     <Content Include="Scripts\StrixIT\Services\strixit.sanitize.js" />
     <Content Include="Scripts\StrixIT\strixit.configuration.js" />
@@ -575,7 +566,12 @@
     <Content Include="Scripts\Utilities\script.js" />
     <Content Include="Styles\Bootstrap\bootstrap.css" />
     <Content Include="Styles\FontAwesome\font-awesome.css" />
+    <Content Include="Styles\fonts\fontawesome-webfont.eot" />
     <Content Include="Styles\fonts\fontawesome-webfont.svg" />
+    <Content Include="Styles\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Styles\fonts\fontawesome-webfont.woff" />
+    <Content Include="Styles\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Styles\fonts\FontAwesome.otf" />
     <Content Include="Styles\Images\flag_en.jpg" />
     <Content Include="Styles\Images\flag_nl.jpg" />
     <Content Include="Styles\Images\StrixIT_logo.png" />
@@ -593,6 +589,8 @@
     <Content Include="Styles\Kendo\Bootstrap\sprite_kpi_2x.png" />
     <Content Include="Styles\Kendo\images\back.png" />
     <Content Include="Styles\Kendo\images\kendoui.svg" />
+    <Content Include="Styles\Kendo\images\kendoui.ttf" />
+    <Content Include="Styles\Kendo\images\kendoui.woff" />
     <Content Include="Styles\Kendo\images\wp8_icons.png" />
     <Content Include="Styles\Kendo\images\wp8_inverseicons.png" />
     <Content Include="Styles\Kendo\kendo.bootstrap.min.css" />
@@ -641,17 +639,18 @@
     <Content Include="Styles\Kendo\textures\transparency.png" />
     <Content Include="Styles\Kendo\textures\transtexture.png" />
     <Content Include="Styles\site.css" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\LanguagePicker.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_MasterLayout.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

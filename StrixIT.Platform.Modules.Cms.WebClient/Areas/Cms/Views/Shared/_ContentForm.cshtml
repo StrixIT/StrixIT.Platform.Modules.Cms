@@ -1,0 +1,95 @@
+﻿<!-- #region Apache License -->
+@*
+    Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*@
+<!-- #endregion -->
+
+@model PlatformBaseViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_ItemLayout.cshtml";
+    var type = (Type)ViewBag.ModelType;
+    var hasName = type.HasProperty("Name");
+    var nameProperty = hasName ? "name" : "id";
+    var isEntityType = typeof(EntityViewModel).IsAssignableFrom(type);
+    var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
+    var contentType = EntityHelper.GetObjectMap(type).ContentType;
+    var isTranslatable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.Translations);
+    var isVersionable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+    var supportDrafts = EntityHelper.IsServiceActive(contentType, EntityServiceActions.Drafts);
+    var isTaggable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowFixedTagging);
+    var fileIds = EntityHelper.GetFileProperties(contentType);
+    var key = isEntityType ? "entityId" : "id";
+    var url = isEntityType ? "url" : "id";
+    var defaultKey = Activator.CreateInstance(contentType.GetProperty("Id").PropertyType);
+    var remoteUrl = Url.Action("CheckName");
+}
+@RenderSection("CSS", false)
+@section Navigation {
+    @RenderSection("Navigation", false)
+    <div class="inline" ng-show="@string.Format("{0}.returnUrl", typeName)">
+        <a ng-href="{{ @string.Format("{0}.returnUrl", typeName) }}" target="_self">@DefaultInterface.Cancel</a>
+        |
+    </div>
+    <div class="inline" ng-show="!@string.Format("{0}.returnUrl", typeName) && showCancel()">
+        <a ng-href="{{ getLink('@Url.AdminLink(MvcConstants.DETAILS)', '@url') }}">@DefaultInterface.Cancel</a>
+        |
+    </div>
+    @if (!StrixPlatform.User.IsInRole(PlatformConstants.CONTRIBUTORROLE))
+    {
+        <a href="@(Url.AdminLink(MvcConstants.INDEX).Replace(string.Format("/{0}/", MvcConstants.INDEX.ToLower()), string.Empty))">@DefaultInterface.BackToList</a>
+    }
+}
+<div ng-controller="entitycontroller">
+    <h3><span ng-show="isNew(@typeName)" ng-bind-html="'@string.Format(DefaultInterface.Create, typeName)'"></span><span ng-show="!isNew(@typeName)" ng-bind-html="'@DefaultInterface.EditItem.Replace("{0}", typeName)'.replace('{1}', @string.Format("{0}.{1}", typeName, nameProperty))"></span></h3>
+    @if (isTranslatable)
+    {
+        @Html.Partial("~/Areas/Cms/Views/Shared/EditLanguagePicker.cshtml")
+    }
+    @RenderSection("BeforeForm", false)
+    @if (StrixCms.Config.UsesSqlCompactDatabase)
+    {
+        @Html.Hidden("MaxTextLength", 4000)
+    }
+    <form id="@string.Format("{0}form", typeName)" name="@string.Format("{0}form", typeName)" kendo-validator="validator" novalidate="novalidate" class="entity-form @ViewBag.FormClass">
+        @if (isTaggable)
+        {
+            @Html.Partial("~/Areas/Cms/Views/Shared/TagPartial.cshtml")
+        }
+        @if (hasName)
+        {
+            <strix-cms-editor editor-label="@DefaultInterface.Name">
+                <input type="text" id="name" name="name" class="k-textbox" ng-model="@string.Format("{0}.name", typeName)" required maxlength="250" data-required-msg="Enter a name" data-remote data-remote-idproperty="@key" data-remote-url="@remoteUrl" data-remote-msg="This name is already in use" strix-show-html />
+            </strix-cms-editor>
+        }
+
+        @RenderSection("FormContent", true)
+
+        @if (isVersionable)
+        {
+            <div ng-show="!isNew(@typeName)" class="version-log-container">
+                <strix-cms-editor editor-label="@Interface.VersionLog">
+                    <textarea class="k-textbox version-log" rows="5" ng-model="@string.Format("{0}.versionLog", typeName)" strix-show-html maxlength="1000"></textarea>
+                </strix-cms-editor>
+            </div>
+        }
+        <p>
+            <kendo-button ng-click="submit(@typeName)" class="k-primary" ng-disabled="savingEntity || remoteValidationInProgress">@DefaultInterface.Save</kendo-button>
+        </p>
+    </form>
+    @RenderSection("AfterForm", false)
+    @RenderSection("ImageUpload", false)
+    @RenderSection("AfterImageUpload", false)
+    @Html.Partial("ConfirmationModal", new ConfirmationConfig())
+</div>
