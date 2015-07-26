@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrixIT.Platform.Modules.Cms.Web", "StrixIT.Platform.Modules.Cms.Web\StrixIT.Platform.Modules.Cms.Web.csproj", "{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrixIT.Platform.Modules.Cms.WebClient", "StrixIT.Platform.Modules.Cms.WebClient\StrixIT.Platform.Modules.Cms.WebClient.csproj", "{589131D5-B87F-4D5F-8EEC-C2E3EBF61ECE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrixIT.Platform.Modules.Cms.Tests", "StrixIT.Platform.Modules.Cms.Tests\StrixIT.Platform.Modules.Cms.Tests.csproj", "{40397CC9-5AE2-4C8A-8F51-5E0D003A0C00}"
 EndProject
