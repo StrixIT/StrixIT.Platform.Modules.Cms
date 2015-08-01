@@ -1,4 +1,4 @@
-﻿#region Apache License
+#region Apache License
 
 //-----------------------------------------------------------------------
 // <copyright file="CmsInitializer.cs" company="StrixIT">
@@ -41,13 +41,13 @@ namespace StrixIT.Platform.Modules.Cms
         private IFileSystemWrapper _fileSystemWrapper;
         private IImageConverter _imageConverter;
         private IMembershipService _membershipService;
-        private IPlatformDataSource _platformDataSource;
+        private PlatformDataSource _platformDataSource;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public CmsInitializer(IPlatformDataSource platformDataSource, IFileSystemWrapper fileSystemWrapper, IImageConverter imageConverter)
+        public CmsInitializer(PlatformDataSource platformDataSource, IFileSystemWrapper fileSystemWrapper, IImageConverter imageConverter)
         {
             this._platformDataSource = platformDataSource;
             this._fileSystemWrapper = fileSystemWrapper;
@@ -170,21 +170,21 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (this._membershipService != null)
             {
-                var existingGroupIds = this._platformDataSource.Query<GroupData>().Select(u => u.Id).ToArray();
+                var existingGroupIds = this._platformDataSource.GroupNameLookups.Select(u => u.Id).ToArray();
                 var newGroupData = this._membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
 
                 if (newGroupData.Count() > 0)
                 {
-                    this._platformDataSource.Save(newGroupData.ToList());
+                    this._platformDataSource.GroupNameLookups.AddRange(newGroupData.ToList());
                     this._platformDataSource.SaveChanges();
                 }
 
-                var existingUserIds = this._platformDataSource.Query<UserData>().Select(u => u.Id).ToArray();
+                var existingUserIds = this._platformDataSource.UserNameLookups.Select(u => u.Id).ToArray();
                 var newUserData = this._membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
 
                 if (newUserData.Count() > 0)
                 {
-                    this._platformDataSource.Save(newUserData.ToList());
+                    this._platformDataSource.UserNameLookups.AddRange(newUserData.ToList());
                     this._platformDataSource.SaveChanges();
                 }
             }
@@ -192,12 +192,12 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 if (!this._platformDataSource.Query<GroupData>().Any(g => g.Id == Guid.Empty))
                 {
-                    this._platformDataSource.Save(new GroupData { Id = Guid.Empty, Name = "Main" });
+                    this._platformDataSource.GroupNameLookups.Add(new GroupData { Id = Guid.Empty, Name = "Main" });
                 }
 
                 if (!this._platformDataSource.Query<UserData>().Any(g => g.Id == Guid.Empty))
                 {
-                    this._platformDataSource.Save(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
+                    this._platformDataSource.UserNameLookups.Add(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
                 }
 
                 this._platformDataSource.SaveChanges();
