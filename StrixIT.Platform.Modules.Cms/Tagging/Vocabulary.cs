@@ -31,7 +31,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// A class that defines a vocabulary for the Taxonomy system. A vocabulary holds a collection
     /// of terms.
     /// </summary>
-    public class Vocabulary : ValidationBase
+    public class Vocabulary
     {
         #region Public Properties
 

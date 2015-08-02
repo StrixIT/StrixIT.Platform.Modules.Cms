@@ -29,7 +29,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The base class for all Cms content.
     /// </summary>
-    public abstract class ContentBase : ValidationBase, IAudit
+    public abstract class ContentBase : IAudit
     {
         #region Public Properties
 

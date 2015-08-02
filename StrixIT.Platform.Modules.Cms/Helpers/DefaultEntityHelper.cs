@@ -224,7 +224,7 @@ namespace StrixIT.Platform.Modules.Cms
                 types.AddRange(assembly.GetTypes().Where(ty => ty.IsClass
                                                                && !ty.IsAbstract
                                                                && !ty.IsGenericType
-                                                               && typeof(ValidationBase).IsAssignableFrom(ty)));
+                                                               && typeof(object).IsAssignableFrom(ty)));
             }
 
             foreach (var type in types)
@@ -234,6 +234,7 @@ namespace StrixIT.Platform.Modules.Cms
                 viewModelType = viewModelType != null ? viewModelType : listModelType;
                 listModelType = listModelType != null ? listModelType : viewModelType;
 
+                // Todo: throw error here if a view or list model type occurs more than once?
                 if (viewModelType != null || listModelType != null)
                 {
                     _objectMaps.Add(new ObjectMap(type, viewModelType, listModelType));

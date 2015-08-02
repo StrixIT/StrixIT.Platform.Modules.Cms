@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// A class that contains the basic information for an entity type as stored in the database.
     /// </summary>
-    public class EntityType : ValidationBase
+    public class EntityType
     {
         #region Public Properties
 

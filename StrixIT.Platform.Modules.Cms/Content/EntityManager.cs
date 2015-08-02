@@ -348,7 +348,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
 
-            if (!theContent.IsValid)
+            if (!theContent.Validate())
             {
                 throw new StrixValidationException();
             }
@@ -571,7 +571,7 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     var genericArguments = p.PropertyType.GenericTypeArguments;
 
-                    if (genericArguments.Length == 1 && typeof(ValidationBase).IsAssignableFrom(genericArguments.First()))
+                    if (genericArguments.Length == 1 && typeof(object).IsAssignableFrom(genericArguments.First()))
                     {
                         return true;
                     }
@@ -582,12 +582,13 @@ namespace StrixIT.Platform.Modules.Cms
 
             foreach (var prop in relationProperties)
             {
-                var firstVal = first.GetPropertyValue(prop) as IEnumerable<ValidationBase>;
+                var firstVal = first.GetPropertyValue(prop) as IEnumerable<object>;
                 var secondVal = second.GetPropertyValue(prop);
 
-                if (firstVal != null && firstVal.Any(v => !v.IsValid) && secondVal != null)
+                // Todo: why the check with validate here?
+                if (firstVal != null && firstVal.Any(v => !v.Validate()) && secondVal != null)
                 {
-                    relationValues.Add(prop, ((IEnumerable<ValidationBase>)secondVal).ToList());
+                    relationValues.Add(prop, ((IEnumerable<object>)secondVal).ToList());
                 }
                 else
                 {
@@ -669,7 +670,7 @@ namespace StrixIT.Platform.Modules.Cms
                         var addMethod = collection.GetType().GetMethod("Add");
                         clearMethod.Invoke(collection, null);
 
-                        foreach (var item in (IEnumerable<ValidationBase>)values)
+                        foreach (var item in (IEnumerable<object>)values)
                         {
                             addMethod.Invoke(collection, new object[] { item });
                         }

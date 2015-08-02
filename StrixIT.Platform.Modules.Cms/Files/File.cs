@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// A class describing the files uploaded in the Cms.
     /// </summary>
-    public class File : ValidationBase
+    public class File
     {
         #region Public Properties
 

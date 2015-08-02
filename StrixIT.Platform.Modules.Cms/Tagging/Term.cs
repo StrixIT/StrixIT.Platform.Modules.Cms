@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// A class used to define a Term in the Taxonomy system.
     /// </summary>
-    public class Term : ValidationBase
+    public class Term
     {
         #region Public Properties
 

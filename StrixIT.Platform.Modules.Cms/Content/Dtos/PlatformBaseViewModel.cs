@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The base view model for all view models in the Cms.
     /// </summary>
-    public abstract class PlatformBaseViewModel : ValidationBase
+    public abstract class PlatformBaseViewModel
     {
         #region Private Fields
 

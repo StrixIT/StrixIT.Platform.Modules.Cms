@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The base entity class for all platform entities.
     /// </summary>
-    public class PlatformEntity : ValidationBase
+    public class PlatformEntity
     {
         #region Public Properties
 

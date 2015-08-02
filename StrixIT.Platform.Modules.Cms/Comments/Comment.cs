@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// A comment that can be added to an entity.
     /// </summary>
-    public class Comment : ValidationBase
+    public class Comment
     {
         #region Public Properties
 

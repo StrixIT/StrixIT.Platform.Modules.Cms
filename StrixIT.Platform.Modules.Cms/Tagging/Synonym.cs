@@ -29,7 +29,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// A class to define synonyms for a Taxonomy Term.
     /// </summary>
-    public class Synonym : ValidationBase
+    public class Synonym
     {
         #region Public Properties
 

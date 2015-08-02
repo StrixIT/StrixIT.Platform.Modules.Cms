@@ -28,7 +28,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The interface for cms content.
     /// </summary>
-    public interface IContent : IValidationBase, IAudit
+    public interface IContent : IAudit
     {
         #region Public Properties
 

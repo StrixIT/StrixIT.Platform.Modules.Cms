@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     /// A class for enabling/disabling entity services, such as translations and versioning, for an
     /// entity type.
     /// </summary>
-    public class EntityTypeServiceAction : ValidationBase
+    public class EntityTypeServiceAction
     {
         #region Public Properties
 
