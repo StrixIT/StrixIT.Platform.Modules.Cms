@@ -4,27 +4,29 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using StrixIT.Platform.Core;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     [TestClass]
     public class EntityHelperTests
     {
-        #region Public Methods
+        #region Private Fields
 
-        [ClassInitialize]
-        public static void Init(TestContext context)
-        {
-            TestHelpers.MockUtilities();
-            new StructureMapDependencyInjector();
-            CmsInitializer.ConfigureEntityMaps();
-        }
+        private List<Mock> _mocks;
+        private Mock<IUserContext> _userMock;
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         [TestMethod]
         public void GetEntityTypeIdShouldReturnCorrectId()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             var id = helper.GetEntityTypeId(typeof(Html));
             Assert.AreEqual(EntityServicesTestData.HtmlEntityTypeId, id);
         }
@@ -32,15 +34,24 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void GetTypeUsingEntityIdShouldReturnCorrectType()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             var type = helper.GetEntityType(EntityServicesTestData.HtmlEntityTypeId);
             Assert.AreEqual(typeof(Html), type);
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
+            _mocks = TestHelpers.MockUtilities();
+            _userMock = _mocks.First(m => typeof(Mock<IUserContext>).IsAssignableFrom(m.GetType())) as Mock<IUserContext>;
+            new StructureMapDependencyInjector();
+            CmsInitializer.ConfigureEntityMaps();
         }
 
         [TestMethod]
         public void IsServiceActiveShouldReturnFalseForNonActiveService()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             var result = helper.IsServiceActive(typeof(Html), "Versioning");
             Assert.IsFalse(result);
         }
@@ -48,7 +59,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void IsServiceActiveShouldReturnTrueForActiveService()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             var result = helper.IsServiceActive(typeof(Html), "Translations");
             Assert.IsTrue(result);
         }
@@ -56,7 +67,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void MappingAnEntityToAListModelShouldMapTheUrl()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             EntityHelper.SetHelper(helper);
             var content = EntityServicesTestData.FirstNewsContentEn.Map<NewsListModel>();
             var result = content.Map<NewsListModel>();
@@ -66,7 +77,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void ObjectMapShouldReturnProperObjectMap()
         {
-            var helper = new DefaultEntityHelper(EntityServicesTestData.EntityTypes);
+            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
             var map = helper.GetObjectMap(typeof(News));
             Assert.AreEqual(typeof(News), map.ContentType);
             Assert.AreEqual(typeof(NewsViewModel), map.ViewModelType);

@@ -5,6 +5,7 @@
 ////------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         };
 
         private List<Mock> _mocks;
+        private Mock<IUserContext> _userMock;
 
         #endregion Private Fields
 
@@ -58,7 +60,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             var platformHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IPlatformHelper>))) as Mock<IPlatformHelper>;
             var entityHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
             StrixCms.SetHelper(new DefaultPlatformHelper(null));
-            var entityHelper = new DefaultEntityHelper(entityTypes);
+            var entityHelper = new DefaultEntityHelper(_userMock.Object, entityTypes);
             EntityHelper.SetHelper(entityHelper);
             var result = mock.EntityServiceManager.GetManagerActionRecords();
             StrixCms.SetHelper(platformHelperMock.Object);
@@ -72,6 +74,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void Init()
         {
             _mocks = TestHelpers.MockUtilities();
+            _userMock = _mocks.First(m => typeof(Mock<IUserContext>).IsAssignableFrom(m.GetType())) as Mock<IUserContext>;
         }
 
         #endregion Public Methods

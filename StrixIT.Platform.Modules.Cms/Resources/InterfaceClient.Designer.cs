@@ -61,6 +61,15 @@ namespace StrixIT.Platform.Modules.Cms.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to anonymous.
+        /// </summary>
+        public static string Anonymous {
+            get {
+                return ResourceManager.GetString("Anonymous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File deleted successfully.
         /// </summary>
         public static string FileDeletedSuccessfully {

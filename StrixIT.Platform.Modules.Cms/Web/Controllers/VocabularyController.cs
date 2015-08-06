@@ -30,10 +30,17 @@ namespace StrixIT.Platform.Modules.Cms
     [StrixAuthorization(Roles = CmsRoleNames.EDITORROLES)]
     public class VocabularyController : BaseCrudController<Guid, VocabularyViewModel>
     {
+        #region Private Fields
+
+        private IUserContext _user;
+
+        #endregion Private Fields
+
         #region Public Constructors
 
-        public VocabularyController(ITaxonomyService service) : base(service)
+        public VocabularyController(ITaxonomyService service, IUserContext user) : base(service)
         {
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -75,7 +82,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public override ActionResult Index()
         {
-            var config = new VocabularyListConfiguration(StrixPlatform.User);
+            var config = new VocabularyListConfiguration(_user);
             return this.View(config);
         }
 

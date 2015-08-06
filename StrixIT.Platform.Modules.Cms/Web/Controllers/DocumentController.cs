@@ -40,8 +40,8 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public DocumentController(IDocumentService documentService, ICommentService commentService, ITaxonomyService taxonomyService)
-            : base(documentService, commentService)
+        public DocumentController(IDocumentService documentService, ICommentService commentService, IUserContext user, ITaxonomyService taxonomyService)
+            : base(documentService, commentService, user)
         {
             this._taxonomyService = taxonomyService;
         }
@@ -85,7 +85,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public override ActionResult Index()
         {
-            var config = new EntityListConfiguration<DocumentViewModel>(StrixPlatform.User);
+            var config = new EntityListConfiguration<DocumentViewModel>(User);
             config.Fields.Insert(0, new ListFieldConfiguration("Extension"));
             config.Fields.Insert(1, new ListFieldConfiguration("FileSize", "bytes") { ShowFilter = false });
             return this.View(config);

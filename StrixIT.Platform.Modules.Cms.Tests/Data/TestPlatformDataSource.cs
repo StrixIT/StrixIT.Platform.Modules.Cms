@@ -11,8 +11,8 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     {
         #region Public Constructors
 
-        public TestPlatformDataSource(IFileSystemWrapper wrapper, ICacheService cache)
-            : base(wrapper, cache)
+        public TestPlatformDataSource(IFileSystemWrapper wrapper, ICacheService cache, IUserContext user)
+            : base(wrapper, cache, user)
         {
             Configuration.LazyLoadingEnabled = true;
         }

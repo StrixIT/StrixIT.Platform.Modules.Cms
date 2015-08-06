@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -33,15 +33,17 @@ namespace StrixIT.Platform.Modules.Cms
 
         private ICommentManager _commentManager;
         private IPlatformDataSource _dataSource;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public CommentService(IPlatformDataSource dataSource, ICommentManager commentManager)
+        public CommentService(IPlatformDataSource dataSource, ICommentManager commentManager, IUserContext user)
         {
-            this._dataSource = dataSource;
-            this._commentManager = commentManager;
+            _dataSource = dataSource;
+            _commentManager = commentManager;
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -55,23 +57,23 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("model");
             }
 
-            var result = this._commentManager.DeleteComment(model.Map<Comment>(), model.EntityTypeId);
-            this._dataSource.SaveChanges();
+            var result = _commentManager.DeleteComment(model.Map<Comment>(), model.EntityTypeId);
+            _dataSource.SaveChanges();
             return result;
         }
 
         public CommentListModel GetComments(Guid entityId)
         {
-            return this.GetComments(entityId, null);
+            return GetComments(entityId, null);
         }
 
         public CommentListModel GetComments(Guid entityId, string culture)
         {
-            var comments = this._commentManager.GetComments(entityId, culture);
+            var comments = _commentManager.GetComments(entityId, culture);
             CommentListModel list = new CommentListModel();
             list.EntityId = entityId;
             list.Culture = culture;
-            list.ChildComments = this.CreateCommentTree(comments, null);
+            list.ChildComments = CreateCommentTree(comments, null);
             return list;
         }
 
@@ -86,18 +88,18 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (model.Id == 0)
             {
-                comment = this._commentManager.AddComment(model.EntityTypeId, model.Map<Comment>());
+                comment = _commentManager.AddComment(model.EntityTypeId, model.Map<Comment>());
             }
             else
             {
-                comment = this._commentManager.EditComment(model.Map<Comment>());
+                comment = _commentManager.EditComment(model.Map<Comment>());
             }
 
-            this._dataSource.SaveChanges();
+            _dataSource.SaveChanges();
 
-            var userId = StrixPlatform.User.Id;
-            var isAdmin = StrixPlatform.User.IsAdministrator;
-            var hasChildren = this._commentManager.HasChildComments(comment.Id);
+            var userId = _user.Id;
+            var isAdmin = _user.IsAdministrator;
+            var hasChildren = _commentManager.HasChildComments(comment.Id);
 
             model = comment.Map<CommentViewModel>();
 
@@ -114,8 +116,8 @@ namespace StrixIT.Platform.Modules.Cms
         private IList<CommentViewModel> CreateCommentTree(ICollection<Comment> comments, long? parentId)
         {
             List<CommentViewModel> list = new List<CommentViewModel>();
-            var userId = StrixPlatform.User.Id;
-            var isAdmin = StrixPlatform.User.IsAdministrator;
+            var userId = _user.Id;
+            var isAdmin = _user.IsAdministrator;
 
             foreach (Comment comment in comments.Where(co => parentId.HasValue ? co.ParentId == parentId.Value : co.ParentId == null))
             {
@@ -127,7 +129,7 @@ namespace StrixIT.Platform.Modules.Cms
 
                 if (subComments.Count > 0)
                 {
-                    commentModel.ChildComments = this.CreateCommentTree(comments, comment.Id);
+                    commentModel.ChildComments = CreateCommentTree(comments, comment.Id);
                 }
 
                 list.Add(commentModel);

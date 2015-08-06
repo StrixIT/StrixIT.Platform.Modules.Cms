@@ -5,6 +5,7 @@
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
@@ -81,7 +82,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         private IFileManager GetManager()
         {
-            return new FileManager(new Mock<IPlatformDataSource>().Object, new Mock<IImageConverter>().Object);
+            return new FileManager(new Mock<IPlatformDataSource>().Object, new Mock<IImageConverter>().Object, new Mock<IUserContext>().Object);
         }
 
         #endregion Private Methods

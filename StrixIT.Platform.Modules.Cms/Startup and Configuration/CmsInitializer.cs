@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -47,15 +47,19 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public CmsInitializer(PlatformDataSource platformDataSource, IFileSystemWrapper fileSystemWrapper, IImageConverter imageConverter)
+        public CmsInitializer(
+            PlatformDataSource platformDataSource,
+            IFileSystemWrapper fileSystemWrapper,
+            IImageConverter imageConverter,
+            IUserContext user)
         {
-            this._platformDataSource = platformDataSource;
-            this._fileSystemWrapper = fileSystemWrapper;
-            this._imageConverter = imageConverter;
+            _platformDataSource = platformDataSource;
+            _fileSystemWrapper = fileSystemWrapper;
+            _imageConverter = imageConverter;
 
             // I must use the service locator here because no implementation for IMembershipService
             // could be available.
-            this._membershipService = DependencyInjector.TryGet<IMembershipService>();
+            _membershipService = DependencyInjector.TryGet<IMembershipService>();
         }
 
         #endregion Public Constructors
@@ -64,11 +68,11 @@ namespace StrixIT.Platform.Modules.Cms
 
         public void Initialize()
         {
-            this.UpdateMembershipLookups();
-            this.AddMailTemplates();
+            UpdateMembershipLookups();
+            AddMailTemplates();
             RegisterDefaultTokens();
-            DataMapper.OnCreateMap += this.ConfigureTypeMaps;
-            this.RegisterMappings();
+            DataMapper.OnCreateMap += ConfigureTypeMaps;
+            RegisterMappings();
             PageRegistration.LocatePages();
         }
 
@@ -128,9 +132,9 @@ namespace StrixIT.Platform.Modules.Cms
 
         internal void AddMailTemplates()
         {
-            if (this._platformDataSource.Query<MailContentTemplate>().Count() == 0)
+            if (_platformDataSource.Query<MailContentTemplate>().Count() == 0)
             {
-                new MailBuilder(this._fileSystemWrapper, this._membershipService).InitMails(this._platformDataSource);
+                new MailBuilder(_fileSystemWrapper, _membershipService).InitMails(_platformDataSource);
             }
         }
 
@@ -139,11 +143,12 @@ namespace StrixIT.Platform.Modules.Cms
             ConfigureFilterMaps();
             ConfigureEntityMaps();
             ConfigureAuditMaps();
-            ConfigureFileMaps(this._imageConverter);
+            ConfigureFileMaps(_imageConverter);
 
             DataMapper.CreateMap<Vocabulary, VocabularyViewModel>().AfterMap((vocabulary, model) =>
             {
-                model.CanEdit = StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES);
+                var user = DependencyInjector.Get<IUserContext>();
+                model.CanEdit = user.IsInRole(CmsRoleNames.EDITORROLES);
             });
 
             DataMapper.CreateMap<Term, TermViewModel>();
@@ -168,39 +173,39 @@ namespace StrixIT.Platform.Modules.Cms
 
         internal void UpdateMembershipLookups()
         {
-            if (this._membershipService != null)
+            if (_membershipService != null)
             {
-                var existingGroupIds = this._platformDataSource.GroupNameLookups.Select(u => u.Id).ToArray();
-                var newGroupData = this._membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
+                var existingGroupIds = _platformDataSource.GroupNameLookups.Select(u => u.Id).ToArray();
+                var newGroupData = _membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
 
                 if (newGroupData.Count() > 0)
                 {
-                    this._platformDataSource.GroupNameLookups.AddRange(newGroupData.ToList());
-                    this._platformDataSource.SaveChanges();
+                    _platformDataSource.GroupNameLookups.AddRange(newGroupData.ToList());
+                    _platformDataSource.SaveChanges();
                 }
 
-                var existingUserIds = this._platformDataSource.UserNameLookups.Select(u => u.Id).ToArray();
-                var newUserData = this._membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
+                var existingUserIds = _platformDataSource.UserNameLookups.Select(u => u.Id).ToArray();
+                var newUserData = _membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
 
                 if (newUserData.Count() > 0)
                 {
-                    this._platformDataSource.UserNameLookups.AddRange(newUserData.ToList());
-                    this._platformDataSource.SaveChanges();
+                    _platformDataSource.UserNameLookups.AddRange(newUserData.ToList());
+                    _platformDataSource.SaveChanges();
                 }
             }
             else
             {
-                if (!this._platformDataSource.Query<GroupData>().Any(g => g.Id == Guid.Empty))
+                if (!_platformDataSource.Query<GroupData>().Any(g => g.Id == Guid.Empty))
                 {
-                    this._platformDataSource.GroupNameLookups.Add(new GroupData { Id = Guid.Empty, Name = "Main" });
+                    _platformDataSource.GroupNameLookups.Add(new GroupData { Id = Guid.Empty, Name = "Main" });
                 }
 
-                if (!this._platformDataSource.Query<UserData>().Any(g => g.Id == Guid.Empty))
+                if (!_platformDataSource.Query<UserData>().Any(g => g.Id == Guid.Empty))
                 {
-                    this._platformDataSource.UserNameLookups.Add(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
+                    _platformDataSource.UserNameLookups.Add(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
                 }
 
-                this._platformDataSource.SaveChanges();
+                _platformDataSource.SaveChanges();
             }
         }
 
@@ -214,7 +219,8 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 var audit = x as IAudit;
                 var model = y as AuditViewModel;
-                model.CanEdit = StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES) || model.CreatedByUserId == StrixPlatform.User.Id;
+                var user = DependencyInjector.Get<IUserContext>();
+                model.CanEdit = user.IsInRole(CmsRoleNames.EDITORROLES) || model.CreatedByUserId == user.Id;
                 model.UpdatedBy = StrixCms.GetUserName(audit.UpdatedByUserId);
                 model.CreatedBy = StrixCms.GetUserName(audit.CreatedByUserId);
 

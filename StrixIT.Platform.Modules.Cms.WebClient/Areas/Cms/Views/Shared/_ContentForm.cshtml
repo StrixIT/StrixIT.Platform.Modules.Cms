@@ -46,7 +46,7 @@
         <a ng-href="{{ getLink('@Url.AdminLink(MvcConstants.DETAILS)', '@url') }}">@DefaultInterface.Cancel</a>
         |
     </div>
-    @if (!StrixPlatform.User.IsInRole(PlatformConstants.CONTRIBUTORROLE))
+    @if (!User.IsInRole(PlatformConstants.CONTRIBUTORROLE))
     {
         <a href="@(Url.AdminLink(MvcConstants.INDEX).Replace(string.Format("/{0}/", MvcConstants.INDEX.ToLower()), string.Empty))">@DefaultInterface.BackToList</a>
     }

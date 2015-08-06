@@ -4,6 +4,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using StrixIT.Platform.Core;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
@@ -16,7 +17,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod()]
         public void ImageAsBase64ShouldReturnProperBase64String()
         {
-            ImageConverter target = new ImageConverter();
+            ImageConverter target = new ImageConverter(new Mock<IUserContext>().Object);
             string path = StrixPlatform.Environment.WorkingDirectory + @"\TestFiles\Strix_losuiltje.png";
             int width = 100;
             int height = 100;
@@ -35,7 +36,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod()]
         public void ResizeShouldResizeImageAndSaveToDisk()
         {
-            ImageConverter target = new ImageConverter();
+            ImageConverter target = new ImageConverter(new Mock<IUserContext>().Object);
             string path = StrixPlatform.Environment.WorkingDirectory + @"\TestFiles\uiltje.png";
             string resultFile = StrixPlatform.Environment.WorkingDirectory + @"\TestFiles\uiltje_50_50.png";
             System.IO.File.Delete(resultFile);

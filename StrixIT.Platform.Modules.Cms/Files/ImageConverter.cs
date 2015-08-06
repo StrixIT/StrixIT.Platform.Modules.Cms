@@ -33,6 +33,21 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class ImageConverter : IImageConverter
     {
+        #region Private Fields
+
+        private IUserContext _user;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public ImageConverter(IUserContext user)
+        {
+            _user = user;
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         public string GetThumbPath(string path, int width, int height)
@@ -342,9 +357,9 @@ namespace StrixIT.Platform.Modules.Cms
                 directory = directory + string.Format("\\{0}", CmsConstants.SECURE);
             }
 
-            if (!StrixPlatform.User.IsInMainGroup)
+            if (!_user.IsInMainGroup)
             {
-                directory = directory + "\\" + StrixPlatform.User.GroupName;
+                directory = directory + "\\" + _user.GroupName;
             }
 
             return directory;

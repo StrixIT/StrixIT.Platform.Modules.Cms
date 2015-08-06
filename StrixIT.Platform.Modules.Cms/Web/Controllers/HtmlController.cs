@@ -20,6 +20,7 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -29,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public HtmlController(IEntityService<HtmlViewModel> service, ICommentService commentService) : base(service, commentService)
+        public HtmlController(IEntityService<HtmlViewModel> service, ICommentService commentService, IUserContext user) : base(service, commentService, user)
         {
         }
 

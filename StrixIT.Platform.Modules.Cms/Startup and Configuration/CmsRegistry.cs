@@ -32,7 +32,7 @@ namespace StrixIT.Platform.Modules.Cms
         public CmsRegistry()
         {
             For<IPlatformDataSource>()
-                .AddInstances(inst => inst.ConstructedBy(() => new PlatformDataSource(new FileSystemWrapper(), new CacheService()))
+                .AddInstances(inst => inst.ConstructedBy(() => new PlatformDataSource(new FileSystemWrapper(), new CacheService(), DependencyInjector.Get<IUserContext>()))
                 .Named(PlatformConstants.STRUCTUREMAPPRIVATE))
                 .Use<PlatformDataSource>();
 

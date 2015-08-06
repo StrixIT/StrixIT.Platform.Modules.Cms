@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -44,17 +44,19 @@ namespace StrixIT.Platform.Modules.Cms
 
         private ICacheService _cache;
         private IFileSystemWrapper _fileSystemWrapper;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Constructors
 
-        public PlatformDataSource(IFileSystemWrapper fileSystemWrapper, ICacheService cache)
+        public PlatformDataSource(IFileSystemWrapper fileSystemWrapper, ICacheService cache, IUserContext user)
             : base(CmsConstants.CMS)
         {
-            this._fileSystemWrapper = fileSystemWrapper;
-            this._cache = cache;
-            this.Configuration.ValidateOnSaveEnabled = false;
+            _fileSystemWrapper = fileSystemWrapper;
+            _cache = cache;
+            _user = user;
+            Configuration.ValidateOnSaveEnabled = false;
         }
 
         protected PlatformDataSource(string connectionStringName) : base(connectionStringName)
@@ -73,7 +75,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             get
             {
-                return this._fileSystemWrapper;
+                return _fileSystemWrapper;
             }
         }
 
@@ -174,8 +176,8 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var relations = entity.GetPropertyValue(propertyName) as IEnumerable;
             var relationType = relations.AsQueryable().ElementType;
-            var relationKeyProperties = this.GetKeyProperties(relationType);
-            var keys = this.GetKeyValues(relationType, relations);
+            var relationKeyProperties = GetKeyProperties(relationType);
+            var keys = GetKeyValues(relationType, relations);
 
             if (keys.Count == 0)
             {
@@ -219,14 +221,14 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             // Use the where clause and all keys to create the query.
-            var query = this.Query(relationType).Where(whereBuilder.ToString(), allKeys.ToArray());
+            var query = Query(relationType).Where(whereBuilder.ToString(), allKeys.ToArray());
             var list = typeof(Enumerable).GetMethod("ToList").MakeGenericMethod(new Type[] { relationType }).Invoke(null, new object[] { query }) as IList;
             return list;
         }
 
         public TKey GetKeyValue<TKey>(object entity)
         {
-            return (TKey)this.GetKeyValues(entity.GetType(), new object[] { entity }).First().First();
+            return (TKey)GetKeyValues(entity.GetType(), new object[] { entity }).First().First();
         }
 
         public string[] GetManyToManyRelations(Type entityType)
@@ -247,7 +249,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             List<ModifiedPropertyValue> list = new List<ModifiedPropertyValue>();
-            var entry = this.Entry(entity);
+            var entry = Entry(entity);
 
             if (entry.State == EntityState.Detached)
             {
@@ -264,37 +266,37 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             // Check many-on-many relations for changes.
-            list.AddRange(this.GetChangedRelations(entity));
+            list.AddRange(GetChangedRelations(entity));
 
             return list;
         }
 
         public void Ignore(object entity)
         {
-            var entry = this.Entry(entity);
+            var entry = Entry(entity);
             entry.State = System.Data.Entity.EntityState.Detached;
         }
 
         public IQueryable<T> Query<T>(string includes) where T : class
         {
             IQueryable query = base.Query<T>();
-            query = this.AddIncludes(query, includes);
-            query = this.SecureQuery(query);
+            query = AddIncludes(query, includes);
+            query = SecureQuery(query);
             return query.Cast<T>();
         }
 
         public IQueryable Query(Type entityType)
         {
-            var query = this.Set(entityType).AsQueryable();
-            query = this.SecureQuery(query);
+            var query = Set(entityType).AsQueryable();
+            query = SecureQuery(query);
             return query;
         }
 
         public IQueryable Query(Type entityType, string includes)
         {
-            var query = this.Set(entityType).AsQueryable();
-            query = this.AddIncludes(query, includes);
-            query = this.SecureQuery(query);
+            var query = Set(entityType).AsQueryable();
+            query = AddIncludes(query, includes);
+            query = SecureQuery(query);
             return query;
         }
 
@@ -306,26 +308,26 @@ namespace StrixIT.Platform.Modules.Cms
         {
             try
             {
-                var modifiedEntityTypes = this.ChangeTracker.Entries().Where(en => en.Entity != null && (en.State.Equals(EntityState.Added) || en.State.Equals(EntityState.Modified) || en.State.Equals(EntityState.Deleted))).Select(en => en.Entity.GetType()).Distinct().ToArray();
+                var modifiedEntityTypes = ChangeTracker.Entries().Where(en => en.Entity != null && (en.State.Equals(EntityState.Added) || en.State.Equals(EntityState.Modified) || en.State.Equals(EntityState.Deleted))).Select(en => en.Entity.GetType()).Distinct().ToArray();
 
                 base.SaveChanges();
 
-                this._fileSystemWrapper.ClearSavedQueue();
+                _fileSystemWrapper.ClearSavedQueue();
 
                 // Delete all files marked for deletion.
-                this._fileSystemWrapper.ProcessDeleteQueue();
+                _fileSystemWrapper.ProcessDeleteQueue();
 
                 foreach (var type in modifiedEntityTypes)
                 {
                     var entityType = ObjectContext.GetObjectType(type);
-                    this._cache.Delete(string.Format(CmsConstants.CONTENTPERCULTURE, entityType.Name));
-                    this._cache.Delete(string.Format(CmsConstants.LOOKUPPERCULTURE, entityType.Name));
+                    _cache.Delete(string.Format(CmsConstants.CONTENTPERCULTURE, entityType.Name));
+                    _cache.Delete(string.Format(CmsConstants.LOOKUPPERCULTURE, entityType.Name));
                 }
             }
             catch (Exception ex)
             {
-                this._fileSystemWrapper.RemoveFilesInSavedQueue();
-                this._fileSystemWrapper.ClearDeleteQueue();
+                _fileSystemWrapper.RemoveFilesInSavedQueue();
+                _fileSystemWrapper.ClearDeleteQueue();
                 Logger.Log("An error occurred while saving the context changes.", ex, LogLevel.Fatal);
                 throw;
             }
@@ -371,8 +373,8 @@ namespace StrixIT.Platform.Modules.Cms
             ReadEntityTypeConfigurations(modelBuilder);
 
             // Disable cascade for entity and create and update user relations on content base
-            // entities. This is needed to prevent multiple cascade errors when generating the
-            // database and (for the entity relation) being unable to keep the
+            // entities. is needed to prevent multiple cascade errors when generating the database
+            // and (for the entity relation) being unable to keep the
             // ManyToManyCascadeDeleteConvention for relations between entities (as used in e.g. the
             // Path of Heroes module).
             foreach (var contentType in ModuleManager.GetTypeList(typeof(ContentBase)).Where(t => !t.Equals(typeof(ContentBase))))
@@ -397,7 +399,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             var entityType = query.ElementType;
             var isContent = typeof(IContent).IsAssignableFrom(entityType);
-            var currentGroupId = StrixPlatform.User.GroupId;
+            var currentGroupId = _user.GroupId;
             string prefix = string.Empty;
 
             if (isContent)
@@ -407,7 +409,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (isContent || typeof(PlatformEntity).IsAssignableFrom(entityType))
             {
-                var currentUserId = StrixPlatform.User.Id;
+                var currentUserId = _user.Id;
 
                 if (currentUserId != null)
                 {
@@ -588,7 +590,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The select many query</returns>
         private IQueryable BuildRelationQuery(Type entityType, Type propertyType, string propertyName, string where, object[] keyValues)
         {
-            var query = this.Set(entityType).Where(where, keyValues);
+            var query = Set(entityType).Where(where, keyValues);
             var selectManyMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "SelectMany" && m.GetGenericArguments().Count() == 2).First();
             var nonGeneric = selectManyMethod.MakeGenericMethod(entityType, propertyType);
             var lambda = GetPropertyExpression(entityType, propertyName, propertyType);
@@ -605,15 +607,15 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var list = new List<ModifiedPropertyValue>();
             var entityType = ObjectContext.GetObjectType(entity.GetType());
-            var props = this.GetManyToManyRelations(entityType);
-            var where = this.GetWhereClause(entityType);
-            var keyValues = this.GetKeyValues(entityType, new object[] { entity }).First();
+            var props = GetManyToManyRelations(entityType);
+            var where = GetWhereClause(entityType);
+            var keyValues = GetKeyValues(entityType, new object[] { entity }).First();
 
             foreach (var prop in props)
             {
                 var propertyType = entity.GetType().GetProperty(prop).PropertyType.GenericTypeArguments[0];
-                var oldValuesQuery = this.BuildRelationQuery(entityType, propertyType, prop, where, keyValues);
-                var select = this.GetSelectClause(propertyType);
+                var oldValuesQuery = BuildRelationQuery(entityType, propertyType, prop, where, keyValues);
+                var select = GetSelectClause(propertyType);
                 var oldValues = GetRelationValues(oldValuesQuery, select);
                 var newValues = new List<IDictionary<string, object>>();
                 var relationProperty = entity.GetPropertyValue(prop) as IEnumerable;
@@ -671,7 +673,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             StringBuilder select = new StringBuilder();
 
-            foreach (var key in this.GetKeyProperties(entityType))
+            foreach (var key in GetKeyProperties(entityType))
             {
                 if (select.Length != 0)
                 {
@@ -692,7 +694,7 @@ namespace StrixIT.Platform.Modules.Cms
         private string GetWhereClause(Type entityType)
         {
             StringBuilder where = new StringBuilder();
-            var keyProperties = this.GetKeyProperties(entityType);
+            var keyProperties = GetKeyProperties(entityType);
 
             for (int i = 0; i < keyProperties.Length; i++)
             {

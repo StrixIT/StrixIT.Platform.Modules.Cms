@@ -4,6 +4,9 @@
 //// </auto-generated>
 ////------------------------------------------------------------------------------
 
+using Moq;
+using StrixIT.Platform.Core;
+
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
     public class EntityServiceManagerMock
@@ -12,6 +15,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         private DataSourceMock _dataSourceMock = new DataSourceMock();
         private IEntityServiceManager _manager;
+        private Mock<IUserContext> _userMock = new Mock<IUserContext>();
 
         #endregion Private Fields
 
@@ -19,7 +23,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         public EntityServiceManagerMock()
         {
-            _manager = new EntityServiceManager(_dataSourceMock.Mock.Object);
+            _manager = new EntityServiceManager(_dataSourceMock.Mock.Object, _userMock.Object);
         }
 
         #endregion Public Constructors
@@ -39,6 +43,14 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             get
             {
                 return _manager;
+            }
+        }
+
+        public Mock<IUserContext> UserMock
+        {
+            get
+            {
+                return _userMock;
             }
         }
 

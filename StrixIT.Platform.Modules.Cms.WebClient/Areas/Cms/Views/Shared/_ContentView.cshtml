@@ -20,7 +20,7 @@
 @{
     Layout = "~/Areas/Admin/Views/Shared/_ItemLayout.cshtml";
     var type = (Type)ViewBag.ModelType;
-    bool IsAdmin = StrixPlatform.User.IsAdministrator;
+    bool IsAdmin = User.IsAdministrator;
     bool canEdit = typeof(AuditViewModel).IsAssignableFrom(type);
     var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
     var hasName = type.HasProperty("Name");
@@ -44,7 +44,7 @@
 @section Navigation {
     <div class="inline" ng-show="!(@showVersion)">
         <div class="inline" @if (canEdit) { @: ng-show="@string.Format("{0}.canEdit", typeName)"
-                                                                                                                                      }>
+                                                                                                                                                   }>
             @if (supportDrafts)
             {
                 <a ng-href="{{ ''@(Url.AdminLink("Details") + "?versionNumber={0}")'.replace('{0}', @string.Format("{0}.versionNumber", typeName)) }}">@Interface.ViewDraft</a>

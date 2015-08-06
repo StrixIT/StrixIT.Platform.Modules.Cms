@@ -19,15 +19,19 @@
 @{
     var type = (Type)ViewBag.ModelType;
     var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
+    var membershipActive = DependencyInjector.TryGet<IMembershipService>() != null;
 }
 <script type="text/x-kendo-angular-template" id="@(typeName + "versionstemplate")">
     <tr>
         <td>
             <span>{{ dataItem.versionNumber }}</span>
         </td>
-        <td>
-            <span>{{ dataItem.createdBy }}</span>
-        </td>
+        @if (membershipActive)
+        {
+            <td>
+                <span>{{ dataItem.createdBy }}</span>
+            </td>
+        }
         <td>
             <span>{{ dataItem.createdOn | kendoDate }}</span>
         </td>
@@ -50,9 +54,12 @@
                 <th data-field="VersionNumber">
                     @Interface.VersionNumberHeader
                 </th>
-                <th data-field="CreatedBy">
-                    @DefaultInterface.CreatedBy
-                </th>
+                @if (membershipActive)
+                {
+                    <th data-field="CreatedBy">
+                        @DefaultInterface.CreatedBy
+                    </th>
+                }
                 <th data-field="CreatedOn">
                     @DefaultInterface.CreatedOn
                 </th>
@@ -66,9 +73,12 @@
                 <th>
                     <input kendo-numeric-text-box data-field="VersionNumber" data-operator="equals" />
                 </th>
-                <th>
-                    <input type="text" class="k-textbox" data-field="CreatedBy" data-operator="contains" />
-                </th>
+                @if (membershipActive)
+                {
+                    <th>
+                        <input type="text" class="k-textbox" data-field="CreatedBy" data-operator="contains" />
+                    </th>
+                }
                 <th>
                     <input type="text" class="k-textbox" data-field="CreatedOn" data-operator="contains" />
                 </th>

@@ -26,7 +26,7 @@
             <img ng-src="{{ dataItem.filePath }}" />
             <span class="caption document-name" ng-bind-html="dataItem.name"></span>
         </a>
-        @if (StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES))
+        @if (User.IsInRole(CmsRoleNames.EDITORROLES))
         {
             <a class="cms-editlink" href="{{ '@Url.Action("Edit", "Document", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })/' + dataItem.url }}">@Interface.EditDocument</a>
         }
@@ -37,7 +37,7 @@
     <input type="text" class="k-textbox" strix-search k-data-source="documents" placeholder="Search documents..." data-field="Name, Description" />
     <ul class="cms-list-documents" kendo-listview="documentslist" k-options="documentslistconfig"></ul>
     <div kendo-pager k-data-source="documents"></div>
-    @if (StrixPlatform.User.IsInRole(CmsRoleNames.EDITORROLES))
+    @if (User.IsInRole(CmsRoleNames.EDITORROLES))
     {
         <a class="cms-createlink" href="@Url.Action("Edit", "Document", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })">@Interface.CreateDocument</a>
     }

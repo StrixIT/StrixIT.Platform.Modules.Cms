@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -37,15 +37,17 @@ namespace StrixIT.Platform.Modules.Cms
         private static string _uploadFolder = StrixCms.Config.Files.UploadFolder;
         private IPlatformDataSource _dataSource;
         private IImageConverter _imageConverter;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public FileManager(IPlatformDataSource dataSource, IImageConverter imageConverter)
+        public FileManager(IPlatformDataSource dataSource, IImageConverter imageConverter, IUserContext user)
         {
-            this._dataSource = dataSource;
-            this._imageConverter = imageConverter;
+            _dataSource = dataSource;
+            _imageConverter = imageConverter;
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -74,14 +76,14 @@ namespace StrixIT.Platform.Modules.Cms
 
             url = url.ToLower();
 
-            if (!StrixPlatform.User.IsInMainGroup && url.Contains(string.Format("{0}/{1}/", CmsConstants.SECURE.ToLower(), StrixPlatform.User.GroupName.ToLower())))
+            if (!_user.IsInMainGroup && url.Contains(string.Format("{0}/{1}/", CmsConstants.SECURE.ToLower(), _user.GroupName.ToLower())))
             {
                 return true;
             }
 
             var secureFiles = StrixCms.Config.Files.SecureFiles;
             var directoryIsSecure = url.Contains(string.Format("/{0}/", CmsConstants.SECURE.ToLower()));
-            var isAuthenticated = !string.IsNullOrWhiteSpace(StrixPlatform.User.Name);
+            var isAuthenticated = !string.IsNullOrWhiteSpace(_user.Name);
 
             if (secureFiles || directoryIsSecure)
             {
@@ -98,11 +100,11 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("fileId");
             }
 
-            var file = this._dataSource.Query<File>().FirstOrDefault(f => f.Id == fileId);
+            var file = _dataSource.Query<File>().FirstOrDefault(f => f.Id == fileId);
 
             if (file != null)
             {
-                this.Delete(file);
+                Delete(file);
             }
         }
 
@@ -113,13 +115,13 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("file");
             }
 
-            if (file.GroupId == StrixPlatform.User.GroupId)
+            if (file.GroupId == _user.GroupId)
             {
                 try
                 {
-                    this._dataSource.Delete(file);
+                    _dataSource.Delete(file);
                     string directory = System.IO.Path.Combine(StrixPlatform.Environment.MapPath(file.Folder), file.Path);
-                    this._dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
+                    _dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
                 }
                 catch (Exception ex)
                 {
@@ -131,15 +133,15 @@ namespace StrixIT.Platform.Modules.Cms
 
         public File Get(Guid id)
         {
-            return this._dataSource.Query<File>().FirstOrDefault(f => f.Id == id);
+            return _dataSource.Query<File>().FirstOrDefault(f => f.Id == id);
         }
 
         public DocumentType GetDocumentType(string extension)
         {
-            return this.IsImage(extension) ? DocumentType.Image :
-                        this.IsVideo(extension) ? DocumentType.Video :
-                        this.IsAudio(extension) ? DocumentType.Audio :
-                        this.IsDocument(extension) ? DocumentType.Document :
+            return IsImage(extension) ? DocumentType.Image :
+                        IsVideo(extension) ? DocumentType.Video :
+                        IsAudio(extension) ? DocumentType.Audio :
+                        IsDocument(extension) ? DocumentType.Document :
                         DocumentType.Unknown;
         }
 
@@ -160,7 +162,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public bool IsFileAllowed(string name)
         {
-            return this.IsFileAllowed(name, null);
+            return IsFileAllowed(name, null);
         }
 
         public bool IsFileAllowed(string name, string[] additionalAllowedExtensions)
@@ -212,16 +214,16 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            if (this.IsFileAllowed(arguments.FileName, new string[] { "zip" }) && arguments.FileData.Length > 0)
+            if (IsFileAllowed(arguments.FileName, new string[] { "zip" }) && arguments.FileData.Length > 0)
             {
                 string extension = System.IO.Path.GetExtension(arguments.FileName).Replace(".", string.Empty);
-                var isInMainGroup = StrixPlatform.User.IsInMainGroup;
+                var isInMainGroup = _user.IsInMainGroup;
                 File newFile = new File();
                 newFile.Path = !isInMainGroup || StrixCms.Config.Files.SecureFiles ? string.Format("{0}\\", CmsConstants.SECURE) : null;
 
                 if (!isInMainGroup)
                 {
-                    newFile.Path = newFile.Path + StrixPlatform.User.GroupName;
+                    newFile.Path = newFile.Path + _user.GroupName;
                 }
 
                 newFile.Id = Guid.NewGuid();
@@ -243,27 +245,27 @@ namespace StrixIT.Platform.Modules.Cms
                 try
                 {
                     var path = string.Format("{0}.{1}", Path.Combine(directory, newFile.FileName), newFile.Extension);
-                    this._dataSource.FileSystemWrapper.SaveFile(path, arguments.FileData);
+                    _dataSource.FileSystemWrapper.SaveFile(path, arguments.FileData);
 
-                    if (this.IsImage(newFile.Extension))
+                    if (IsImage(newFile.Extension))
                     {
                         if (arguments.MaxX.HasValue && arguments.MaxX.Value > 0 && arguments.MaxY.HasValue && arguments.MaxY.Value > 0)
                         {
-                            this._imageConverter.Resize(path, arguments.MaxX.Value, arguments.MaxY.Value, true);
+                            _imageConverter.Resize(path, arguments.MaxX.Value, arguments.MaxY.Value, true);
                         }
 
                         if (arguments.CustomX.HasValue && arguments.CustomX.Value > 0 && arguments.CustomY.HasValue && arguments.CustomY.Value > 0)
                         {
-                            this._imageConverter.Resize(path, arguments.CustomX.Value, arguments.CustomY.Value, false, false);
+                            _imageConverter.Resize(path, arguments.CustomX.Value, arguments.CustomY.Value, false, false);
                         }
                     }
 
-                    createdFile = this.CreateFile(newFile);
+                    createdFile = CreateFile(newFile);
                 }
                 catch (Exception ex)
                 {
-                    this._dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, newFile.FileName), newFile.Extension));
-                    this._dataSource.FileSystemWrapper.ProcessDeleteQueue();
+                    _dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, newFile.FileName), newFile.Extension));
+                    _dataSource.FileSystemWrapper.ProcessDeleteQueue();
                     Logger.Log(ex.Message, ex, LogLevel.Fatal);
                     throw;
                 }
@@ -308,7 +310,7 @@ namespace StrixIT.Platform.Modules.Cms
                             System.IO.Stream stream = entry.Open();
                             stream.Read(data, 0, (int)entry.Length);
 
-                            File file = this.Save(new SaveFileArguments
+                            File file = Save(new SaveFileArguments
                             {
                                 FileName = entry.Name,
                                 FileData = data,
@@ -327,10 +329,10 @@ namespace StrixIT.Platform.Modules.Cms
                 foreach (File file in files)
                 {
                     string directory = System.IO.Path.Combine(StrixPlatform.Environment.MapPath(_uploadFolder), file.Path);
-                    this._dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
+                    _dataSource.FileSystemWrapper.DeleteFile(string.Format("{0}.{1}", Path.Combine(directory, file.FileName), file.Extension));
                 }
 
-                this._dataSource.FileSystemWrapper.ProcessDeleteQueue();
+                _dataSource.FileSystemWrapper.ProcessDeleteQueue();
                 Logger.Log(ex.Message, ex, LogLevel.Fatal);
                 throw;
             }
@@ -392,10 +394,10 @@ namespace StrixIT.Platform.Modules.Cms
         private File CreateFile(File file)
         {
             file.Folder = _uploadFolder;
-            file.GroupId = StrixPlatform.User.GroupId;
+            file.GroupId = _user.GroupId;
             file.UploadedOn = DateTime.Now;
-            file.UploadedByUserId = StrixPlatform.User.Id;
-            this._dataSource.Save(file);
+            file.UploadedByUserId = _user.Id;
+            _dataSource.Save(file);
             return file;
         }
 

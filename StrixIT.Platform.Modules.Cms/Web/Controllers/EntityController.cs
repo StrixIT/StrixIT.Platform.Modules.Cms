@@ -38,6 +38,7 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private ICommentService _commentService;
+        private IUserContext _user;
 
         #endregion Private Fields
 
@@ -48,10 +49,11 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         /// <param name="entityService">The entity service to use</param>
         /// <param name="commentService">The comment service to use</param>
-        protected EntityController(IEntityService<TModel> entityService, ICommentService commentService)
+        protected EntityController(IEntityService<TModel> entityService, ICommentService commentService, IUserContext user)
             : base(entityService)
         {
             this._commentService = commentService;
+            _user = user;
         }
 
         #endregion Protected Constructors
@@ -66,6 +68,14 @@ namespace StrixIT.Platform.Modules.Cms
             get
             {
                 return this._service as IEntityService<TModel>;
+            }
+        }
+
+        protected new IUserContext User
+        {
+            get
+            {
+                return _user;
             }
         }
 
@@ -156,7 +166,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The index view</returns>
         public override ActionResult Index()
         {
-            var config = new EntityListConfiguration<TModel>(StrixPlatform.User);
+            var config = new EntityListConfiguration<TModel>(User);
             return this.View(config);
         }
 
@@ -191,7 +201,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
             else
             {
-                var model = new EntityListConfiguration<TModel>(StrixPlatform.User);
+                var model = new EntityListConfiguration<TModel>(User);
                 return this.View("List", model);
             }
         }

@@ -48,10 +48,19 @@ namespace StrixIT.Platform.Modules.Cms
         /// <param name="userContext">The user context to use</param>
         /// <param name="properties">The names of the properties to display in the list</param>
         public EntityListConfiguration(IUserContext userContext, IEnumerable<string> properties)
-            : base(EntityHelper.GetObjectMap(typeof(T)).ListModelType, properties != null ? properties.Concat(new string[] { CmsConstants.UPDATEDBY, CmsConstants.UPDATEDON }) : new string[] { CmsConstants.UPDATEDBY, CmsConstants.UPDATEDON })
+            : base(EntityHelper.GetObjectMap(typeof(T)).ListModelType)
         {
+            var propertiesToAdd = DependencyInjector.TryGet<IMembershipService>() != null ? new string[] { CmsConstants.UPDATEDBY, CmsConstants.UPDATEDON } : new string[] { CmsConstants.UPDATEDON };
+            properties = properties != null ? properties.Concat(propertiesToAdd) : propertiesToAdd;
+
+            foreach (var property in properties)
+            {
+                this.Fields.Add(new ListFieldConfiguration(property));
+            }
+
             var updatedOnField = this.Fields.First(f => f.Name == CmsConstants.UPDATEDON);
             updatedOnField.ShowFilter = false;
+            updatedOnField.FilterName = "kendoDate";
             this.InterfaceResourceType = typeof(Resources.Interface);
             this.CanCreate = true;
             this.CanEdit = true;

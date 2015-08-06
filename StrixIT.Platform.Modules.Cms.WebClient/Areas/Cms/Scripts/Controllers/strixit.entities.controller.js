@@ -96,7 +96,13 @@
         function getUpdateText(text) {
             if (text) {
                 var entity = entityService.getEntity();
-                return entity ? text.replace('{0}', entity.updatedBy).replace('{1}', $filter('kendoDate')(entity.updatedOn)) : '';
+
+                if (entity)
+                {
+                    var anonymous = $scope.getResource('cms', 'interface', 'anonymous');
+                    var updatedBy = entity.updatedBy ? text.replace('{0}', entity.updatedBy) : text.replace('{0}', anonymous);
+                    return updatedBy.replace('{1}', $filter('kendoDate')(entity.updatedOn))
+                }
             }
         }
 

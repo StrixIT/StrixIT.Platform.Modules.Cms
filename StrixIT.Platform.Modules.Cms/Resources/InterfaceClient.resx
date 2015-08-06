@@ -129,4 +129,7 @@
   <data name="FileTooLarge" xml:space="preserve">
     <value>The selected file is too large. You can upload no more than {0} MB.</value>
   </data>
+  <data name="Anonymous" xml:space="preserve">
+    <value>anonymous</value>
+  </data>
 </root>

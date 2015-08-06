@@ -15,6 +15,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         private Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
         private DataSourceMock _dataSourceMock = new DataSourceMock();
         private IEntityManager _manager;
+        private Mock<IUserContext> _userMock = new Mock<IUserContext>();
 
         #endregion Private Fields
 
@@ -24,7 +25,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             _dataSourceMock.RegisterData<PlatformEntity>(EntityServicesTestData.Entities);
             _dataSourceMock.RegisterData<News>(EntityServicesTestData.Content);
-            _manager = new EntityManager(_dataSourceMock.Mock.Object, _cacheMock.Object);
+            _manager = new EntityManager(_dataSourceMock.Mock.Object, _cacheMock.Object, _userMock.Object);
         }
 
         #endregion Public Constructors
@@ -52,6 +53,14 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             get
             {
                 return _manager;
+            }
+        }
+
+        public Mock<IUserContext> UserMock
+        {
+            get
+            {
+                return _userMock;
             }
         }
 

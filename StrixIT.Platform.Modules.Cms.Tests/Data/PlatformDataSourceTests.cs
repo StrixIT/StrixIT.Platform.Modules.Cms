@@ -23,7 +23,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Data
         [TestMethod]
         public void CmsConfigShouldCorrectlyReportUseOfSqlCompact()
         {
-            var source = new TestPlatformDataSource(null, null);
+            var source = new TestPlatformDataSource(null, null, null);
             Assert.IsTrue(StrixCms.Config.UsesSqlCompactDatabase);
         }
 

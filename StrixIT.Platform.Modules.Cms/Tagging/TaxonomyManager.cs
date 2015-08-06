@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -35,14 +35,16 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private IPlatformDataSource _dataSource;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public TaxonomyManager(IPlatformDataSource dataSource)
+        public TaxonomyManager(IPlatformDataSource dataSource, IUserContext user)
         {
-            this._dataSource = dataSource;
+            _dataSource = dataSource;
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -51,22 +53,22 @@ namespace StrixIT.Platform.Modules.Cms
 
         public bool Tag(IContent entity, IEnumerable<Guid> tagIds)
         {
-            return this.Tag(entity, null, tagIds);
+            return Tag(entity, null, tagIds);
         }
 
         public bool Tag(Guid entityId, Guid termId)
         {
-            return this.Tag(null, entityId, new Guid[] { termId });
+            return Tag(null, entityId, new Guid[] { termId });
         }
 
         public bool Tag(Guid entityId, IEnumerable<Guid> tagIds)
         {
-            return this.Tag(null, entityId, tagIds);
+            return Tag(null, entityId, tagIds);
         }
 
         public bool Tag(Guid entityId, string vocabularyName, string termName)
         {
-            return this.Tag(entityId, vocabularyName, termName, null);
+            return Tag(entityId, vocabularyName, termName, null);
         }
 
         public bool Tag(Guid entityId, string vocabularyName, string termName, string culture)
@@ -84,7 +86,7 @@ namespace StrixIT.Platform.Modules.Cms
             bool result = true;
 
             // See if the entity is tagged already.
-            var entity = this._dataSource.Query<PlatformEntity>().Include("Tags.Vocabulary").Where(e => e.Id == entityId).FirstOrDefault();
+            var entity = _dataSource.Query<PlatformEntity>().Include("Tags.Vocabulary").Where(e => e.Id == entityId).FirstOrDefault();
 
             if (entity == null)
             {
@@ -93,7 +95,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (!entity.Tags.Any(GetTermFunc(vocabularyName, termName, culture).Compile()))
             {
-                var term = this.GetTag(vocabularyName, termName);
+                var term = GetTag(vocabularyName, termName);
                 entity.Tags.Add(term);
                 term.TagCount++;
             }
@@ -107,17 +109,17 @@ namespace StrixIT.Platform.Modules.Cms
 
         public Term GetTag(Guid id)
         {
-            return this._dataSource.Query<Term>().FirstOrDefault(t => t.Id == id);
+            return _dataSource.Query<Term>().FirstOrDefault(t => t.Id == id);
         }
 
         public Term GetTag(string vocabularyName, string tagName)
         {
-            return this.GetTag(vocabularyName, tagName, null, null);
+            return GetTag(vocabularyName, tagName, null, null);
         }
 
         public Term GetTag(string vocabularyName, string tagName, string culture)
         {
-            return this.GetTag(vocabularyName, tagName, culture, null);
+            return GetTag(vocabularyName, tagName, culture, null);
         }
 
         public Term GetTag(string vocabularyName, string tagName, string culture, string include)
@@ -134,11 +136,11 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             // Try to get the tag from the database.
-            var term = this._dataSource.Query<Term>(include).FirstOrDefault(GetTermFunc(vocabularyName, tagName, culture));
+            var term = _dataSource.Query<Term>(include).FirstOrDefault(GetTermFunc(vocabularyName, tagName, culture));
 
             if (term == null)
             {
-                term = this.CreateTag(vocabularyName, tagName);
+                term = CreateTag(vocabularyName, tagName);
                 term.TaggedFiles = new List<File>();
             }
 
@@ -147,12 +149,12 @@ namespace StrixIT.Platform.Modules.Cms
 
         public IQueryable<Term> TagQuery()
         {
-            return this.TagQueryForVocabulary(null, null);
+            return TagQueryForVocabulary(null, null);
         }
 
         public IQueryable<Term> TagQuery(string culture)
         {
-            return this.TagQueryForVocabulary(null, culture);
+            return TagQueryForVocabulary(null, culture);
         }
 
         public IQueryable<Term> TagQueryForVocabulary(Guid vocabularyId)
@@ -162,12 +164,12 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("vocabularyId");
             }
 
-            return this._dataSource.Query<Vocabulary>().Where(v => v.Id == vocabularyId).SelectMany(v => v.Terms);
+            return _dataSource.Query<Vocabulary>().Where(v => v.Id == vocabularyId).SelectMany(v => v.Terms);
         }
 
         public IQueryable<Term> TagQueryForVocabulary(string vocabularyName)
         {
-            return this.TagQueryForVocabulary(vocabularyName, null);
+            return TagQueryForVocabulary(vocabularyName, null);
         }
 
         public IQueryable<Term> TagQueryForVocabulary(string vocabularyName, string culture)
@@ -178,7 +180,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             bool vocabularySpecified = !string.IsNullOrWhiteSpace(vocabularyName);
-            return this._dataSource.Query<Vocabulary>().Where(v => v.Culture.ToLower() == culture.ToLower()
+            return _dataSource.Query<Vocabulary>().Where(v => v.Culture.ToLower() == culture.ToLower()
                                                                    && ((!vocabularySpecified && !v.IsSystemVocabulary)
                                                                         || v.Name.ToLower() == vocabularyName.ToLower())).SelectMany(v => v.Terms);
         }
@@ -189,13 +191,13 @@ namespace StrixIT.Platform.Modules.Cms
 
         public Term CreateTag(Guid vocabularyId, string tagName)
         {
-            var vocabulary = this.GetVocabulary(vocabularyId);
-            return this.CreateTag(vocabulary.Name, tagName, vocabulary.Culture);
+            var vocabulary = GetVocabulary(vocabularyId);
+            return CreateTag(vocabulary.Name, tagName, vocabulary.Culture);
         }
 
         public Term CreateTag(string vocabularyName, string tagName)
         {
-            return this.CreateTag(vocabularyName, tagName, null);
+            return CreateTag(vocabularyName, tagName, null);
         }
 
         public Term CreateTag(string vocabularyName, string tagName, string culture)
@@ -210,7 +212,7 @@ namespace StrixIT.Platform.Modules.Cms
                 culture = StrixPlatform.DefaultCultureCode;
             }
 
-            var term = this._dataSource.Query<Term>().FirstOrDefault(GetTermFunc(vocabularyName, tagName, culture));
+            var term = _dataSource.Query<Term>().FirstOrDefault(GetTermFunc(vocabularyName, tagName, culture));
 
             if (term != null)
             {
@@ -218,18 +220,18 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             // Create the term if it does not exist yet.
-            var vocabulary = this.GetVocabulary(vocabularyName, culture);
+            var vocabulary = GetVocabulary(vocabularyName, culture);
             var id = Guid.NewGuid();
 
             term = new Term
             {
                 Id = id,
                 Name = tagName,
-                Url = UrlHelpers.CreateUniqueUrl(this._dataSource.Query<Term>(), tagName, id),
+                Url = UrlHelpers.CreateUniqueUrl(_dataSource.Query<Term>(), tagName, id),
                 VocabularyId = vocabulary.Id
             };
 
-            this._dataSource.Save(term);
+            _dataSource.Save(term);
             vocabulary.Terms.Add(term);
 
             return term;
@@ -246,17 +248,17 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("id");
             }
 
-            return this._dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Id == id);
+            return _dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Id == id);
         }
 
         public Vocabulary GetVocabulary(string vocabularyName)
         {
-            return this.GetVocabulary(vocabularyName, null, false);
+            return GetVocabulary(vocabularyName, null, false);
         }
 
         public Vocabulary GetVocabulary(string vocabularyName, string culture)
         {
-            return this.GetVocabulary(vocabularyName, culture, false);
+            return GetVocabulary(vocabularyName, culture, false);
         }
 
         public Vocabulary GetVocabulary(string vocabularyName, string culture, bool includeTerms)
@@ -271,7 +273,7 @@ namespace StrixIT.Platform.Modules.Cms
                 culture = StrixPlatform.DefaultCultureCode;
             }
 
-            var query = this._dataSource.Query<Vocabulary>();
+            var query = _dataSource.Query<Vocabulary>();
 
             if (includeTerms)
             {
@@ -282,7 +284,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (vocabulary == null)
             {
-                vocabulary = this.CreateVocabulary(vocabularyName, culture);
+                vocabulary = CreateVocabulary(vocabularyName, culture);
             }
 
             return vocabulary;
@@ -295,12 +297,12 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("url");
             }
 
-            return this._dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Url.ToLower() == url.ToLower());
+            return _dataSource.Query<Vocabulary>().FirstOrDefault(vo => vo.Url.ToLower() == url.ToLower());
         }
 
         public IQueryable<Vocabulary> VocabularyQuery()
         {
-            return this._dataSource.Query<Vocabulary>().Where(v => !v.IsSystemVocabulary);
+            return _dataSource.Query<Vocabulary>().Where(v => !v.IsSystemVocabulary);
         }
 
         #endregion Get Vocabulary
@@ -309,7 +311,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public Vocabulary CreateVocabulary(string vocabularyName)
         {
-            return this.CreateVocabulary(vocabularyName, null);
+            return CreateVocabulary(vocabularyName, null);
         }
 
         public Vocabulary CreateVocabulary(string vocabularyName, string culture)
@@ -324,7 +326,7 @@ namespace StrixIT.Platform.Modules.Cms
                 culture = StrixPlatform.DefaultCultureCode;
             }
 
-            var vocabulary = this._dataSource.Query<Vocabulary>().FirstOrDefault(GetVocabularyFunc(vocabularyName, culture));
+            var vocabulary = _dataSource.Query<Vocabulary>().FirstOrDefault(GetVocabularyFunc(vocabularyName, culture));
 
             if (vocabulary != null)
             {
@@ -337,15 +339,15 @@ namespace StrixIT.Platform.Modules.Cms
             vocabulary = new Vocabulary
             {
                 Id = id,
-                GroupId = StrixPlatform.User.GroupId,
+                GroupId = _user.GroupId,
                 Culture = culture,
                 Name = vocabularyName,
-                Url = UrlHelpers.CreateUniqueUrl(this._dataSource.Query<Vocabulary>(), vocabularyName, id),
+                Url = UrlHelpers.CreateUniqueUrl(_dataSource.Query<Vocabulary>(), vocabularyName, id),
                 IsSystemVocabulary = isSystem,
                 Terms = new List<Term>(),
             };
 
-            this._dataSource.Save(vocabulary);
+            _dataSource.Save(vocabulary);
             return vocabulary;
         }
 
@@ -355,18 +357,18 @@ namespace StrixIT.Platform.Modules.Cms
 
         public void DeleteTag(Guid id)
         {
-            var tag = this._dataSource.Query<Term>().Where(t => t.Id == id);
-            this._dataSource.Delete(tag);
+            var tag = _dataSource.Query<Term>().Where(t => t.Id == id);
+            _dataSource.Delete(tag);
         }
 
         public void DeleteTags(Guid entityId)
         {
-            var tags = this._dataSource.Query<PlatformEntity>().Where(t => t.Id == entityId).Select(t => t.Tags).ToList();
+            var tags = _dataSource.Query<PlatformEntity>().Where(t => t.Id == entityId).Select(t => t.Tags).ToList();
             var result = true;
 
             foreach (var tag in tags)
             {
-                this._dataSource.Delete(tag);
+                _dataSource.Delete(tag);
 
                 if (!result)
                 {
@@ -381,8 +383,8 @@ namespace StrixIT.Platform.Modules.Cms
 
         public void DeleteVocabulary(Guid id)
         {
-            var vocabulary = this._dataSource.Query<Vocabulary>().Where(v => v.Id == id);
-            this._dataSource.Delete(vocabulary);
+            var vocabulary = _dataSource.Query<Vocabulary>().Where(v => v.Id == id);
+            _dataSource.Delete(vocabulary);
         }
 
         #endregion Delete Vocabulary
@@ -401,13 +403,13 @@ namespace StrixIT.Platform.Modules.Cms
                 return;
             }
 
-            var theTag = this.GetTag(CoreVocabulary.FileUse.ToString(), tag);
+            var theTag = GetTag(CoreVocabulary.FileUse.ToString(), tag);
 
             // Save the tag to the data source to reset its deleted status, in case the tag is
             // marked as deleted.
-            this._dataSource.Save(theTag);
+            _dataSource.Save(theTag);
 
-            var files = this._dataSource.Query<File>().Include(f => f.Tags).Where(f => fileNames.Contains(f.FileName.ToLower())).ToList();
+            var files = _dataSource.Query<File>().Include(f => f.Tags).Where(f => fileNames.Contains(f.FileName.ToLower())).ToList();
 
             foreach (var name in fileNames)
             {
@@ -433,7 +435,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return;
             }
 
-            var theTag = this.GetTag(CoreVocabulary.FileUse.ToString(), tag, null, "TaggedFiles.Tags");
+            var theTag = GetTag(CoreVocabulary.FileUse.ToString(), tag, null, "TaggedFiles.Tags");
 
             foreach (var name in fileNames)
             {
@@ -443,10 +445,10 @@ namespace StrixIT.Platform.Modules.Cms
                     theTag.TaggedFiles.Remove(file);
                     theTag.TagCount--;
 
-                    // If there are no more files tagged with this tag, remove it.
+                    // If there are no more files tagged with tag, remove it.
                     if (theTag.TagCount == 0)
                     {
-                        this._dataSource.Delete(theTag);
+                        _dataSource.Delete(theTag);
                     }
                 }
             }
@@ -493,7 +495,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (content == null)
             {
-                entity = this._dataSource.Query<PlatformEntity>().Include(e => e.Tags).FirstOrDefault(e => e.Id == entityId);
+                entity = _dataSource.Query<PlatformEntity>().Include(e => e.Tags).FirstOrDefault(e => e.Id == entityId);
             }
             else
             {
@@ -505,7 +507,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
 
-            var tags = this._dataSource.Query<Term>().Where(t => tagIds.Contains(t.Id)).ToList();
+            var tags = _dataSource.Query<Term>().Where(t => tagIds.Contains(t.Id)).ToList();
 
             foreach (var id in tagIds)
             {

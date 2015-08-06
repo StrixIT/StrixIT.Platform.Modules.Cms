@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -33,14 +33,16 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private IPlatformDataSource _dataSource;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public EntityServiceManager(IPlatformDataSource dataSource)
+        public EntityServiceManager(IPlatformDataSource dataSource, IUserContext user)
         {
-            this._dataSource = dataSource;
+            _dataSource = dataSource;
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -90,13 +92,13 @@ namespace StrixIT.Platform.Modules.Cms
             bool result = true;
 
             Guid[] typeIds = records.Select(re => re.Item2).ToArray();
-            var groupId = StrixPlatform.User.GroupId;
-            List<EntityType> entityTypes = this._dataSource.Query<EntityType>().Include(t => t.EntityTypeServiceActions).Where(e => typeIds.Contains(e.Id)).ToList();
+            var groupId = _user.GroupId;
+            List<EntityType> entityTypes = _dataSource.Query<EntityType>().Include(t => t.EntityTypeServiceActions).Where(e => typeIds.Contains(e.Id)).ToList();
 
             foreach (var entityType in entityTypes)
             {
                 var actions = entityType.EntityTypeServiceActions.Where(s => s.GroupId == groupId).ToList();
-                this._dataSource.Delete(actions);
+                _dataSource.Delete(actions);
 
                 foreach (var action in actions)
                 {

@@ -38,16 +38,19 @@ namespace StrixIT.Platform.Modules.Cms
         private static bool _isInitialized = false;
         private static object _lockObject = new object();
         private static ConcurrentBag<ObjectMap> _objectMaps = new ConcurrentBag<ObjectMap>();
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         [DefaultConstructor]
-        public DefaultEntityHelper() : this(null) { }
+        public DefaultEntityHelper(IUserContext user) : this(user, null) { }
 
-        public DefaultEntityHelper(IList<EntityType> entityTypes)
+        public DefaultEntityHelper(IUserContext user, IList<EntityType> entityTypes)
         {
+            _user = user;
+
             if (entityTypes != null)
             {
                 _entityTypeList = new ConcurrentBag<EntityType>(entityTypes);
@@ -92,11 +95,11 @@ namespace StrixIT.Platform.Modules.Cms
 
             foreach (var action in actions)
             {
-                var serviceAction = type.EntityTypeServiceActions.FirstOrDefault(s => s.GroupId == StrixPlatform.User.GroupId && s.Action.ToLower() == action.ToLower());
+                var serviceAction = type.EntityTypeServiceActions.FirstOrDefault(s => s.GroupId == _user.GroupId && s.Action.ToLower() == action.ToLower());
 
                 if (serviceAction == null)
                 {
-                    type.EntityTypeServiceActions.Add(new EntityTypeServiceAction { GroupId = StrixPlatform.User.GroupId, Action = action });
+                    type.EntityTypeServiceActions.Add(new EntityTypeServiceAction { GroupId = _user.GroupId, Action = action });
                 }
             }
         }
@@ -118,7 +121,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             foreach (var action in actions)
             {
-                var serviceAction = type.EntityTypeServiceActions.FirstOrDefault(s => s.GroupId == StrixPlatform.User.GroupId && s.Action.ToLower() == action.ToLower());
+                var serviceAction = type.EntityTypeServiceActions.FirstOrDefault(s => s.GroupId == _user.GroupId && s.Action.ToLower() == action.ToLower());
 
                 if (serviceAction != null)
                 {
@@ -208,7 +211,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             entityType = GetNonProxyType(entityType);
             var type = this.EntityTypes.FirstOrDefault(t => t.Name == entityType.FullName);
-            return type.EntityTypeServiceActions != null && type.EntityTypeServiceActions.Any(a => a.GroupId == StrixPlatform.User.GroupId && a.Action.ToLower() == action.ToLower());
+            return type.EntityTypeServiceActions != null && type.EntityTypeServiceActions.Any(a => a.GroupId == _user.GroupId && a.Action.ToLower() == action.ToLower());
         }
 
         #endregion Public Methods

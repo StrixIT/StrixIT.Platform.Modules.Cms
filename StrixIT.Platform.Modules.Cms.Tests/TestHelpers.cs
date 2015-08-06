@@ -30,7 +30,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             userContext.Setup(m => m.Id).Returns(CurrentUserId);
             userContext.Setup(m => m.GroupId).Returns(CurrentUserCurrentGroupId);
             mocks.Add(userContext);
-            StrixPlatform.User = userContext.Object;
 
             var environment = new DefaultEnvironment();
             StrixPlatform.Environment = environment;

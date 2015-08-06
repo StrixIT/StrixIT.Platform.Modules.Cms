@@ -5,7 +5,7 @@
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -36,14 +36,16 @@ namespace StrixIT.Platform.Modules.Cms
 
         private static readonly string[] PropertiesToIgnoreForVersioning = new string[] { "UpdatedByUserId", "UpdatedOn", "PublishedOn", "NumberOfComments", "LastCommentDate", "VersionLog", "SortOrder", "DeletedByUserId", "DeletedOn" };
         private ICacheService _cache;
+        private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public EntityManager(IPlatformDataSource dataSource, ICacheService cache) : base(dataSource)
+        public EntityManager(IPlatformDataSource dataSource, ICacheService cache, IUserContext user) : base(dataSource)
         {
-            this._cache = cache;
+            _cache = cache;
+            _user = user;
         }
 
         #endregion Public Constructors
@@ -52,7 +54,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public bool IsNameAvailable(Type contentType, string name, Guid id)
         {
-            return this.IsNameAvailable(contentType, name, id, null);
+            return IsNameAvailable(contentType, name, id, null);
         }
 
         public bool IsNameAvailable(Type contentType, string name, Guid id, string culture)
@@ -77,7 +79,7 @@ namespace StrixIT.Platform.Modules.Cms
                 culture = StrixPlatform.CurrentCultureCode;
             }
 
-            return !this.DataSource.Query(contentType).Where("Name.ToLower().Equals(@0) AND Culture.ToLower().Equals(@1) AND !EntityId.Equals(@2)", name.ToLower(), culture.ToLower(), id).Any();
+            return !DataSource.Query(contentType).Where("Name.ToLower().Equals(@0) AND Culture.ToLower().Equals(@1) AND !EntityId.Equals(@2)", name.ToLower(), culture.ToLower(), id).Any();
         }
 
         #endregion IsNameAvailable
@@ -86,7 +88,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public override object Get(Type objectType, object id)
         {
-            return this.Get(objectType, id, null);
+            return Get(objectType, id, null);
         }
 
         public override object Get(Type objectType, object id, string includes)
@@ -99,7 +101,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
 
                 var key = (Guid?)id;
-                return this.Get(objectType, key, null, null, null, includes);
+                return Get(objectType, key, null, null, null, includes);
             }
             else
             {
@@ -109,79 +111,79 @@ namespace StrixIT.Platform.Modules.Cms
 
         public T Get<T>(Guid id) where T : class, IContent
         {
-            return this.Get(typeof(T), id, null, null, null, null) as T;
+            return Get(typeof(T), id, null, null, null, null) as T;
         }
 
         public T Get<T>(Guid id, string culture) where T : class, IContent
         {
-            return this.Get(typeof(T), id, null, culture, null, null) as T;
+            return Get(typeof(T), id, null, culture, null, null) as T;
         }
 
         public T Get<T>(Guid id, string culture, int versionNumber) where T : class, IContent
         {
-            return this.Get(typeof(T), id, null, culture, versionNumber, null) as T;
+            return Get(typeof(T), id, null, culture, versionNumber, null) as T;
         }
 
         public T Get<T>(Guid id, string culture, string relationsToInclude) where T : class, IContent
         {
-            return this.Get(typeof(T), id, null, culture, null, relationsToInclude) as T;
+            return Get(typeof(T), id, null, culture, null, relationsToInclude) as T;
         }
 
         public T Get<T>(Guid id, string culture, int versionNumber, string relationsToInclude) where T : class, IContent
         {
-            return this.Get(typeof(T), id, null, culture, versionNumber, relationsToInclude) as T;
+            return Get(typeof(T), id, null, culture, versionNumber, relationsToInclude) as T;
         }
 
         public virtual IContent Get(Type entityType, Guid id, string culture, int versionNumber, string relationsToInclude)
         {
-            return this.Get(entityType, id, null, culture, versionNumber, relationsToInclude);
+            return Get(entityType, id, null, culture, versionNumber, relationsToInclude);
         }
 
         public T Get<T>(string url) where T : class, IContent
         {
-            return this.Get(typeof(T), null, url, null, null, null) as T;
+            return Get(typeof(T), null, url, null, null, null) as T;
         }
 
         public T Get<T>(string url, string culture) where T : class, IContent
         {
-            return this.Get(typeof(T), null, url, culture, null, null) as T;
+            return Get(typeof(T), null, url, culture, null, null) as T;
         }
 
         public T Get<T>(string url, string culture, int versionNumber) where T : class, IContent
         {
-            return this.Get(typeof(T), null, url, culture, versionNumber, null) as T;
+            return Get(typeof(T), null, url, culture, versionNumber, null) as T;
         }
 
         public T Get<T>(string url, string culture, string relationsToInclude) where T : class, IContent
         {
-            return this.Get(typeof(T), null, url, culture, null, relationsToInclude) as T;
+            return Get(typeof(T), null, url, culture, null, relationsToInclude) as T;
         }
 
         public T Get<T>(string url, string culture, int versionNumber, string relationsToInclude) where T : class, IContent
         {
-            return this.Get(typeof(T), null, url, culture, versionNumber, relationsToInclude) as T;
+            return Get(typeof(T), null, url, culture, versionNumber, relationsToInclude) as T;
         }
 
         public virtual IContent Get(Type entityType, string url, string culture, int versionNumber, string relationsToInclude)
         {
-            return this.Get(entityType, null, url, culture, versionNumber, relationsToInclude);
+            return Get(entityType, null, url, culture, versionNumber, relationsToInclude);
         }
 
         public string[] GetAvailableCultures(Type entityType, Guid entityId)
         {
-            return this.Query(entityType).Where("EntityId.Equals(@0) AND IsCurrentVersion", entityId).Select("Culture").Cast<string>().ToArray();
+            return Query(entityType).Where("EntityId.Equals(@0) AND IsCurrentVersion", entityId).Select("Culture").Cast<string>().ToArray();
         }
 
         public IList GetExistingManyToManyRelations(object entity, string propertyName)
         {
-            return this.DataSource.GetExistingManyToManyRelations(entity, propertyName);
+            return DataSource.GetExistingManyToManyRelations(entity, propertyName);
         }
 
         public IList<SelectRelationDto<Guid>> GetLookup<TEntity>() where TEntity : class, IContent
         {
             var cacheKey = string.Format(CmsConstants.LOOKUPPERCULTURE, typeof(TEntity).Name);
             string culture = StrixPlatform.CurrentCultureCode;
-            var list = this._cache[cacheKey] as IDictionary<string, List<SelectRelationDto<Guid>>>;
+            var list = _cache[cacheKey] as IDictionary<string, List<SelectRelationDto<Guid>>>;
 
             if (list == null)
             {
@@ -190,8 +192,8 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (!list.ContainsKey(culture))
             {
-                list.Add(culture, this.QueryCurrent<TEntity>().OrderBy(e => e.Name).Select(e => new SelectRelationDto<Guid> { EntityId = e.EntityId, Name = e.Name }).ToList());
-                this._cache[cacheKey] = list;
+                list.Add(culture, QueryCurrent<TEntity>().OrderBy(e => e.Name).Select(e => new SelectRelationDto<Guid> { EntityId = e.EntityId, Name = e.Name }).ToList());
+                _cache[cacheKey] = list;
             }
 
             return list[culture].ToList();
@@ -199,12 +201,12 @@ namespace StrixIT.Platform.Modules.Cms
 
         public string[] GetManyToManyRelations(Type entityType)
         {
-            return this.DataSource.GetManyToManyRelations(entityType);
+            return DataSource.GetManyToManyRelations(entityType);
         }
 
         public int GetNextSortOrder<T>() where T : class, IContent
         {
-            return this.GetNextSortOrder(typeof(T));
+            return GetNextSortOrder(typeof(T));
         }
 
         #endregion Get
@@ -225,27 +227,27 @@ namespace StrixIT.Platform.Modules.Cms
 
         public override IQueryable Query(Type objectType, string includes)
         {
-            return this.Query(objectType, includes, null, false);
+            return Query(objectType, includes, null, false);
         }
 
         public IQueryable<T> QueryByTag<T>(string tag) where T : class, IContent
         {
-            return this.QueryByTag<T>(tag, null);
+            return QueryByTag<T>(tag, null);
         }
 
         public IQueryable<T> QueryByTag<T>(string tag, string includes) where T : class, IContent
         {
-            return this.Query<T>(tag, includes, true);
+            return Query<T>(tag, includes, true);
         }
 
         public IQueryable<T> QueryCurrent<T>() where T : class, IContent
         {
-            return this.QueryCurrent<T>(null);
+            return QueryCurrent<T>(null);
         }
 
         public IQueryable<T> QueryCurrent<T>(string includes) where T : class, IContent
         {
-            return this.Query<T>(null, includes, true);
+            return Query<T>(null, includes, true);
         }
 
         #endregion Query
@@ -261,7 +263,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return base.Save(entity);
             }
 
-            return this.Save(entity as IContent, null) as T;
+            return Save(entity as IContent, null) as T;
         }
 
         public virtual T Save<T>(T entity, string includes) where T : class, IContent
@@ -270,8 +272,8 @@ namespace StrixIT.Platform.Modules.Cms
             var entityType = entity.GetType();
             var content = entity as IContent;
 
-            var isNew = content.EntityId == Guid.Empty || !this.DataSource.Query(entityType).Where("EntityId.Equals(@0)", content.EntityId).Any();
-            var currentUserId = StrixPlatform.User.Id;
+            var isNew = content.EntityId == Guid.Empty || !DataSource.Query(entityType).Where("EntityId.Equals(@0)", content.EntityId).Any();
+            var currentUserId = _user.Id;
             IContent theContent = null;
 
             if (isNew)
@@ -279,15 +281,15 @@ namespace StrixIT.Platform.Modules.Cms
                 var fixedUrl = content.Entity.Url;
                 var sortOrder = content.SortOrder;
                 var newEntity = CreateEntity(entityType, currentUserId);
-                theContent = this.CreateNewContent(entityType, content, newEntity, currentUserId);
+                theContent = CreateNewContent(entityType, content, newEntity, currentUserId);
                 MapContent(entityType, content, theContent);
 
                 if (sortOrder == 0)
                 {
-                    theContent.SortOrder = this.GetNextSortOrder(entityType);
+                    theContent.SortOrder = GetNextSortOrder(entityType);
                 }
 
-                theContent.Entity.Url = UrlHelpers.CreateUniqueUrl(this.DataSource.Query(entityType), !string.IsNullOrWhiteSpace(fixedUrl) ? fixedUrl : theContent.Name, theContent.EntityId, "Entity.Url", "EntityId");
+                theContent.Entity.Url = UrlHelpers.CreateUniqueUrl(DataSource.Query(entityType), !string.IsNullOrWhiteSpace(fixedUrl) ? fixedUrl : theContent.Name, theContent.EntityId, "Entity.Url", "EntityId");
                 save = true;
             }
             else
@@ -304,19 +306,19 @@ namespace StrixIT.Platform.Modules.Cms
                     }
                 }
 
-                // Check whether there is content for this culture already.
-                theContent = this.Get(entityType, content.EntityId, content.Culture, 0, includes);
-
-                // Check whether the current user is allowed to edit this item.
-                CheckCanEditOrDelete(theContent);
+                // Check whether there is content for culture already.
+                theContent = Get(entityType, content.EntityId, content.Culture, 0, includes);
 
                 if (theContent == null)
                 {
-                    theContent = this.TranslateContent(entityType, content);
+                    theContent = TranslateContent(entityType, content);
                     save = true;
                 }
                 else
                 {
+                    // Check whether the current user is allowed to edit this item.
+                    CheckCanEditOrDelete(theContent);
+
                     var publishedDate = content.PublishedOn;
 
                     MapContent(entityType, content, theContent);
@@ -326,19 +328,19 @@ namespace StrixIT.Platform.Modules.Cms
                         theContent.PublishedOn = publishedDate;
                     }
 
-                    theContent.UpdatedByUserId = StrixPlatform.User.Id;
+                    theContent.UpdatedByUserId = _user.Id;
                     theContent.UpdatedOn = DateTime.Now;
 
                     if (EntityHelper.IsServiceActive(entityType, EntityServiceActions.UpdatePaths))
                     {
-                        theContent.Entity.Url = UrlHelpers.CreateUniqueUrl(this.DataSource.Query(entityType), theContent.Name, theContent.EntityId, "Entity.Url", "EntityId");
+                        theContent.Entity.Url = UrlHelpers.CreateUniqueUrl(DataSource.Query(entityType), theContent.Name, theContent.EntityId, "Entity.Url", "EntityId");
                     }
 
-                    var modifiedProperties = this.DataSource.GetModifiedPropertyValues(theContent).Where(p => !PropertiesToIgnoreForVersioning.Contains(p.PropertyName)).ToArray();
+                    var modifiedProperties = DataSource.GetModifiedPropertyValues(theContent).Where(p => !PropertiesToIgnoreForVersioning.Contains(p.PropertyName)).ToArray();
 
                     if (!modifiedProperties.IsEmpty())
                     {
-                        theContent = this.CreateNewVersion(entityType, theContent, modifiedProperties);
+                        theContent = CreateNewVersion(entityType, theContent, modifiedProperties);
                         save = true;
                     }
                     else
@@ -359,7 +361,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (save)
             {
-                this.DataSource.Save(theContent);
+                DataSource.Save(theContent);
             }
 
             return theContent as T;
@@ -380,28 +382,28 @@ namespace StrixIT.Platform.Modules.Cms
             else
             {
                 var content = entity as IContent;
-                this.Delete(typeof(T), content.Id, content.Culture, content.VersionNumber, null);
+                Delete(typeof(T), content.Id, content.Culture, content.VersionNumber, null);
             }
         }
 
         public void Delete<T>(Guid id) where T : class, IContent
         {
-            this.Delete(typeof(T), id, null, 0, null);
+            Delete(typeof(T), id, null, 0, null);
         }
 
         public void Delete<T>(Guid id, string culture) where T : class, IContent
         {
-            this.Delete(typeof(T), id, culture, 0, null);
+            Delete(typeof(T), id, culture, 0, null);
         }
 
         public void Delete<T>(Guid id, string culture, int versionNumber) where T : class, IContent
         {
-            this.Delete(typeof(T), id, culture, versionNumber, null);
+            Delete(typeof(T), id, culture, versionNumber, null);
         }
 
         public void Delete<T>(Guid id, string culture, int versionNumber, string log) where T : class, IContent
         {
-            this.Delete(typeof(T), id, culture, versionNumber, log);
+            Delete(typeof(T), id, culture, versionNumber, log);
         }
 
         public void Delete(Type entityType, Guid id, string culture, int versionNumber, string log)
@@ -417,7 +419,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             bool trashActive = EntityHelper.IsServiceActive(entityType, EntityServiceActions.Trashbin);
-            IQueryable query = this.DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", id);
+            IQueryable query = DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", id);
             var list = query.GetList();
             var nonDeleted = list.AsQueryable().Where("!DeletedOn.HasValue").Count();
             var deleteEntity = (!trashActive && string.IsNullOrWhiteSpace(culture))
@@ -425,15 +427,15 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (deleteEntity)
             {
-                this.DeleteEntityCompletely(query);
+                DeleteEntityCompletely(query);
             }
             else
             {
-                this.DeleteEntityContent(query, culture, versionNumber, trashActive);
+                DeleteEntityContent(query, culture, versionNumber, trashActive);
             }
 
-            this._cache.Delete(string.Format(CmsConstants.CONTENTPERCULTURE, entityType.Name));
-            this._cache.Delete(string.Format(CmsConstants.LOOKUPPERCULTURE, entityType.Name));
+            _cache.Delete(string.Format(CmsConstants.CONTENTPERCULTURE, entityType.Name));
+            _cache.Delete(string.Format(CmsConstants.LOOKUPPERCULTURE, entityType.Name));
         }
 
         #endregion Delete
@@ -444,11 +446,11 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (!typeof(IContent).IsAssignableFrom(entityType))
             {
-                throw new NotSupportedException("The entity type must implement IContent to use this method.");
+                throw new NotSupportedException("The entity type must implement IContent to use method.");
             }
 
             string culture = StrixPlatform.CurrentCultureCode.ToLower();
-            var lastSortOrder = this.Query(entityType).Where("IsCurrentVersion AND Culture.Equals(@0)", culture).Select("SortOrder").Cast<int?>().Max();
+            var lastSortOrder = Query(entityType).Where("IsCurrentVersion AND Culture.Equals(@0)", culture).Select("SortOrder").Cast<int?>().Max();
             return lastSortOrder.HasValue ? lastSortOrder.Value + 1 : 1;
         }
 
@@ -494,35 +496,6 @@ namespace StrixIT.Platform.Modules.Cms
         #endregion Protected Methods
 
         #region Private Methods
-
-        private static void CheckCanEditOrDelete(IContent content)
-        {
-            if (StrixPlatform.User.IsInRole(PlatformConstants.CONTRIBUTORROLE) && content.CreatedByUserId != StrixPlatform.User.Id)
-            {
-                throw new InvalidOperationException("A contributor can edit only his own content.");
-            }
-        }
-
-        /// <summary>
-        /// If the content has an entity id, check whether a platform entity with this id exists. If
-        /// the content has no entity id or no platform entity with the id exists, create a new
-        /// platform entity.
-        /// </summary>
-        /// <param name="entityType">The type of the entity to create</param>
-        /// <param name="currentUserId">The id of the currently active user creating the entity</param>
-        /// <returns>The new entity</returns>
-        private static PlatformEntity CreateEntity(Type entityType, Guid currentUserId)
-        {
-            var entity = new PlatformEntity
-            {
-                Id = Guid.NewGuid(),
-                EntityTypeId = EntityHelper.GetEntityTypeId(entityType),
-                GroupId = StrixPlatform.User.GroupId,
-                OwnerUserId = currentUserId
-            };
-
-            return entity;
-        }
 
         /// <summary>
         /// Gets the file values for mapping content.
@@ -681,6 +654,34 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
+        private void CheckCanEditOrDelete(IContent content)
+        {
+            if (_user.IsInRole(PlatformConstants.CONTRIBUTORROLE) && content.CreatedByUserId != _user.Id)
+            {
+                throw new InvalidOperationException("A contributor can edit only his own content.");
+            }
+        }
+
+        /// <summary>
+        /// If the content has an entity id, check whether a platform entity with id exists. If the
+        /// content has no entity id or no platform entity with the id exists, create a new platform entity.
+        /// </summary>
+        /// <param name="entityType">The type of the entity to create</param>
+        /// <param name="currentUserId">The id of the currently active user creating the entity</param>
+        /// <returns>The new entity</returns>
+        private PlatformEntity CreateEntity(Type entityType, Guid currentUserId)
+        {
+            var entity = new PlatformEntity
+            {
+                Id = Guid.NewGuid(),
+                EntityTypeId = EntityHelper.GetEntityTypeId(entityType),
+                GroupId = _user.GroupId,
+                OwnerUserId = currentUserId
+            };
+
+            return entity;
+        }
+
         /// <summary>
         /// Create new content for an entity.
         /// </summary>
@@ -691,7 +692,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The new content</returns>
         private IContent CreateNewContent(Type entityType, IContent content, PlatformEntity entity, Guid currentUserId)
         {
-            var theContent = this.Get(entityType, null) as IContent;
+            var theContent = Get(entityType, null) as IContent;
 
             if (!string.IsNullOrWhiteSpace(content.Culture))
             {
@@ -732,7 +733,7 @@ namespace StrixIT.Platform.Modules.Cms
                 if (!modifiedPropertyValues.IsEmpty())
                 {
                     // Get the new version number to use.
-                    var versionQuery = this.DataSource.Query(contentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) AND PublishedOn.HasValue", content.EntityId, content.Culture);
+                    var versionQuery = DataSource.Query(contentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) AND PublishedOn.HasValue", content.EntityId, content.Culture);
                     var versionNumber = versionQuery.Select("VersionNumber").Cast<int>().Max();
 
                     // Create a new version with a new id.
@@ -744,8 +745,8 @@ namespace StrixIT.Platform.Modules.Cms
                     // Undo the changes made to the old version by ignoring the currently loaded
                     // version and fetching a fresh one from the database. Then, set the IsCurrent
                     // flag on the old version to false.
-                    this.DataSource.Ignore(content);
-                    content = this.Get(contentType, content.EntityId, content.Culture, content.VersionNumber, null);
+                    DataSource.Ignore(content);
+                    content = Get(contentType, content.EntityId, content.Culture, content.VersionNumber, null);
                     content.IsCurrentVersion = false;
                     return theContent;
                 }
@@ -767,14 +768,14 @@ namespace StrixIT.Platform.Modules.Cms
                 return;
             }
 
-            // Check whether the current user is allowed to edit this item.
+            // Check whether the current user is allowed to edit item.
             CheckCanEditOrDelete(entry);
 
             var platformEntry = entry.GetPropertyValue("Entity") as PlatformEntity;
-            var comments = this.DataSource.Query<Comment>().Where(c => c.EntityId == platformEntry.Id);
-            this.DataSource.Delete(query);
-            this.DataSource.Delete(comments);
-            this.DataSource.Delete(platformEntry);
+            var comments = DataSource.Query<Comment>().Where(c => c.EntityId == platformEntry.Id);
+            DataSource.Delete(query);
+            DataSource.Delete(comments);
+            DataSource.Delete(platformEntry);
         }
 
         /// <summary>
@@ -797,17 +798,17 @@ namespace StrixIT.Platform.Modules.Cms
                 query = query.Where("VersionNumber.Equals(@0)", versionNumber);
                 var entry = query.GetFirst() as IContent;
 
-                // Check whether the current user is allowed to edit this item.
+                // Check whether the current user is allowed to edit item.
                 CheckCanEditOrDelete(entry);
 
                 if (entry.DeletedOn.HasValue || !trashActive)
                 {
-                    this.DataSource.Delete(entry);
+                    DataSource.Delete(entry);
                 }
                 else
                 {
                     entry.DeletedOn = DateTime.Now;
-                    entry.DeletedByUserId = StrixPlatform.User.Id;
+                    entry.DeletedByUserId = _user.Id;
                 }
             }
             else
@@ -816,17 +817,17 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     var content = entry as IContent;
 
-                    // Check whether the current user is allowed to edit this item.
+                    // Check whether the current user is allowed to edit item.
                     CheckCanEditOrDelete(content);
 
                     if (content.DeletedOn.HasValue || !trashActive)
                     {
-                        this.DataSource.Delete(entry);
+                        DataSource.Delete(entry);
                     }
                     else
                     {
                         content.DeletedOn = DateTime.Now;
-                        content.DeletedByUserId = StrixPlatform.User.Id;
+                        content.DeletedByUserId = _user.Id;
                     }
                 }
             }
@@ -901,7 +902,7 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 // try to get the content for the default culture or any culture, copy it, and
                 // update the culture.
-                var query = this.DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", content.EntityId);
+                var query = DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", content.EntityId);
                 var list = query.GetList();
 
                 var theContent = list.AsQueryable().Where("Culture.ToLower().Equals(@0)", StrixPlatform.CurrentCultureCode.ToLower()).GetFirst() as IContent;
