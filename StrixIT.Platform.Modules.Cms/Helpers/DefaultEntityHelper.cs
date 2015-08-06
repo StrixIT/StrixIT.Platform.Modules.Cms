@@ -237,9 +237,16 @@ namespace StrixIT.Platform.Modules.Cms
                 viewModelType = viewModelType != null ? viewModelType : listModelType;
                 listModelType = listModelType != null ? listModelType : viewModelType;
 
-                // Todo: throw error here if a view or list model type occurs more than once?
                 if (viewModelType != null || listModelType != null)
                 {
+                    var existing = _objectMaps.Where(m => m.ViewModelType.FullName == viewModelType.FullName || m.ListModelType.FullName == listModelType.FullName);
+
+                    if (existing.Any())
+                    {
+                        var message = string.Format("There is a duplicatie object map entry for entity type {0} with view model type {1} and list model type {2}.", type.Name, viewModelType.Name, listModelType.Name);
+                        throw new StrixConfigurationException(message);
+                    }
+
                     _objectMaps.Add(new ObjectMap(type, viewModelType, listModelType));
                 }
             }

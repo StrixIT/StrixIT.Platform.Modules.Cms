@@ -26,19 +26,19 @@ using System.Runtime.Serialization;
 namespace StrixIT.Platform.Modules.Cms
 {
     [Serializable]
-    public class StrixValidationException : Exception
+    public class StrixConfigurationException : Exception
     {
         #region Public Constructors
 
-        public StrixValidationException()
+        public StrixConfigurationException()
         {
         }
 
-        public StrixValidationException(string message) : base(message)
+        public StrixConfigurationException(string message) : base(message)
         {
         }
 
-        public StrixValidationException(string message, Exception innerException) : base(message, innerException)
+        public StrixConfigurationException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
@@ -46,7 +46,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Protected Constructors
 
-        protected StrixValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected StrixConfigurationException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
