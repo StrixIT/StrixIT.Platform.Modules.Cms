@@ -20,6 +20,7 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
 using System;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public FileController(IFileService fileService, IImageConverter imageConverter)
+        public FileController(IFileService fileService, IImageConverter imageConverter, IEnvironment environment) : base(environment)
         {
             this._fileService = fileService;
             this._imageConverter = imageConverter;
@@ -75,7 +76,7 @@ namespace StrixIT.Platform.Modules.Cms
         [AuthenticatedCache(Duration = 86400)]
         public ActionResult GetImage(string type, int width, int height, string url)
         {
-            return this.GetFileInternal(type, Web.Helpers.HtmlDecode(url, false), width, height);
+            return this.GetFileInternal(type, HtmlHelpers.HtmlDecode(url, false), width, height);
         }
 
         [HttpPost]
@@ -110,7 +111,7 @@ namespace StrixIT.Platform.Modules.Cms
                 path = this._imageConverter.GetThumbPath(url, width, height);
                 var pathParts = path.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
                 url = pathParts.Last();
-                path = string.Format("/{0}/", Web.Helpers.GetVirtualPath(string.Join("\\", pathParts.Take(pathParts.Length - 1))));
+                path = string.Format("/{0}/", Environment.GetVirtualPath(string.Join("\\", pathParts.Take(pathParts.Length - 1))));
             }
             else
             {
@@ -121,7 +122,7 @@ namespace StrixIT.Platform.Modules.Cms
             if (false)
             {
                 var webImage = new WebImage(path);
-                string waterMarkPath = string.Format("{0}{1}", Server.MapPath("~"), StrixCms.Config.Files.WaterMarkPath.Replace('/', '\\'));
+                string waterMarkPath = string.Format("{0}{1}", Server.MapPath("~"), Environment.Configuration.GetConfiguration<CmsConfiguration>().WaterMarkPath.Replace('/', '\\'));
                 webImage.AddImageWatermark(waterMarkPath);
                 return this.File(webImage.GetBytes(), MimeMapping.GetMimeMapping(url));
             }

@@ -5,6 +5,7 @@
 ////------------------------------------------------------------------------------
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
@@ -14,8 +15,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         private Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
         private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private Mock<IEnvironment> _environmentMock = new Mock<IEnvironment>();
+        private Mock<IEntityHelper> _helperMock = new Mock<IEntityHelper>();
         private IEntityManager _manager;
-        private Mock<IUserContext> _userMock = new Mock<IUserContext>();
 
         #endregion Private Fields
 
@@ -25,7 +27,12 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             _dataSourceMock.RegisterData<PlatformEntity>(EntityServicesTestData.Entities);
             _dataSourceMock.RegisterData<News>(EntityServicesTestData.Content);
-            _manager = new EntityManager(_dataSourceMock.Mock.Object, _cacheMock.Object, _userMock.Object);
+            var userMock = new Mock<IUserContext>();
+            var cultureServiceMock = new Mock<ICultureService>();
+            cultureServiceMock.Setup(c => c.CurrentCultureCode).Returns("en");
+            _environmentMock.Setup(e => e.User).Returns(userMock.Object);
+            _environmentMock.Setup(e => e.Cultures).Returns(cultureServiceMock.Object);
+            _manager = new EntityManager(_dataSourceMock.Mock.Object, _cacheMock.Object, _environmentMock.Object, _helperMock.Object);
         }
 
         #endregion Public Constructors
@@ -56,11 +63,19 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
-        public Mock<IUserContext> UserMock
+        public Mock<IEnvironment> EnvironmentMock
         {
             get
             {
-                return _userMock;
+                return _environmentMock;
+            }
+        }
+
+        public Mock<IEntityHelper> HelperMock
+        {
+            get
+            {
+                return _helperMock;
             }
         }
 

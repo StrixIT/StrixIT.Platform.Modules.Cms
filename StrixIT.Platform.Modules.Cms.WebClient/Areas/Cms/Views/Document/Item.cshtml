@@ -20,7 +20,7 @@
 @{
     Layout = "~/Areas/Cms/Views/Shared/_ContentDisplay.cshtml";
     Html.AddScript("~/Areas/Cms/Scripts/Widgets/strixit.documentcontroller.js");
-    var cultureString = StrixPlatform.CurrentCultureCode == StrixPlatform.DefaultCultureCode ? string.Empty : StrixPlatform.CurrentCultureCode + "/";
+    var cultureString = Platform.Cultures.CurrentCultureCode == StrixPlatform.DefaultCultureCode ? string.Empty : StrixPlatform.CurrentCultureCode + "/";
     var downloadLink = string.Format("/{0}Document/Download/{1}", cultureString, Model.Url);
 }
 <div class="cms-content-document" data-id="@Model.Id" ng-controller="documentcontroller" ng-init="initItem('@Model.EntityId', '@Model.DocumentType', '@Model.FullPath')">
@@ -32,15 +32,18 @@
             case DocumentType.Image:
                 {
                     <img class="img-thumbnail center-block" />
-                } break;
+                }
+                break;
             case DocumentType.Video:
                 {
                     <video controls><source src="/@Model.FullPath" type="@string.Format("video/{0}", Model.File.Extension)"></video>
-                } break;
+                }
+                break;
             case DocumentType.Audio:
                 {
                     <audio controls><source src="/@Model.FullPath" type="@string.Format("video/{0}", Model.File.Extension)"></audio>
-                } break;
+                }
+                break;
         }
         <a href="@downloadLink" target="_blank" class="cms-downloadlink-document">
             @Interface.Download

@@ -37,7 +37,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public EntityActionController(IServiceManagerService managerService)
+        public EntityActionController(IServiceManagerService managerService, IEnvironment environment) : base(environment)
         {
             this._service = managerService;
         }

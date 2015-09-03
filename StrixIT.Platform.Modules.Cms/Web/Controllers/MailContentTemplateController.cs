@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public MailContentTemplateController(IEntityService<MailContentTemplateViewModel> service, ICommentService commentService, IUserContext user) : base(service, commentService, user)
+        public MailContentTemplateController(IEntityService<MailContentTemplateViewModel> service, ICmsServices cmsServices) : base(service, cmsServices)
         {
         }
 

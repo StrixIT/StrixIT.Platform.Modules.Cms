@@ -73,28 +73,26 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\StrixIT.Platform.Core.dll</HintPath>
     </Reference>
+    <Reference Include="StrixIT.Platform.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\StrixIT.Platform.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="StrixIT.Platform.Web, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\StrixIT.Platform.Web.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\structuremap.3.1.5.154\lib\net40\StructureMap.dll</HintPath>
-    </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\structuremap.3.1.5.154\lib\net40\StructureMap.Net4.dll</HintPath>
+      <HintPath>Libraries\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap.Web, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\structuremap.web.3.1.5.154\lib\net40\StructureMap.Web.dll</HintPath>
+      <HintPath>Libraries\StructureMap.Web.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -127,7 +125,6 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -501,7 +498,11 @@
     <Content Include="Libraries\nl\StrixIT.Platform.Core.resources.dll" />
     <Content Include="Libraries\nl\StrixIT.Platform.Web.resources.dll" />
     <Content Include="Libraries\StrixIT.Platform.Core.dll" />
+    <Content Include="Libraries\StrixIT.Platform.Framework.dll" />
+    <Content Include="Libraries\StrixIT.Platform.Testing.dll" />
     <Content Include="Libraries\StrixIT.Platform.Web.dll" />
+    <Content Include="Libraries\StructureMap.dll" />
+    <Content Include="Libraries\StructureMap.Web.dll" />
     <Content Include="License.txt" />
     <Content Include="packages.config" />
     <Content Include="ReadMe.txt" />

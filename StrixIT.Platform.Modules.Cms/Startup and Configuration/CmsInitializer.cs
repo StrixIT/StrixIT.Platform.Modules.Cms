@@ -21,6 +21,8 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
+using StrixIT.Platform.Web;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,24 +40,32 @@ namespace StrixIT.Platform.Modules.Cms
 
         private static bool _isInitialized = false;
 
-        private IFileSystemWrapper _fileSystemWrapper;
+        private IEnvironment _environment;
+        private IFileSystem _fileSystemWrapper;
+        private IPlatformHelper _helper;
         private IImageConverter _imageConverter;
         private IMembershipService _membershipService;
-        private PlatformDataSource _platformDataSource;
+        private IPlatformDataSource _platformDataSource;
+        private IPageRegistrator _registrator;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         public CmsInitializer(
-            PlatformDataSource platformDataSource,
-            IFileSystemWrapper fileSystemWrapper,
+            IPlatformDataSource platformDataSource,
+            IFileSystem fileSystemWrapper,
             IImageConverter imageConverter,
-            IUserContext user)
+            IEnvironment environment,
+            IPlatformHelper helper,
+            IPageRegistrator registrator)
         {
             _platformDataSource = platformDataSource;
             _fileSystemWrapper = fileSystemWrapper;
             _imageConverter = imageConverter;
+            _environment = environment;
+            _helper = helper;
+            _registrator = registrator;
 
             // I must use the service locator here because no implementation for IMembershipService
             // could be available.
@@ -73,7 +83,7 @@ namespace StrixIT.Platform.Modules.Cms
             RegisterDefaultTokens();
             DataMapper.OnCreateMap += ConfigureTypeMaps;
             RegisterMappings();
-            PageRegistration.LocatePages();
+            _registrator.LocatePages();
         }
 
         public void WebInitialize()
@@ -134,7 +144,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (_platformDataSource.Query<MailContentTemplate>().Count() == 0)
             {
-                new MailBuilder(_fileSystemWrapper, _membershipService).InitMails(_platformDataSource);
+                new MailBuilder(_fileSystemWrapper, _environment).InitMails(_platformDataSource);
             }
         }
 
@@ -157,9 +167,9 @@ namespace StrixIT.Platform.Modules.Cms
             DataMapper.RegisterMapConfig(tagConfig);
 
             DataMapper.CreateMap<Comment, CommentViewModel>()
-                .ForMember(cv => cv.CreatedBy, ce => ce.MapFrom(co => StrixCms.GetUserName(co.CreatedByUserId)))
-                .ForMember(cv => cv.CreatedByEmail, ce => ce.MapFrom(co => StrixCms.GetUserEmail(co.CreatedByUserId)))
-                .ForMember(cv => cv.UpdatedBy, ce => ce.MapFrom(co => StrixCms.GetUserName(co.UpdatedByUserId)));
+                .ForMember(cv => cv.CreatedBy, ce => ce.MapFrom(co => _helper.GetUserName(co.CreatedByUserId)))
+                .ForMember(cv => cv.CreatedByEmail, ce => ce.MapFrom(co => _helper.GetUserEmail(co.CreatedByUserId)))
+                .ForMember(cv => cv.UpdatedBy, ce => ce.MapFrom(co => _helper.GetUserName(co.UpdatedByUserId)));
             DataMapper.CreateMap<CommentViewModel, Comment>()
                 .ForMember(co => co.CreatedByUserId, ce => ce.Ignore())
                 .ForMember(co => co.CreatedOn, ce => ce.Ignore());
@@ -175,21 +185,21 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (_membershipService != null)
             {
-                var existingGroupIds = _platformDataSource.GroupNameLookups.Select(u => u.Id).ToArray();
+                var existingGroupIds = _platformDataSource.Query<GroupData>().Select(u => u.Id).ToArray();
                 var newGroupData = _membershipService.GroupData().Where(g => !existingGroupIds.Contains(g.Id));
 
                 if (newGroupData.Count() > 0)
                 {
-                    _platformDataSource.GroupNameLookups.AddRange(newGroupData.ToList());
+                    _platformDataSource.Save(newGroupData.ToList());
                     _platformDataSource.SaveChanges();
                 }
 
-                var existingUserIds = _platformDataSource.UserNameLookups.Select(u => u.Id).ToArray();
+                var existingUserIds = _platformDataSource.Query<UserData>().Select(u => u.Id).ToArray();
                 var newUserData = _membershipService.UserData().Where(g => !existingUserIds.Contains(g.Id));
 
                 if (newUserData.Count() > 0)
                 {
-                    _platformDataSource.UserNameLookups.AddRange(newUserData.ToList());
+                    _platformDataSource.Save(newUserData.ToList());
                     _platformDataSource.SaveChanges();
                 }
             }
@@ -197,12 +207,12 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 if (!_platformDataSource.Query<GroupData>().Any(g => g.Id == Guid.Empty))
                 {
-                    _platformDataSource.GroupNameLookups.Add(new GroupData { Id = Guid.Empty, Name = "Main" });
+                    _platformDataSource.Save(new GroupData { Id = Guid.Empty, Name = "Main" });
                 }
 
                 if (!_platformDataSource.Query<UserData>().Any(g => g.Id == Guid.Empty))
                 {
-                    _platformDataSource.UserNameLookups.Add(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
+                    _platformDataSource.Save(new UserData { Id = Guid.Empty, Name = "Administrator", Email = "admin@strixit.com" });
                 }
 
                 _platformDataSource.SaveChanges();
@@ -212,45 +222,6 @@ namespace StrixIT.Platform.Modules.Cms
         #endregion Internal Methods
 
         #region Private Methods
-
-        private static void ConfigureAuditMaps()
-        {
-            Action<object, object> auditAction = (x, y) =>
-            {
-                var audit = x as IAudit;
-                var model = y as AuditViewModel;
-                var user = DependencyInjector.Get<IUserContext>();
-                model.CanEdit = user.IsInRole(CmsRoleNames.EDITORROLES) || model.CreatedByUserId == user.Id;
-                model.UpdatedBy = StrixCms.GetUserName(audit.UpdatedByUserId);
-                model.CreatedBy = StrixCms.GetUserName(audit.CreatedByUserId);
-
-                var content = x as IContent;
-
-                if (content != null)
-                {
-                    if (model is EntityViewModel && content.PublishedByUserId.HasValue)
-                    {
-                        ((EntityViewModel)model).PublishedBy = StrixCms.GetUserName(content.PublishedByUserId.Value);
-                    }
-                }
-            };
-
-            var listAuditConfig = new MapConfig<AuditViewModel, AuditViewModel>();
-            listAuditConfig.AfterMapAction = auditAction;
-            DataMapper.RegisterMapConfig(listAuditConfig);
-
-            var entityAuditConfig = new MapConfig<IContent, AuditViewModel>();
-            entityAuditConfig.AfterMapAction = auditAction;
-            DataMapper.RegisterMapConfig(entityAuditConfig);
-
-            var auditReturnConfig = new MapConfig<EntityViewModel, IContent>();
-            auditReturnConfig.MembersToIgnore.Add(d => d.IsCurrentVersion);
-            auditReturnConfig.MembersToIgnore.Add(d => d.CreatedByUserId);
-            auditReturnConfig.MembersToIgnore.Add(d => d.CreatedOn);
-            auditReturnConfig.MembersToIgnore.Add(d => d.UpdatedByUserId);
-            auditReturnConfig.MembersToIgnore.Add(d => d.UpdatedOn);
-            DataMapper.RegisterMapConfig(auditReturnConfig);
-        }
 
         private static void ConfigureFileMaps(IImageConverter imageConverter)
         {
@@ -306,7 +277,7 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     foreach (var allowHtmlProperty in target.GetType().GetProperties().Where(p => p.HasAttribute<AllowHtmlAttribute>()))
                     {
-                        var decodedValue = Web.Helpers.HtmlDecode((string)source.GetPropertyValue(allowHtmlProperty.Name), false);
+                        var decodedValue = HtmlHelpers.HtmlDecode((string)source.GetPropertyValue(allowHtmlProperty.Name), false);
                         target.SetPropertyValue(allowHtmlProperty.Name, decodedValue);
                     }
                 }
@@ -329,7 +300,7 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     foreach (var allowHtmlProperty in source.GetType().GetProperties().Where(p => p.HasAttribute<AllowHtmlAttribute>()))
                     {
-                        var encodedValue = Web.Helpers.HtmlEncode((string)source.GetPropertyValue(allowHtmlProperty.Name));
+                        var encodedValue = HtmlHelpers.HtmlEncode((string)source.GetPropertyValue(allowHtmlProperty.Name));
                         target.SetPropertyValue(allowHtmlProperty.Name, encodedValue);
                     }
                 }
@@ -444,6 +415,45 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 Tokenizer.RegisterToken(string.Format("[[{0}]]", enumerator.Key.ToString().ToUpper()), (string)enumerator.Value);
             }
+        }
+
+        private void ConfigureAuditMaps()
+        {
+            Action<object, object> auditAction = (x, y) =>
+            {
+                var audit = x as IAudit;
+                var model = y as AuditViewModel;
+                var user = DependencyInjector.Get<IUserContext>();
+                model.CanEdit = user.IsInRole(CmsRoleNames.EDITORROLES) || model.CreatedByUserId == user.Id;
+                model.UpdatedBy = _helper.GetUserName(audit.UpdatedByUserId);
+                model.CreatedBy = _helper.GetUserName(audit.CreatedByUserId);
+
+                var content = x as IContent;
+
+                if (content != null)
+                {
+                    if (model is EntityViewModel && content.PublishedByUserId.HasValue)
+                    {
+                        ((EntityViewModel)model).PublishedBy = _helper.GetUserName(content.PublishedByUserId.Value);
+                    }
+                }
+            };
+
+            var listAuditConfig = new MapConfig<AuditViewModel, AuditViewModel>();
+            listAuditConfig.AfterMapAction = auditAction;
+            DataMapper.RegisterMapConfig(listAuditConfig);
+
+            var entityAuditConfig = new MapConfig<IContent, AuditViewModel>();
+            entityAuditConfig.AfterMapAction = auditAction;
+            DataMapper.RegisterMapConfig(entityAuditConfig);
+
+            var auditReturnConfig = new MapConfig<EntityViewModel, IContent>();
+            auditReturnConfig.MembersToIgnore.Add(d => d.IsCurrentVersion);
+            auditReturnConfig.MembersToIgnore.Add(d => d.CreatedByUserId);
+            auditReturnConfig.MembersToIgnore.Add(d => d.CreatedOn);
+            auditReturnConfig.MembersToIgnore.Add(d => d.UpdatedByUserId);
+            auditReturnConfig.MembersToIgnore.Add(d => d.UpdatedOn);
+            DataMapper.RegisterMapConfig(auditReturnConfig);
         }
 
         private void ConfigureTypeMaps(object sender, CreateMapEventArgs e)

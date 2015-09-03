@@ -21,7 +21,6 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
-using StructureMap;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,15 +34,15 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Private Fields
 
-        private IUserContext _user;
+        private IEnvironment _environment;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public ImageConverter(IUserContext user)
+        public ImageConverter(IEnvironment environment)
         {
-            _user = user;
+            _environment = environment;
         }
 
         #endregion Public Constructors
@@ -52,7 +51,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public string GetThumbPath(string path, int width, int height)
         {
-            var physicalPath = StrixPlatform.Environment.MapPath(path);
+            var physicalPath = _environment.MapPath(path);
 
             if (!IsImage(physicalPath))
             {
@@ -77,7 +76,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            var fullPath = StrixPlatform.Environment.MapPath(path);
+            var fullPath = _environment.MapPath(path);
 
             if (!System.IO.File.Exists(fullPath))
             {
@@ -104,7 +103,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            var fullPath = StrixPlatform.Environment.MapPath(path);
+            var fullPath = _environment.MapPath(path);
 
             if (!System.IO.File.Exists(fullPath))
             {
@@ -120,7 +119,7 @@ namespace StrixIT.Platform.Modules.Cms
                 CreateThumb(fullPath, thumbPath, width, height, keepAspectRatio);
             }
 
-            var virtualPath = Web.Helpers.GetVirtualPath(thumbPath);
+            var virtualPath = _environment.GetVirtualPath(thumbPath);
 
             if (!virtualPath.StartsWith("/"))
             {
@@ -137,7 +136,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            var directory = this.GetSecureDirectory(StrixPlatform.Environment.MapPath(Path.GetDirectoryName(path)));
+            var directory = this.GetSecureDirectory(_environment.MapPath(Path.GetDirectoryName(path)));
             string fullPath = Path.Combine(directory, Path.GetFileName(path));
             return Resize(System.IO.File.ReadAllBytes(fullPath), new Size(width, height), fullPath, overwrite, keepAspectRatio);
         }
@@ -246,13 +245,6 @@ namespace StrixIT.Platform.Modules.Cms
             return format;
         }
 
-        private static bool IsImage(string extension)
-        {
-            extension = Path.GetExtension(extension).Replace(".", string.Empty);
-            var extensions = StrixCms.Config.Files.ImageExtensions;
-            return extensions.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToLower().Any(e => e.ToLower() == extension.ToLower());
-        }
-
         private static byte[] Resize(byte[] data, Size newSize, string fullPath = null, bool overwrite = false, bool keepAspectRatio = true)
         {
             if (data.IsEmpty())
@@ -352,14 +344,14 @@ namespace StrixIT.Platform.Modules.Cms
 
         private string GetSecureDirectory(string directory)
         {
-            if (StrixCms.Config.Files.SecureFiles && !directory.ToLower().Contains(string.Format("\\{0}", CmsConstants.SECURE).ToLower()))
+            if (_environment.Configuration.GetConfiguration<CmsConfiguration>().SecureFiles && !directory.ToLower().Contains(string.Format("\\{0}", CmsConstants.SECURE).ToLower()))
             {
                 directory = directory + string.Format("\\{0}", CmsConstants.SECURE);
             }
 
-            if (!_user.IsInMainGroup)
+            if (!_environment.User.IsInMainGroup)
             {
-                directory = directory + "\\" + _user.GroupName;
+                directory = directory + "\\" + _environment.User.GroupName;
             }
 
             return directory;
@@ -371,11 +363,11 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (HttpContext.Current != null)
             {
-                thumbDirectory = StrixCms.Config.Files.ThumbDirectory;
+                thumbDirectory = _environment.Configuration.GetConfiguration<CmsConfiguration>().ThumbDirectory;
             }
             else
             {
-                thumbDirectory = Path.Combine(StrixPlatform.Environment.WorkingDirectory, StrixCms.Config.Files.ThumbDirectory).Replace("/", "\\");
+                thumbDirectory = Path.Combine(_environment.WorkingDirectory, _environment.Configuration.GetConfiguration<CmsConfiguration>().ThumbDirectory).Replace("/", "\\");
             }
 
             return this.GetSecureDirectory(thumbDirectory);
@@ -388,7 +380,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            var thumbPhysicalPath = StrixPlatform.Environment.MapPath(thumbDirectory);
+            var thumbPhysicalPath = _environment.MapPath(thumbDirectory);
 
             if (!Directory.Exists(thumbPhysicalPath))
             {
@@ -398,6 +390,13 @@ namespace StrixIT.Platform.Modules.Cms
             string pathWithoutExtension = Path.GetFileNameWithoutExtension(fullPath);
             string extension = Path.GetExtension(fullPath);
             return string.Format("{0}\\{1}_{2}_{3}.{4}", thumbPhysicalPath, pathWithoutExtension, width, height, extension).Replace("..", ".");
+        }
+
+        private bool IsImage(string extension)
+        {
+            extension = Path.GetExtension(extension).Replace(".", string.Empty);
+            var extensions = _environment.Configuration.GetConfiguration<CmsConfiguration>().ImageExtensions;
+            return extensions.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToLower().Any(e => e.ToLower() == extension.ToLower());
         }
 
         #endregion Private Methods

@@ -30,7 +30,17 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public abstract class AuditViewModel : PlatformBaseViewModel, IAudit
     {
+        #region Protected Constructors
+
+        protected AuditViewModel(Type entityType) : base(entityType)
+        {
+        }
+
+        #endregion Protected Constructors
+
         #region Public Properties
+
+        public bool CanDelete { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user can edit this view model.

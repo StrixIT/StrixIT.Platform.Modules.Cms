@@ -19,13 +19,13 @@
 @model EntityViewModel
 @{
     var linkClass = Model.Id == Guid.Empty ? "cms-createlink" : "cms-editlink";
-    var linkText = Model.Id == Guid.Empty ? string.Format(DefaultInterface.Create, EntityHelper.GetObjectMap(Model.GetType()).ContentType.Name) : DefaultInterface.Edit;
+    var linkText = Model.Id == Guid.Empty ? string.Format(DefaultInterface.Create, Cms.GetObjectMap(Model.GetType()).ContentType.Name) : DefaultInterface.Edit;
     var areaName = (string)ViewContext.RouteData.Values["area"] ?? (string)ViewContext.HttpContext.Items[CmsConstants.MODULE];
     var controllerName = (string)ViewContext.RouteData.Values["controller"];
 }
 <div class="cms-content">
     @RenderBody()
-    @if (User.IsAdministrator)
+    @if (Platform.User.IsAdministrator)
     {
         <a class="@linkClass" ng-href="{{ '@Url.AdminLink(MvcConstants.EDIT, controllerName, areaName)' + '/' + '@Model.Url' }}">@linkText</a>
     }

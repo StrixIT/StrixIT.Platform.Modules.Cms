@@ -30,6 +30,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class DocumentViewModel : EntityViewModel
     {
+        #region Public Constructors
+
+        public DocumentViewModel() : base(typeof(Document))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

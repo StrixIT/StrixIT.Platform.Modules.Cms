@@ -30,6 +30,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class DocumentListModel : EntityListModel
     {
+        #region Public Constructors
+
+        public DocumentListModel() : base(typeof(Document))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

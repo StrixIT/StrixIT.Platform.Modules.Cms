@@ -34,22 +34,31 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private IPlatformDataSource _dataSource;
-
+        private IEntityHelper _entityHelper;
         private IObjectManager _objectManager;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public ObjectService(IPlatformDataSource dataSource, IObjectManager objectManager)
+        public ObjectService(IPlatformDataSource dataSource, IObjectManager objectManager, IEntityHelper entityHelper)
         {
             this._dataSource = dataSource;
             this._objectManager = objectManager;
+            _entityHelper = entityHelper;
         }
 
         #endregion Public Constructors
 
         #region Protected Properties
+
+        protected IEntityHelper EntityHelper
+        {
+            get
+            {
+                return _entityHelper;
+            }
+        }
 
         protected IObjectManager Manager
         {

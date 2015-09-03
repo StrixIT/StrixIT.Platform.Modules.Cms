@@ -12,10 +12,11 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     {
         #region Private Fields
 
+        private Mock<IConfiguration> _configMock = new Mock<IConfiguration>();
         private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private Mock<IEnvironment> _environmentMock = new Mock<IEnvironment>();
         private Mock<IImageConverter> _imageConverterMock = new Mock<IImageConverter>();
         private IFileManager _manager;
-        private Mock<IUserContext> _userMock = new Mock<IUserContext>();
 
         #endregion Private Fields
 
@@ -24,12 +25,20 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public FileManagerMock()
         {
             _dataSourceMock.RegisterData<EntityType>(EntityServicesTestData.EntityTypes);
-            _manager = new FileManager(_dataSourceMock.Mock.Object, _imageConverterMock.Object, _userMock.Object);
+            _manager = new FileManager(_dataSourceMock.Mock.Object, _imageConverterMock.Object, _environmentMock.Object);
         }
 
         #endregion Public Constructors
 
         #region Public Properties
+
+        public Mock<IConfiguration> ConfigMock
+        {
+            get
+            {
+                return _configMock;
+            }
+        }
 
         public DataSourceMock DataSourceMock
         {
@@ -39,19 +48,19 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
+        public Mock<IEnvironment> EnvironmentMock
+        {
+            get
+            {
+                return _environmentMock;
+            }
+        }
+
         public IFileManager FileManager
         {
             get
             {
                 return _manager;
-            }
-        }
-
-        public Mock<IUserContext> UserMock
-        {
-            get
-            {
-                return _userMock;
             }
         }
 

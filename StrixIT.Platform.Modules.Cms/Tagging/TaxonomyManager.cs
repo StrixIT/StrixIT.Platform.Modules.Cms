@@ -35,16 +35,16 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private IPlatformDataSource _dataSource;
-        private IUserContext _user;
+        private IEnvironment _environment;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public TaxonomyManager(IPlatformDataSource dataSource, IUserContext user)
+        public TaxonomyManager(IPlatformDataSource dataSource, IEnvironment environment)
         {
             _dataSource = dataSource;
-            _user = user;
+            _environment = environment;
         }
 
         #endregion Public Constructors
@@ -80,7 +80,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             bool result = true;
@@ -132,7 +132,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             // Try to get the tag from the database.
@@ -176,7 +176,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             bool vocabularySpecified = !string.IsNullOrWhiteSpace(vocabularyName);
@@ -209,7 +209,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             var term = _dataSource.Query<Term>().FirstOrDefault(GetTermFunc(vocabularyName, tagName, culture));
@@ -270,7 +270,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             var query = _dataSource.Query<Vocabulary>();
@@ -323,7 +323,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(culture))
             {
-                culture = StrixPlatform.DefaultCultureCode;
+                culture = _environment.Cultures.DefaultCultureCode;
             }
 
             var vocabulary = _dataSource.Query<Vocabulary>().FirstOrDefault(GetVocabularyFunc(vocabularyName, culture));
@@ -339,7 +339,7 @@ namespace StrixIT.Platform.Modules.Cms
             vocabulary = new Vocabulary
             {
                 Id = id,
-                GroupId = _user.GroupId,
+                GroupId = _environment.User.GroupId,
                 Culture = culture,
                 Name = vocabularyName,
                 Url = UrlHelpers.CreateUniqueUrl(_dataSource.Query<Vocabulary>(), vocabularyName, id),

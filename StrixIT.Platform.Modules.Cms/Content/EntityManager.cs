@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using StrixIT.Platform.Web;
 using System;
 using System.Collections;
@@ -36,16 +37,16 @@ namespace StrixIT.Platform.Modules.Cms
 
         private static readonly string[] PropertiesToIgnoreForVersioning = new string[] { "UpdatedByUserId", "UpdatedOn", "PublishedOn", "NumberOfComments", "LastCommentDate", "VersionLog", "SortOrder", "DeletedByUserId", "DeletedOn" };
         private ICacheService _cache;
-        private IUserContext _user;
+        private IEnvironment _environment;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public EntityManager(IPlatformDataSource dataSource, ICacheService cache, IUserContext user) : base(dataSource)
+        public EntityManager(IPlatformDataSource dataSource, ICacheService cache, IEnvironment environment, IEntityHelper entityHelper) : base(dataSource, entityHelper)
         {
             _cache = cache;
-            _user = user;
+            _environment = environment;
         }
 
         #endregion Public Constructors
@@ -76,7 +77,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (culture == null)
             {
-                culture = StrixPlatform.CurrentCultureCode;
+                culture = _environment.Cultures.CurrentCultureCode;
             }
 
             return !DataSource.Query(contentType).Where("Name.ToLower().Equals(@0) AND Culture.ToLower().Equals(@1) AND !EntityId.Equals(@2)", name.ToLower(), culture.ToLower(), id).Any();
@@ -182,7 +183,7 @@ namespace StrixIT.Platform.Modules.Cms
         public IList<SelectRelationDto<Guid>> GetLookup<TEntity>() where TEntity : class, IContent
         {
             var cacheKey = string.Format(CmsConstants.LOOKUPPERCULTURE, typeof(TEntity).Name);
-            string culture = StrixPlatform.CurrentCultureCode;
+            string culture = _environment.Cultures.CurrentCultureCode;
             var list = _cache[cacheKey] as IDictionary<string, List<SelectRelationDto<Guid>>>;
 
             if (list == null)
@@ -273,7 +274,7 @@ namespace StrixIT.Platform.Modules.Cms
             var content = entity as IContent;
 
             var isNew = content.EntityId == Guid.Empty || !DataSource.Query(entityType).Where("EntityId.Equals(@0)", content.EntityId).Any();
-            var currentUserId = _user.Id;
+            var currentUserId = _environment.User.Id;
             IContent theContent = null;
 
             if (isNew)
@@ -328,7 +329,7 @@ namespace StrixIT.Platform.Modules.Cms
                         theContent.PublishedOn = publishedDate;
                     }
 
-                    theContent.UpdatedByUserId = _user.Id;
+                    theContent.UpdatedByUserId = _environment.User.Id;
                     theContent.UpdatedOn = DateTime.Now;
 
                     if (EntityHelper.IsServiceActive(entityType, EntityServiceActions.UpdatePaths))
@@ -449,7 +450,7 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new NotSupportedException("The entity type must implement IContent to use method.");
             }
 
-            string culture = StrixPlatform.CurrentCultureCode.ToLower();
+            string culture = _environment.Cultures.CurrentCultureCode.ToLower();
             var lastSortOrder = Query(entityType).Where("IsCurrentVersion AND Culture.Equals(@0)", culture).Select("SortOrder").Cast<int?>().Max();
             return lastSortOrder.HasValue ? lastSortOrder.Value + 1 : 1;
         }
@@ -465,7 +466,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (currentOnly)
             {
-                query = query.Where(c => c.Culture.ToLower() == StrixPlatform.CurrentCultureCode.ToLower() && c.IsCurrentVersion);
+                query = query.Where(c => c.Culture.ToLower() == _environment.Cultures.CurrentCultureCode.ToLower() && c.IsCurrentVersion);
             }
 
             return query;
@@ -486,7 +487,7 @@ namespace StrixIT.Platform.Modules.Cms
 
                 if (currentOnly)
                 {
-                    query = query.Where("Culture.ToLower().Equals(@0) AND IsCurrentVersion", StrixPlatform.CurrentCultureCode.ToLower());
+                    query = query.Where("Culture.ToLower().Equals(@0) AND IsCurrentVersion", _environment.Cultures.CurrentCultureCode.ToLower());
                 }
             }
 
@@ -656,7 +657,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         private void CheckCanEditOrDelete(IContent content)
         {
-            if (_user.IsInRole(PlatformConstants.CONTRIBUTORROLE) && content.CreatedByUserId != _user.Id)
+            if (_environment.User.IsInRole(PlatformConstants.CONTRIBUTORROLE) && content.CreatedByUserId != _environment.User.Id)
             {
                 throw new InvalidOperationException("A contributor can edit only his own content.");
             }
@@ -675,7 +676,7 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 Id = Guid.NewGuid(),
                 EntityTypeId = EntityHelper.GetEntityTypeId(entityType),
-                GroupId = _user.GroupId,
+                GroupId = _environment.User.GroupId,
                 OwnerUserId = currentUserId
             };
 
@@ -808,7 +809,7 @@ namespace StrixIT.Platform.Modules.Cms
                 else
                 {
                     entry.DeletedOn = DateTime.Now;
-                    entry.DeletedByUserId = _user.Id;
+                    entry.DeletedByUserId = _environment.User.Id;
                 }
             }
             else
@@ -827,7 +828,7 @@ namespace StrixIT.Platform.Modules.Cms
                     else
                     {
                         content.DeletedOn = DateTime.Now;
-                        content.DeletedByUserId = _user.Id;
+                        content.DeletedByUserId = _environment.User.Id;
                     }
                 }
             }
@@ -860,7 +861,7 @@ namespace StrixIT.Platform.Modules.Cms
             else
             {
                 content = Activator.CreateInstance(entityType) as IContent;
-                content.Culture = StrixPlatform.CurrentCultureCode;
+                content.Culture = _environment.Cultures.CurrentCultureCode;
                 content.VersionNumber = 1;
                 content.IsCurrentVersion = true;
                 content.Entity = new PlatformEntity();
@@ -876,7 +877,7 @@ namespace StrixIT.Platform.Modules.Cms
                 query = query.Where("IsCurrentVersion");
             }
 
-            culture = string.IsNullOrWhiteSpace(culture) ? StrixPlatform.CurrentCultureCode : culture;
+            culture = string.IsNullOrWhiteSpace(culture) ? _environment.Cultures.CurrentCultureCode : culture;
             query = query.Where("Culture.ToLower().Equals(@0)", culture.ToLower());
 
             content = query.GetFirst() as IContent;
@@ -905,7 +906,7 @@ namespace StrixIT.Platform.Modules.Cms
                 var query = DataSource.Query(entityType, "Entity").Where("EntityId.Equals(@0)", content.EntityId);
                 var list = query.GetList();
 
-                var theContent = list.AsQueryable().Where("Culture.ToLower().Equals(@0)", StrixPlatform.CurrentCultureCode.ToLower()).GetFirst() as IContent;
+                var theContent = list.AsQueryable().Where("Culture.ToLower().Equals(@0)", _environment.Cultures.CurrentCultureCode.ToLower()).GetFirst() as IContent;
 
                 if (theContent == null)
                 {

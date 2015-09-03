@@ -82,7 +82,16 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         private IFileManager GetManager()
         {
-            return new FileManager(new Mock<IPlatformDataSource>().Object, new Mock<IImageConverter>().Object, new Mock<IUserContext>().Object);
+            var configMock = new Mock<IConfiguration>();
+            var config = new CmsConfiguration();
+            config.ImageExtensions = "png,bmp,jpg";
+            config.ThumbDirectory = "Content/Thumbs";
+            config.AllowedFileTypes = "jpg,png,pdf,zip";
+            configMock.Setup(c => c.GetConfiguration<CmsConfiguration>()).Returns(config);
+            var environmentMock = new Mock<IEnvironment>();
+            environmentMock.Setup(e => e.Configuration).Returns(configMock.Object);
+
+            return new FileManager(new Mock<IPlatformDataSource>().Object, new Mock<IImageConverter>().Object, environmentMock.Object);
         }
 
         #endregion Private Methods

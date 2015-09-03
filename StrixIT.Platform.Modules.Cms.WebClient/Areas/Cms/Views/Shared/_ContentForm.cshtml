@@ -24,12 +24,12 @@
     var nameProperty = hasName ? "name" : "id";
     var isEntityType = typeof(EntityViewModel).IsAssignableFrom(type);
     var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
-    var contentType = EntityHelper.GetObjectMap(type).ContentType;
-    var isTranslatable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.Translations);
-    var isVersionable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
-    var supportDrafts = EntityHelper.IsServiceActive(contentType, EntityServiceActions.Drafts);
-    var isTaggable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowFixedTagging);
-    var fileIds = EntityHelper.GetFileProperties(contentType);
+    var contentType = Cms.GetObjectMap(type).ContentType;
+    var isTranslatable = Cms.IsServiceActive(contentType, EntityServiceActions.Translations);
+    var isVersionable = Cms.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+    var supportDrafts = Cms.IsServiceActive(contentType, EntityServiceActions.Drafts);
+    var isTaggable = Cms.IsServiceActive(contentType, EntityServiceActions.AllowFixedTagging);
+    var fileIds = Cms.GetFileProperties(contentType);
     var key = isEntityType ? "entityId" : "id";
     var url = isEntityType ? "url" : "id";
     var defaultKey = Activator.CreateInstance(contentType.GetProperty("Id").PropertyType);
@@ -46,7 +46,7 @@
         <a ng-href="{{ getLink('@Url.AdminLink(MvcConstants.DETAILS)', '@url') }}">@DefaultInterface.Cancel</a>
         |
     </div>
-    @if (!User.IsInRole(PlatformConstants.CONTRIBUTORROLE))
+    @if (!Platform.User.IsInRole(PlatformConstants.CONTRIBUTORROLE))
     {
         <a href="@(Url.AdminLink(MvcConstants.INDEX).Replace(string.Format("/{0}/", MvcConstants.INDEX.ToLower()), string.Empty))">@DefaultInterface.BackToList</a>
     }
@@ -58,7 +58,7 @@
         @Html.Partial("~/Areas/Cms/Views/Shared/EditLanguagePicker.cshtml")
     }
     @RenderSection("BeforeForm", false)
-    @if (StrixCms.Config.UsesSqlCompactDatabase)
+    @if (Platform.Configuration.GetConfiguration<CmsConfiguration>().UsesSqlCompactDatabase)
     {
         @Html.Hidden("MaxTextLength", 4000)
     }

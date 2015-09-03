@@ -46,9 +46,9 @@ namespace StrixIT.Platform.Modules.Cms
         /// <summary>
         /// Initializes a new instance of the <see cref="PlatformBaseViewModel"/> class.
         /// </summary>
-        protected PlatformBaseViewModel()
+        protected PlatformBaseViewModel(Type entityType)
         {
-            this._entityType = EntityHelper.GetObjectMap(this.GetType()).ContentType;
+            this._entityType = entityType;
             this.AdminRoles = new string[] { PlatformConstants.ADMINROLE };
             this.EditRoles = CmsRoleNames.EDITORROLES.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
         }

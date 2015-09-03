@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Framework;
 using System;
 
 namespace StrixIT.Platform.Modules.Cms

@@ -6,6 +6,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.DependencyInjection;
+using StrixIT.Platform.Core.Environment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,18 +19,14 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
     {
         #region Private Fields
 
+        private Mock<ICultureService> _cultureServiceMock = new Mock<ICultureService>();
         private Mock<IEntityHelper> _entityHelperMock = new Mock<IEntityHelper>();
+        private Mock<IPageRegistrator> _registratorMock = new Mock<IPageRegistrator>();
         private Mock<IPlatformDataSource> _sourceMock = new Mock<IPlatformDataSource>();
 
         #endregion Private Fields
 
         #region Public Methods
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            EntityHelper.SetHelper(null);
-        }
 
         [TestInitialize]
         public void Init()
@@ -36,14 +34,13 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
             var dependencyInjectorMock = new Mock<IDependencyInjector>();
             dependencyInjectorMock.Setup(d => d.GetAll<IHandlePlatformEvent<PrepareQueryEvent>>()).Returns(new List<IHandlePlatformEvent<PrepareQueryEvent>> { new HandlePrepareQuery() });
             DependencyInjector.Injector = dependencyInjectorMock.Object;
-            EntityHelper.SetHelper(_entityHelperMock.Object);
             Setup();
         }
 
         [TestMethod]
         public void SearchShouldReturnASearchResultForAllEntitiesMatchingTheFilter()
         {
-            var service = new SearchService(_sourceMock.Object);
+            var service = GetSearchService();
             var options = new FilterOptions();
             options.Filter = new Filter();
             options.Filter.Logic = FilterType.Or;
@@ -63,7 +60,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
         [TestMethod]
         public void SearchShouldReturnASearchResultForAllSearchableEntityTypes()
         {
-            var service = new SearchService(_sourceMock.Object);
+            var service = GetSearchService();
             var result = service.Search(null);
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Data.Select(d => d.TypeName).Distinct().Count());
@@ -73,6 +70,11 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
         #endregion Public Methods
 
         #region Private Methods
+
+        private SearchService GetSearchService()
+        {
+            return new SearchService(_sourceMock.Object, _cultureServiceMock.Object, _entityHelperMock.Object, _registratorMock.Object);
+        }
 
         private void Setup()
         {
@@ -112,6 +114,18 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
                 new MailContent { Id = Guid.NewGuid(), Culture = "en", IsCurrentVersion = true, Name = "Account created mail", Body = "Account created", Entity = new PlatformEntity { Id = Guid.NewGuid(), Url = "acount-created-mail" }},
             };
 
+            var locators = new List<ContentLocator>();
+
+            foreach (var entry in htmlList)
+            {
+                locators.Add(new ContentLocator { ContentTypeName = typeof(Html).FullName, ContentUrl = entry.Entity.Url, PageUrl = string.Empty });
+            }
+
+            foreach (var entry in newsList)
+            {
+                locators.Add(new ContentLocator { ContentTypeName = typeof(News).FullName, ContentUrl = entry.Entity.Url, PageUrl = string.Empty });
+            }
+
             _entityHelperMock.Setup(m => m.EntityTypes).Returns(types);
             _entityHelperMock.Setup(m => m.GetEntityType(html.Id)).Returns(typeof(Html));
             _entityHelperMock.Setup(m => m.GetEntityType(news.Id)).Returns(typeof(News));
@@ -121,6 +135,10 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Service
             _sourceMock.Setup(s => s.Query(typeof(News))).Returns(newsList.AsQueryable());
             _sourceMock.Setup(s => s.Query(typeof(Document))).Returns(documentList.AsQueryable());
             _sourceMock.Setup(s => s.Query(typeof(MailContent))).Returns(mailContentList.AsQueryable());
+
+            _cultureServiceMock.Setup(c => c.CurrentCultureCode).Returns("en");
+
+            _registratorMock.Setup(p => p.ContentLocators).Returns(locators);
         }
 
         #endregion Private Methods

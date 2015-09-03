@@ -5,6 +5,7 @@
 ////------------------------------------------------------------------------------
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
@@ -14,8 +15,17 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         #region Private Fields
 
         private Mock<ICacheService> _cacheMock = new Mock<ICacheService>();
+        private Mock<ICmsData> _cmsDataMock = new Mock<ICmsData>();
+        private Mock<ICultureService> _cultureMock = new Mock<ICultureService>();
         private DataSourceMock _dataSourceMock = new DataSourceMock();
+
+        //private Mock<IPlatformDataSource> _dataSourceMock = new Mock<IPlatformDataSource>();
+        //private Mock<IEntityManager> _entityManagerMock = new Mock<IEntityManager>();
+        private Mock<IEntityHelper> _entityHelperMock = new Mock<IEntityHelper>();
+
         private EntityManagerMock _entityManagerMock = new EntityManagerMock();
+        private Mock<IEnvironment> _environmentMock = new Mock<IEnvironment>();
+        private Mock<IPlatformHelper> _helperMock = new Mock<IPlatformHelper>();
         private IEntityService<TModel> _service;
         private TaxonomyManagerMock _taxonomyManagerMock = new TaxonomyManagerMock();
 
@@ -25,7 +35,23 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         public EntityServiceMock()
         {
-            _service = Activator.CreateInstance(typeof(EntityService<>).MakeGenericType(typeof(TModel)), _dataSourceMock.Mock.Object, _entityManagerMock.EntityManager, _taxonomyManagerMock.TaxonomyManager, _cacheMock.Object) as IEntityService<TModel>;
+            _cultureMock.Setup(c => c.CurrentCultureCode).Returns("en");
+            _environmentMock.Setup(e => e.Cultures).Returns(_cultureMock.Object);
+            _helperMock.Setup(h => h.GetUserName(It.IsAny<Guid>())).Returns("Test");
+
+            _cmsDataMock.Setup(c => c.DataSource).Returns(_dataSourceMock.Mock.Object);
+            _cmsDataMock.Setup(c => c.EntityManager).Returns(_entityManagerMock.EntityManager);
+            _cmsDataMock.Setup(c => c.EntityHelper).Returns(_entityHelperMock.Object);
+            _cmsDataMock.Setup(c => c.Environment).Returns(_environmentMock.Object);
+            _cmsDataMock.Setup(c => c.PlatformHelper).Returns(_helperMock.Object);
+            _cmsDataMock.Setup(c => c.TaxonomyManager).Returns(_taxonomyManagerMock.TaxonomyManager);
+
+            _entityHelperMock.Setup(m => m.GetObjectMap(typeof(News))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
+            _entityHelperMock.Setup(m => m.GetObjectMap(typeof(NewsViewModel))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
+            _entityHelperMock.Setup(m => m.GetObjectMap(typeof(NewsListModel))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
+            _entityHelperMock.Setup(m => m.GetEntityType(It.IsAny<Guid>())).Returns(typeof(News));
+
+            _service = Activator.CreateInstance(typeof(EntityService<>).MakeGenericType(typeof(TModel)), _cmsDataMock.Object, _cacheMock.Object) as IEntityService<TModel>;
         }
 
         #endregion Public Constructors
@@ -45,6 +71,14 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             get
             {
                 return _dataSourceMock;
+            }
+        }
+
+        public Mock<IEntityHelper> EntityHelperMock
+        {
+            get
+            {
+                return _entityHelperMock;
             }
         }
 

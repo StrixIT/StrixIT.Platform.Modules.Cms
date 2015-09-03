@@ -29,6 +29,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class HtmlViewModel : EntityViewModel
     {
+        #region Public Constructors
+
+        public HtmlViewModel() : base(typeof(Html))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

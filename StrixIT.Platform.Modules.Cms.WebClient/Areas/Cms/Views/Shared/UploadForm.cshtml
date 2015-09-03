@@ -25,6 +25,8 @@
     var imageName = imageProperty != null ? (imageProperty.Name + "Path").ToCamelCase() : string.Empty;
     System.Web.Configuration.HttpRuntimeSection section = System.Configuration.ConfigurationManager.GetSection("system.web/httpRuntime") as System.Web.Configuration.HttpRuntimeSection;
     var maxLength = section.MaxRequestLength;
+    var config = Platform.Configuration.GetConfiguration<CmsConfiguration>();
+    var allowedFileTypes = string.Join(",", config.AllowedFileTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToLower().Trim());
 }
 <style>
     .btn-file {
@@ -70,14 +72,14 @@
         displayWidth: @Model.DisplayWidth,
         keepAspectRatio: @Model.KeepAspectRatio.ToString().ToLower(),
         maxFileSize: @Model.MaxFileSize,
-        fileTypes: '@Model.FileTypes',
+        fileTypes: '@allowedFileTypes',
         terms: JSON.parse(@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Terms)),
         title: '@(Model.ShowTitle ? titleText : string.Empty)',
         browse: '@browseText',
         uploadCallback: '@Model.CallbackFunctionName',
         defaultImage: '@Model.DefaultImage',
         maxSize: @maxLength
-    }
+        }
 </script>
 <div class="cms-uploadform" ng-controller="uploadcontroller" ng-init="initUpload('@(settingsName)')">
     <div class="uploadedview" ng-show="showFile">

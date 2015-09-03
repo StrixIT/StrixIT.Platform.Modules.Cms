@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,27 +44,28 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private ICacheService _cache;
-        private IFileSystemWrapper _fileSystemWrapper;
-        private IUserContext _user;
+        private IEnvironment _environment;
+        private IFileSystem _fileSystemWrapper;
 
         #endregion Private Fields
 
         #region Constructors
 
-        public PlatformDataSource(IFileSystemWrapper fileSystemWrapper, ICacheService cache, IUserContext user)
-            : base(CmsConstants.CMS)
+        public PlatformDataSource(IFileSystem fileSystemWrapper, ICacheService cache, IEnvironment environment)
+            : base(environment.Configuration, CmsConstants.CMS)
         {
             _fileSystemWrapper = fileSystemWrapper;
             _cache = cache;
-            _user = user;
+            _environment = environment;
             Configuration.ValidateOnSaveEnabled = false;
         }
 
-        protected PlatformDataSource(string connectionStringName) : base(connectionStringName)
+        protected PlatformDataSource(IConfiguration config, string connectionStringName) : base(config, connectionStringName)
         {
         }
 
-        private PlatformDataSource() : base(CmsConstants.CMS)
+        // Todo: test. does this still work?
+        private PlatformDataSource() : base(DependencyInjector.Get<IConfiguration>(), CmsConstants.CMS)
         {
         }
 
@@ -71,7 +73,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Properties
 
-        public IFileSystemWrapper FileSystemWrapper
+        public IFileSystem FileSystem
         {
             get
             {
@@ -377,7 +379,7 @@ namespace StrixIT.Platform.Modules.Cms
             // and (for the entity relation) being unable to keep the
             // ManyToManyCascadeDeleteConvention for relations between entities (as used in e.g. the
             // Path of Heroes module).
-            foreach (var contentType in ModuleManager.GetTypeList(typeof(ContentBase)).Where(t => !t.Equals(typeof(ContentBase))))
+            foreach (var contentType in DependencyInjector.GetTypeList(typeof(ContentBase)).Where(t => !t.Equals(typeof(ContentBase))))
             {
                 var entityMethodResult = typeof(DbModelBuilder).GetMethod("Entity").MakeGenericMethod(contentType).Invoke(modelBuilder, null);
                 var hasRequiredEntityCall = entityMethodResult.GetType().GetMethod("HasRequired").MakeGenericMethod(typeof(PlatformEntity));
@@ -399,7 +401,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             var entityType = query.ElementType;
             var isContent = typeof(IContent).IsAssignableFrom(entityType);
-            var currentGroupId = _user.GroupId;
+            var currentGroupId = _environment.User.GroupId;
             string prefix = string.Empty;
 
             if (isContent)
@@ -409,7 +411,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (isContent || typeof(PlatformEntity).IsAssignableFrom(entityType))
             {
-                var currentUserId = _user.Id;
+                var currentUserId = _environment.User.Id;
 
                 if (currentUserId != null)
                 {
@@ -547,7 +549,7 @@ namespace StrixIT.Platform.Modules.Cms
             // to the model.
             var addMethod = typeof(ConfigurationRegistrar).GetMethods().Single(m => m.Name == "Add" && m.GetGenericArguments().Any(a => a.Name == "TEntityType"));
 
-            foreach (var assembly in ModuleManager.LoadedAssemblies.Where(a => a.GetName().Name != "EntityFramework"))
+            foreach (var assembly in DependencyInjector.GetLoadedAssemblies().Where(a => a.GetName().Name != "EntityFramework"))
             {
                 var configTypes = assembly.GetTypes().Where(t => t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>)).ToList();
                 object config = null;

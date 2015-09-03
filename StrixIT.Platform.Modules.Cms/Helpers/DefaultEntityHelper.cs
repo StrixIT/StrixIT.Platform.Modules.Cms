@@ -21,45 +21,27 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
-using StructureMap;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms
 {
-    public class DefaultEntityHelper : IEntityHelper
+    public class EntityHelper : IEntityHelper
     {
         #region Private Fields
 
-        private static ConcurrentBag<EntityType> _entityTypeList;
-        private static bool _isInitialized = false;
-        private static object _lockObject = new object();
-        private static ConcurrentBag<ObjectMap> _objectMaps = new ConcurrentBag<ObjectMap>();
+        private CmsService _cmsService;
         private IUserContext _user;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        [DefaultConstructor]
-        public DefaultEntityHelper(IUserContext user) : this(user, null) { }
-
-        public DefaultEntityHelper(IUserContext user, IList<EntityType> entityTypes)
+        public EntityHelper(CmsService cmsService, IUserContext user)
         {
+            _cmsService = cmsService;
             _user = user;
-
-            if (entityTypes != null)
-            {
-                _entityTypeList = new ConcurrentBag<EntityType>(entityTypes);
-            }
-
-            if (!_isInitialized)
-            {
-                Init();
-            }
         }
 
         #endregion Public Constructors
@@ -70,7 +52,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             get
             {
-                return _entityTypeList.ToList();
+                return _cmsService.EntityTypes.ToList();
             }
         }
 
@@ -139,7 +121,7 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentException(string.Format("No entity type found for id {0}", entityTypeId));
             }
 
-            return ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == type.Name);
+            return DependencyInjector.GetLoadedAssemblies().SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == type.Name);
         }
 
         public Type GetEntityType(string entityTypeName)
@@ -151,7 +133,7 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentException(string.Format("No entity type found for name {0}", entityTypeName));
             }
 
-            return ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == type.Name);
+            return DependencyInjector.GetLoadedAssemblies().SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.FullName == type.Name);
         }
 
         public Guid GetEntityTypeId(Type entityType)
@@ -178,19 +160,20 @@ namespace StrixIT.Platform.Modules.Cms
 
         public ObjectMap GetObjectMap(Type entityType)
         {
+            var maps = _cmsService.ObjectMaps;
             ObjectMap map;
 
             if (typeof(ContentBase).IsAssignableFrom(entityType))
             {
-                map = _objectMaps.FirstOrDefault(m => m.ContentType == entityType);
+                map = maps.FirstOrDefault(m => m.ContentType == entityType);
             }
             else
             {
-                map = _objectMaps.FirstOrDefault(m => m.ViewModelType == entityType);
+                map = maps.FirstOrDefault(m => m.ViewModelType == entityType);
 
                 if (map == null)
                 {
-                    map = _objectMaps.FirstOrDefault(m => m.ListModelType == entityType);
+                    map = maps.FirstOrDefault(m => m.ListModelType == entityType);
                 }
             }
 
@@ -218,40 +201,6 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Private Methods
 
-        private static void CreateObjectMaps()
-        {
-            var types = new List<Type>();
-
-            foreach (var assembly in ModuleManager.LoadedAssemblies)
-            {
-                types.AddRange(assembly.GetTypes().Where(ty => ty.IsClass
-                                                               && !ty.IsAbstract
-                                                               && !ty.IsGenericType
-                                                               && typeof(object).IsAssignableFrom(ty)));
-            }
-
-            foreach (var type in types)
-            {
-                var viewModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "viewmodel")).FirstOrDefault();
-                var listModelType = ModuleManager.LoadedAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name.ToLower() == type.Name.ToLower() + "listmodel")).FirstOrDefault();
-                viewModelType = viewModelType != null ? viewModelType : listModelType;
-                listModelType = listModelType != null ? listModelType : viewModelType;
-
-                if (viewModelType != null || listModelType != null)
-                {
-                    var existing = _objectMaps.Where(m => m.ViewModelType.FullName == viewModelType.FullName || m.ListModelType.FullName == listModelType.FullName);
-
-                    if (existing.Any())
-                    {
-                        var message = string.Format("There is a duplicatie object map entry for entity type {0} with view model type {1} and list model type {2}.", type.Name, viewModelType.Name, listModelType.Name);
-                        throw new StrixConfigurationException(message);
-                    }
-
-                    _objectMaps.Add(new ObjectMap(type, viewModelType, listModelType));
-                }
-            }
-        }
-
         private static Type GetNonProxyType(Type type)
         {
             if (type.Namespace == PlatformConstants.ENTITYFRAMEWORKPROXYTYPE)
@@ -260,68 +209,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return type;
-        }
-
-        private static void GetOrCreateEntityTypes()
-        {
-            var types = new List<Type>();
-
-            // Create or retrieve all entity types.
-            foreach (var assembly in ModuleManager.LoadedAssemblies)
-            {
-                types.AddRange(assembly.GetTypes().Where(ty => ty.IsClass
-                                                               && !ty.IsAbstract
-                                                               && !ty.IsGenericType
-                                                               && typeof(IContent).IsAssignableFrom(ty)));
-            }
-
-            if (_entityTypeList.IsEmpty())
-            {
-                _entityTypeList = new ConcurrentBag<EntityType>();
-                var source = DependencyInjector.Get<IPlatformDataSource>(PlatformConstants.STRUCTUREMAPPRIVATE);
-                var entityTypes = source.Query<EntityType>().Include(e => e.EntityTypeServiceActions).ToList();
-                bool typeAdded = false;
-
-                foreach (Type type in types)
-                {
-                    var existingType = entityTypes.Where(et => et.Name.Equals(GetNonProxyType(type).FullName)).FirstOrDefault();
-
-                    if (existingType == null)
-                    {
-                        var newType = new EntityType();
-                        newType.Id = Guid.NewGuid();
-                        newType.Name = type.FullName;
-                        newType.EntityTypeServiceActions = new List<EntityTypeServiceAction>();
-                        source.Save(newType);
-                        _entityTypeList.Add(newType);
-                        typeAdded = true;
-                    }
-                    else
-                    {
-                        _entityTypeList.Add(existingType);
-                    }
-                }
-
-                if (typeAdded)
-                {
-                    source.SaveChanges();
-                }
-            }
-        }
-
-        private static void Init()
-        {
-            lock (_lockObject)
-            {
-                if (_isInitialized)
-                {
-                    return;
-                }
-
-                GetOrCreateEntityTypes();
-                CreateObjectMaps();
-                _isInitialized = true;
-            }
         }
 
         private string[] GetFileProperties(Type entityType, bool getIdProperties)

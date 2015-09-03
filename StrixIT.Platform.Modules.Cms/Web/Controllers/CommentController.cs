@@ -20,6 +20,7 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
 using StrixIT.Platform.Web;
 using System;
 using System.Web.Mvc;
@@ -36,8 +37,8 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public CommentController(ICommentService service)
-            : base()
+        public CommentController(ICommentService service, IEnvironment environment)
+            : base(environment)
         {
             this._service = service;
         }

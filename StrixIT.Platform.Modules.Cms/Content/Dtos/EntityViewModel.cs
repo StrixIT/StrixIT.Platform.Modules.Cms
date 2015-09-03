@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using Newtonsoft.Json;
+using StrixIT.Platform.Core;
 using System;
 using System.Collections.Generic;
 
@@ -29,8 +30,16 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The base view model for all content entities.
     /// </summary>
-    public abstract class EntityViewModel : AuditViewModel
+    public abstract class EntityViewModel : AuditViewModel, IViewModel
     {
+        #region Protected Constructors
+
+        protected EntityViewModel(Type entityType) : base(entityType)
+        {
+        }
+
+        #endregion Protected Constructors
+
         #region Public Properties
 
         /// <summary>

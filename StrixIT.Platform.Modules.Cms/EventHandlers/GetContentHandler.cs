@@ -30,11 +30,26 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class GetContentHandler : IHandlePlatformEvent<GetContentEvent>
     {
+        #region Private Fields
+
+        private IPageRegistrator _registrator;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public GetContentHandler(IPageRegistrator registrator)
+        {
+            _registrator = registrator;
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         public void Handle(GetContentEvent args)
         {
-            var locator = PageRegistration.RegisterUrl(args.Helper, args.Options);
+            var locator = _registrator.RegisterUrl(args.Helper, args.Options);
             var url = (string)args.Helper.ViewContext.RequestContext.RouteData.Values[CmsConstants.URL] ?? locator.PageUrl;
             url = url.ToLower();
             var itemUrl = (string)args.Helper.ViewContext.RequestContext.RouteData.Values[CmsConstants.DETAILURL] ?? args.Options.Url;
@@ -59,7 +74,7 @@ namespace StrixIT.Platform.Modules.Cms
                 url = url.ToLower();
             }
 
-            var locators = PageRegistration.ContentLocators.Where(l => l.PageUrl.ToLower() == controller.ToLower() && (contentTypeName == null || l.ContentTypeName == contentTypeName)).ToList();
+            var locators = _registrator.ContentLocators.Where(l => l.PageUrl.ToLower() == controller.ToLower() && (contentTypeName == null || l.ContentTypeName == contentTypeName)).ToList();
 
             if (!locators.Any())
             {

@@ -32,14 +32,16 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private IPlatformDataSource _dataSource;
+        private IEntityHelper _entityHelper;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public ObjectManager(IPlatformDataSource dataSource)
+        public ObjectManager(IPlatformDataSource dataSource, IEntityHelper entityHelper)
         {
             this._dataSource = dataSource;
+            _entityHelper = entityHelper;
         }
 
         #endregion Public Constructors
@@ -51,6 +53,14 @@ namespace StrixIT.Platform.Modules.Cms
             get
             {
                 return this._dataSource;
+            }
+        }
+
+        protected IEntityHelper EntityHelper
+        {
+            get
+            {
+                return _entityHelper;
             }
         }
 
@@ -116,7 +126,7 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("objectType");
             }
 
-            var allIncludes = string.Join(", ", EntityHelper.GetFileProperties(objectType));
+            var allIncludes = string.Join(", ", _entityHelper.GetFileProperties(objectType));
 
             if (!string.IsNullOrWhiteSpace(includes))
             {

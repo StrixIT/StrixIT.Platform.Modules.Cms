@@ -38,7 +38,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// Initializes a new instance of the <see cref="EntityListConfiguration{T}"/> class.
         /// </summary>
         /// <param name="userContext">The user context to use</param>
-        public EntityListConfiguration(IUserContext userContext) : this(userContext, null)
+        public EntityListConfiguration(IUserContext userContext, IEntityHelper entityHelper) : this(userContext, entityHelper, null)
         {
         }
 
@@ -47,8 +47,8 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         /// <param name="userContext">The user context to use</param>
         /// <param name="properties">The names of the properties to display in the list</param>
-        public EntityListConfiguration(IUserContext userContext, IEnumerable<string> properties)
-            : base(EntityHelper.GetObjectMap(typeof(T)).ListModelType)
+        public EntityListConfiguration(IUserContext userContext, IEntityHelper entityHelper, IEnumerable<string> properties)
+            : base(entityHelper.GetObjectMap(typeof(T)).ListModelType)
         {
             var propertiesToAdd = DependencyInjector.TryGet<IMembershipService>() != null ? new string[] { CmsConstants.UPDATEDBY, CmsConstants.UPDATEDON } : new string[] { CmsConstants.UPDATEDON };
             properties = properties != null ? properties.Concat(propertiesToAdd) : propertiesToAdd;

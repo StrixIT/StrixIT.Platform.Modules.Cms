@@ -5,6 +5,7 @@
 ////------------------------------------------------------------------------------
 namespace StrixIT.Platform.Modules.Cms.Migrations
 {
+    using Core.Environment;
     using StrixIT.Platform.Core;
     using System.Data.Entity.Migrations;
 
@@ -23,7 +24,7 @@ namespace StrixIT.Platform.Modules.Cms.Migrations
 
         protected override void Seed(StrixIT.Platform.Modules.Cms.PlatformDataSource context)
         {
-            new MailBuilder(DependencyInjector.Get<IFileSystemWrapper>(), DependencyInjector.TryGet(typeof(IMembershipService)) as IMembershipService).InitMails(context);
+            new MailBuilder(DependencyInjector.Get<IFileSystem>(), DependencyInjector.Get<IEnvironment>()).InitMails(context);
         }
 
         #endregion Protected Methods

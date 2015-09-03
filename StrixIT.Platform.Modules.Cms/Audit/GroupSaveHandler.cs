@@ -28,6 +28,23 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class GroupSaveHandler : IHandlePlatformEvent<GeneralEvent>
     {
+        #region Private Fields
+
+        private IPlatformDataSource _dataSource;
+        private IPlatformHelper _helper;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public GroupSaveHandler(IPlatformDataSource dataSource, IPlatformHelper helper)
+        {
+            _dataSource = dataSource;
+            _helper = helper;
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         public void Handle(GeneralEvent args)
@@ -39,10 +56,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             var id = (Guid)args.Data["Id"];
             var name = (string)args.Data["GroupName"];
-
-            var source = DependencyInjector.Get<IPlatformDataSource>(PlatformConstants.STRUCTUREMAPPRIVATE);
-
-            var lookup = source.Query<GroupData>().FirstOrDefault(u => u.Id == id);
+            var lookup = _dataSource.Query<GroupData>().FirstOrDefault(u => u.Id == id);
 
             if (lookup == null)
             {
@@ -50,10 +64,10 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             lookup.Name = name;
-            source.Save(lookup);
-            source.SaveChanges();
+            _dataSource.Save(lookup);
+            _dataSource.SaveChanges();
 
-            StrixCms.ClearGroupNameDictionary();
+            _helper.ClearGroupNameDictionary();
         }
 
         #endregion Public Methods

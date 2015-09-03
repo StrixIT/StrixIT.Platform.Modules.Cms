@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -31,7 +32,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public NewsService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        public NewsService(ICmsData cmsData, ICacheService cache) : base(cmsData, cache)
         {
         }
 
@@ -41,7 +42,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public NewsViewModel GetLatest()
         {
-            var news = this.Manager.QueryCurrent<News>("Entity").OrderByDescending(n => n.PublishedOn).FirstOrDefault();
+            var news = CmsData.EntityManager.QueryCurrent<News>("Entity").OrderByDescending(n => n.PublishedOn).FirstOrDefault();
             return news.Map<NewsViewModel>();
         }
 

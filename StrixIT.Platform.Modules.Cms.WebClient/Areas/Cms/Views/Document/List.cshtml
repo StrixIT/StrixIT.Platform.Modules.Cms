@@ -22,13 +22,13 @@
 }
 <script type="text/x-kendo-angular-template" id="documentstemplate">
     <li>
-        <a class="document-details thumbnail" ng-click="show('document', dataItem)" href="{{ '@Request.Url.AbsolutePath.Replace(string.Format("/{0}/", StrixPlatform.DefaultCultureCode), string.Empty)' + '@itemPageUrl' + '/' + dataItem.url }}" title="@Interface.ClickToViewDocument">
+        <a class="document-details thumbnail" ng-click="show('document', dataItem)" href="{{ '@Request.Url.AbsolutePath.Replace(string.Format("/{0}/", Platform.Cultures.DefaultCultureCode), string.Empty)' + '@itemPageUrl' + '/' + dataItem.url title="@Interface.ClickToViewDocument">
             <img ng-src="{{ dataItem.filePath }}" />
             <span class="caption document-name" ng-bind-html="dataItem.name"></span>
         </a>
-        @if (User.IsInRole(CmsRoleNames.EDITORROLES))
+        @if (Platform.User.IsInRole(CmsRoleNames.EDITORROLES))
         {
-            <a class="cms-editlink" href="{{ '@Url.Action("Edit", "Document", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })/' + dataItem.url }}">@Interface.EditDocument</a>
+            <a class="cms-editlink" href="{{ '@Url.Action("Edit", "Document", new { area = "Cms", language = Platform.Cultures.CurrentCultureCode })/' + dataItem.url>@Interface.EditDocument</a>
         }
     </li>
 </script>
@@ -37,8 +37,8 @@
     <input type="text" class="k-textbox" strix-search k-data-source="documents" placeholder="Search documents..." data-field="Name, Description" />
     <ul class="cms-list-documents" kendo-listview="documentslist" k-options="documentslistconfig"></ul>
     <div kendo-pager k-data-source="documents"></div>
-    @if (User.IsInRole(CmsRoleNames.EDITORROLES))
+    @if (Platform.User.IsInRole(CmsRoleNames.EDITORROLES))
     {
-        <a class="cms-createlink" href="@Url.Action("Edit", "Document", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })">@Interface.CreateDocument</a>
+        <a class="cms-createlink" href="@Url.Action("Edit", "Document", new { area = "Cms", language = Platform.Cultures.CurrentCultureCode>@Interface.CreateDocument</a>
     }
 </div>

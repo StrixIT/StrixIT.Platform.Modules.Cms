@@ -22,7 +22,7 @@
 }
 @section FormContent
 {
-    @if (StrixCms.Config.UseNewsSummary)
+    @if (Platform.Configuration.GetConfiguration<CmsConfiguration>().UseNewsSummary)
     {
         <strix-cms-editor editor-label="@Interface.Summary">
             @Html.Partial("TinyMCE", new RteModel(typeof(News), "Summary"))
@@ -32,8 +32,8 @@
         @Html.Partial("TinyMCE", new RteModel(typeof(News), "Body"))
     </strix-cms-editor>
     @*<strix-cms-editor editor-label="@Interface.PublishedOn">
-        <input name="publishedOn" kendo-date-picker k-ng-model="news.publishedOn" />
-    </strix-cms-editor>*@
+            <input name="publishedOn" kendo-date-picker k-ng-model="news.publishedOn" />
+        </strix-cms-editor>*@
     <strix-cms-editor editor-label="@Interface.ExpireTime">
         <input name="expireTime" kendo-date-picker k-ng-model="news.expireTime" />
     </strix-cms-editor>

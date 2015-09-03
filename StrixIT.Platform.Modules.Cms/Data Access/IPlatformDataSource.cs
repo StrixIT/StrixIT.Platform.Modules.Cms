@@ -38,7 +38,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <summary>
         /// Gets the file system wrapper used.
         /// </summary>
-        IFileSystemWrapper FileSystemWrapper { get; }
+        IFileSystem FileSystem { get; }
 
         #endregion Public Properties
 

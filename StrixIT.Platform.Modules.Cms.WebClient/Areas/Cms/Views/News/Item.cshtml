@@ -24,7 +24,7 @@
 @if (Model.Id != Guid.Empty)
 {
     <h1>@Html.RenderEscapedHtml(Model.Name)</h1>
-    if (StrixCms.Config.UseNewsSummary)
+    if (Platform.Configuration.GetConfiguration<CmsConfiguration>().UseNewsSummary)
     {
         <div class="cms-summary-news">@Html.RenderHtml(Model.Summary)</div>
     }

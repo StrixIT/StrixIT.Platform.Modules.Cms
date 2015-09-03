@@ -37,8 +37,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Private Fields
 
-        private ICommentService _commentService;
-        private IUserContext _user;
+        private ICmsServices _cmsServices;
 
         #endregion Private Fields
 
@@ -49,33 +48,29 @@ namespace StrixIT.Platform.Modules.Cms
         /// </summary>
         /// <param name="entityService">The entity service to use</param>
         /// <param name="commentService">The comment service to use</param>
-        protected EntityController(IEntityService<TModel> entityService, ICommentService commentService, IUserContext user)
-            : base(entityService)
+        protected EntityController(IEntityService<TModel> service, ICmsServices cmsServices)
+            : base(cmsServices.Environment, service)
         {
-            this._commentService = commentService;
-            _user = user;
+            _cmsServices = cmsServices;
         }
 
         #endregion Protected Constructors
 
         #region Protected Properties
 
-        /// <summary>
-        /// Gets the entity service used.
-        /// </summary>
-        protected IEntityService<TModel> Service
+        protected IEntityService<TModel> EntityService
         {
             get
             {
-                return this._service as IEntityService<TModel>;
+                return _service as IEntityService<TModel>;
             }
         }
 
-        protected new IUserContext User
+        protected ICmsServices Services
         {
             get
             {
-                return _user;
+                return _cmsServices;
             }
         }
 
@@ -166,7 +161,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The index view</returns>
         public override ActionResult Index()
         {
-            var config = new EntityListConfiguration<TModel>(User);
+            var config = new EntityListConfiguration<TModel>(Environment.User, _cmsServices.EntityHelper);
             return this.View(config);
         }
 
@@ -196,12 +191,12 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (type == CmsConstants.DISPLAYTYPEITEM && !string.IsNullOrWhiteSpace(url))
             {
-                var model = this.Service.GetCached(this.GetContentUrl(url));
+                var model = EntityService.GetCached(this.GetContentUrl(url));
                 return this.View("Item", model);
             }
             else
             {
-                var model = new EntityListConfiguration<TModel>(User);
+                var model = new EntityListConfiguration<TModel>(Environment.User, _cmsServices.EntityHelper);
                 return this.View("List", model);
             }
         }
@@ -227,7 +222,7 @@ namespace StrixIT.Platform.Modules.Cms
         [AllowAnonymous]
         public virtual ActionResult DisplayTags(string url)
         {
-            return this.DisplayWidget(EntityServiceActions.AllowFixedTagging, url, "Tags", x => this.Service.GetTags(x));
+            return this.DisplayWidget(EntityServiceActions.AllowFixedTagging, url, "Tags", x => EntityService.GetTags(x));
         }
 
         #endregion Content
@@ -240,7 +235,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return new HttpStatusCodeResult(401);
             }
 
-            var model = this.Service.GetCached(url);
+            var model = EntityService.GetCached(url);
             return this.View(model);
         }
 
@@ -271,7 +266,7 @@ namespace StrixIT.Platform.Modules.Cms
         /// <returns>The list of versions</returns>
         public JsonResult GetVersionList(FilterOptions options, Guid entityId)
         {
-            return this.Json(this.Service.GetVersionList(entityId, null, options).DataRecords(options));
+            return this.Json(EntityService.GetVersionList(entityId, null, options).DataRecords(options));
         }
 
         /// <summary>
@@ -284,7 +279,7 @@ namespace StrixIT.Platform.Modules.Cms
         [HttpPost]
         public virtual JsonResult RestoreVersion(Guid id, int versionNumber, string log)
         {
-            var model = this.Service.RestoreVersion(id, versionNumber, log);
+            var model = EntityService.RestoreVersion(id, versionNumber, log);
             return this.Json(model);
         }
 
@@ -296,16 +291,16 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var result = true;
 
-            if (DependencyInjector.TryGet<IMembershipService>() == null)
+            if (!Environment.MembershipActive)
             {
                 return true;
             }
 
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            var map = _cmsServices.EntityHelper.GetObjectMap(typeof(TModel));
 
             // Todo: use injected request and response If anonymous access is not enabled for this
             // entity type, return 401.
-            if (!Request.IsAuthenticated && !EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.AllowAnonymousAccess))
+            if (!Request.IsAuthenticated && !_cmsServices.EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.AllowAnonymousAccess))
             {
                 result = false;
 
@@ -325,37 +320,37 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(id))
             {
-                return this.Service.Get(null);
+                return EntityService.Get(null);
             }
 
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            var map = _cmsServices.EntityHelper.GetObjectMap(typeof(TModel));
 
             if (Guid.TryParse(id, out key))
             {
                 if (versionNumber.HasValue)
                 {
-                    model = this.Service.Get(key, culture, versionNumber.Value);
+                    model = EntityService.Get(key, culture, versionNumber.Value);
                 }
                 else
                 {
-                    model = this.Service.Get(key, culture);
+                    model = EntityService.Get(key, culture);
                 }
             }
             else
             {
                 if (versionNumber.HasValue)
                 {
-                    model = this.Service.Get(id, culture, versionNumber.Value);
+                    model = EntityService.Get(id, culture, versionNumber.Value);
                 }
                 else
                 {
                     if (string.IsNullOrWhiteSpace(culture) && useFallBack)
                     {
-                        model = this.Service.GetAny(id, culture, null);
+                        model = EntityService.GetAny(id, culture, null);
                     }
                     else
                     {
-                        model = this.Service.Get(id, culture);
+                        model = EntityService.Get(id, culture);
                     }
                 }
             }
@@ -369,12 +364,12 @@ namespace StrixIT.Platform.Modules.Cms
 
         private ActionResult DisplayWidget(string serviceName, string url, string view, Func<Guid, object> modelFunc)
         {
-            var map = EntityHelper.GetObjectMap(typeof(TModel));
+            var map = _cmsServices.EntityHelper.GetObjectMap(typeof(TModel));
 
-            if (EntityHelper.IsServiceActive(map.ContentType, serviceName))
+            if (_cmsServices.EntityHelper.IsServiceActive(map.ContentType, serviceName))
             {
                 url = url.Replace("&#47;", "/");
-                var id = this.Service.GetId(url);
+                var id = EntityService.GetId(url);
 
                 if (id.HasValue)
                 {
@@ -406,11 +401,11 @@ namespace StrixIT.Platform.Modules.Cms
         private void UpdateContentLocator()
         {
             ViewBag.ModelType = typeof(TModel);
-            var locator = PageRegistration.ContentLocators.FirstOrDefault(l => l.ContentTypeName == null);
+            var locator = _cmsServices.PageRegistrator.ContentLocators.FirstOrDefault(l => l.ContentTypeName == null);
 
             if (locator != null)
             {
-                var map = EntityHelper.GetObjectMap(typeof(TModel));
+                var map = _cmsServices.EntityHelper.GetObjectMap(typeof(TModel));
                 locator.ContentTypeName = map.ContentType.FullName;
             }
         }

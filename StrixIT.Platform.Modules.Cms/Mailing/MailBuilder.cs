@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,17 +34,17 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Private Fields
 
-        private IFileSystemWrapper _fileSystemWrapper;
-        private IMembershipService _membershipService;
+        private IEnvironment _environment;
+        private IFileSystem _fileSystem;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public MailBuilder(IFileSystemWrapper fileSystemWrapper, IMembershipService membershipService)
+        public MailBuilder(IFileSystem fileSystem, IEnvironment environment)
         {
-            this._fileSystemWrapper = fileSystemWrapper;
-            this._membershipService = membershipService;
+            _fileSystem = fileSystem;
+            _environment = environment;
         }
 
         #endregion Public Constructors
@@ -57,21 +58,21 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("source");
             }
 
-            if (this._membershipService != null)
+            if (_environment.Membership.ApplicationId != Guid.Empty)
             {
-                string from = this.GetFromAddress();
+                string from = _environment.Configuration.FromAddress;
 
                 // Add the default entity types.
                 var mailTemplateType = new EntityType { Id = Guid.NewGuid(), Name = typeof(MailContentTemplate).FullName };
                 var mailType = new EntityType { Id = Guid.NewGuid(), Name = typeof(MailContent).FullName };
                 source.Save(mailTemplateType);
                 source.Save(mailType);
-                var adminId = this._membershipService.AdminId;
-                var mainGroupId = StrixPlatform.MainGroupId;
+                var adminId = _environment.Membership.AdminId;
+                var mainGroupId = _environment.Membership.MainGroupId;
                 var date = DateTime.Now;
-                var templateDir = ModuleManager.AppSettings["Membership"]["mailTemplateFolder"];
-                var directory = StrixPlatform.Environment.MapPath(templateDir);
-                var supportedCultures = StrixPlatform.Configuration.Cultures.ToLower().Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
+                var templateDir = _environment.Configuration.GetSetting<string>("Membership", "mailTemplateFolder");
+                var directory = _environment.MapPath(templateDir);
+                var supportedCultures = _environment.Configuration.GetConfiguration<PlatformConfiguration>().Cultures.ToLower().Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
 
                 var templateContent = this.AddMailTemplate(source, adminId, mainGroupId, directory, mailTemplateType, date, supportedCultures);
                 this.AddMails(source, adminId, mainGroupId, directory, templateContent, mailType, from, date, supportedCultures);
@@ -100,7 +101,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             foreach (var mailFile in mailFiles)
             {
-                var mailData = this._fileSystemWrapper.GetHtmlTemplate(directory, mailFile.Split('\\').Last().Split('.').First(), null);
+                var mailData = this._fileSystem.GetHtmlTemplate(directory, mailFile.Split('\\').Last().Split('.').First(), null);
 
                 var entity = new PlatformEntity
                 {
@@ -148,7 +149,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             // Add the mail template
             var templateName = "Default";
-            var templateData = this._fileSystemWrapper.GetHtmlTemplate(directory, "MailTemplate", null);
+            var templateData = this._fileSystem.GetHtmlTemplate(directory, "MailTemplate", null);
             List<MailContentTemplate> templateContent = new List<MailContentTemplate>();
 
             var templateEntity = new PlatformEntity
@@ -187,12 +188,6 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             return templateContent;
-        }
-
-        private string GetFromAddress()
-        {
-            var mailSettings = Helpers.GetConfigSectionGroup<MailSettingsSectionGroup>("system.net/mailSettings");
-            return mailSettings.Smtp.From ?? "rutger@strixit.com";
         }
 
         #endregion Private Methods

@@ -18,9 +18,9 @@
 @model Guid?
 @{
     var type = (Type)ViewBag.ModelType;
-    var contentType = EntityHelper.GetObjectMap(type).ContentType;
-    bool versionable = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
-    bool allowNested = EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowNestedComments);
+    var contentType = Cms.GetObjectMap(type).ContentType;
+    bool versionable = Cms.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+    bool allowNested = Cms.IsServiceActive(contentType, EntityServiceActions.AllowNestedComments);
 }
 <script type="text/ng-template" id="commenttemplate">
     <div ng-show="!comment.isEditing">
@@ -65,7 +65,7 @@
         </div>
     </div>
 </script>
-<div class="cms-comment-container" ng-controller="commentcontroller" ng-cloak ng-init="init('@type.Name.Replace("ViewModel", string.Empty).ToLower()', '@EntityHelper.GetEntityTypeId(contentType)', '@Interface.NewResponse', '@Interface.EditResponse', '@Interface.RespondToResponse', '@Model')">
+<div class="cms-comment-container" ng-controller="commentcontroller" ng-cloak ng-init="init('@type.Name.Replace("ViewModel", string.Empty).ToLower()', '@Cms.GetEntityTypeId(contentType)', '@Interface.NewResponse', '@Interface.EditResponse', '@Interface.RespondToResponse', '@Model')">
     <h3>@Interface.Comments</h3>
     <div class="cms-comment-data" ng-show="!loading">
         <ul class="cms-comment-list">

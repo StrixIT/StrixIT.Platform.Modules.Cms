@@ -6,6 +6,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Framework;
 
 namespace StrixIT.Platform.Modules.Cms.Tests.Data
 {
@@ -13,19 +14,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Data
     public class PlatformDataSourceTests
     {
         #region Public Methods
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Logger.LoggingService = null;
-        }
-
-        [TestMethod]
-        public void CmsConfigShouldCorrectlyReportUseOfSqlCompact()
-        {
-            var source = new TestPlatformDataSource(null, null, null);
-            Assert.IsTrue(StrixCms.Config.UsesSqlCompactDatabase);
-        }
 
         [TestMethod]
         public void GetManyToManyRelationValuesShouldReturnAllManyToManyKeyValues()
@@ -196,13 +184,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests.Data
             //Assert.AreEqual(date, result[1].OldValue);
             //Assert.AreEqual(newDate, result[1].NewValue);
             Assert.Inconclusive("Implement");
-        }
-
-        [TestInitialize]
-        public void Init()
-        {
-            TestHelpers.MockUtilities();
-            Logger.LoggingService = new Mock<ILoggingService>().Object;
         }
 
         #endregion Public Methods

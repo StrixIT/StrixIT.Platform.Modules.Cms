@@ -27,6 +27,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class FileViewModel : PlatformBaseViewModel
     {
+        #region Public Constructors
+
+        public FileViewModel() : base(typeof(File))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

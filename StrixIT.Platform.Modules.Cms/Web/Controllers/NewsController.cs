@@ -31,7 +31,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public NewsController(INewsService newsService, ICommentService commentService, IUserContext user) : base(newsService, commentService, user)
+        public NewsController(INewsService newsService, ICmsServices cmsServices) : base(newsService, cmsServices)
         {
         }
 
@@ -43,7 +43,7 @@ namespace StrixIT.Platform.Modules.Cms
         [ChildActionOnly]
         public ActionResult DisplayLatest()
         {
-            var model = ((INewsService)this.Service).GetLatest();
+            var model = ((INewsService)EntityService).GetLatest();
 
             if (model == null)
             {
@@ -61,7 +61,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return new HttpStatusCodeResult(401);
             }
 
-            var config = new EntityListConfiguration<NewsViewModel>(User);
+            var config = new EntityListConfiguration<NewsViewModel>(Environment.User, Services.EntityHelper);
             config.Fields.Insert(0, new ListFieldConfiguration("PublishedOn", "kendoDate") { ShowFilter = false });
             config.Fields.Insert(1, new ListFieldConfiguration("ExpireTime", "kendoDate") { ShowFilter = false });
             return this.View(config);

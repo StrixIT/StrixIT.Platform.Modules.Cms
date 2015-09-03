@@ -35,17 +35,17 @@ namespace StrixIT.Platform.Modules.Cms
         #region Private Fields
 
         private ICacheService _cache;
-        private ITaxonomyManager _taxonomyManager;
+        private ICmsData _cmsData;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public EntityService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache)
-            : base(dataSource, entityManager)
+        public EntityService(ICmsData cmsData, ICacheService cache)
+            : base(cmsData.DataSource, cmsData.EntityManager, cmsData.EntityHelper)
         {
-            this._taxonomyManager = taxonomyManager;
-            this._cache = cache;
+            _cmsData = cmsData;
+            _cache = cache;
         }
 
         #endregion Public Constructors
@@ -56,15 +56,15 @@ namespace StrixIT.Platform.Modules.Cms
         {
             get
             {
-                return this._cache;
+                return _cache;
             }
         }
 
-        protected new IEntityManager Manager
+        protected ICmsData CmsData
         {
             get
             {
-                return base.Manager as IEntityManager;
+                return _cmsData;
             }
         }
 
@@ -92,7 +92,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (typeof(EntityViewModel).IsAssignableFrom(typeof(TModel)))
             {
-                return this.Get(typeof(TModel), id, null, null, 0, null) as TModel;
+                return Get(typeof(TModel), id, null, null, 0, null) as TModel;
             }
 
             return base.Get(id);
@@ -100,52 +100,52 @@ namespace StrixIT.Platform.Modules.Cms
 
         public TModel Get(Guid? id, string culture)
         {
-            return this.Get(typeof(TModel), id, null, culture, 0, null) as TModel;
+            return Get(typeof(TModel), id, null, culture, 0, null) as TModel;
         }
 
         public TModel Get(Guid id, string culture, string relationsToInclude)
         {
-            return this.Get(typeof(TModel), id, null, culture, 0, relationsToInclude) as TModel;
+            return Get(typeof(TModel), id, null, culture, 0, relationsToInclude) as TModel;
         }
 
         public TModel Get(Guid id, string culture, int versionNumber)
         {
-            return this.Get(typeof(TModel), id, null, culture, versionNumber, null) as TModel;
+            return Get(typeof(TModel), id, null, culture, versionNumber, null) as TModel;
         }
 
         public TModel Get(Guid id, string culture, int versionNumber, string relationsToInclude)
         {
-            return this.Get(typeof(TModel), id, null, culture, versionNumber, relationsToInclude) as TModel;
+            return Get(typeof(TModel), id, null, culture, versionNumber, relationsToInclude) as TModel;
         }
 
         public TModel Get(string url)
         {
-            return this.Get(url, null, 0, null);
+            return Get(url, null, 0, null);
         }
 
         public TModel Get(string url, string culture)
         {
-            return this.Get(url, culture, 0, null);
+            return Get(url, culture, 0, null);
         }
 
         public TModel Get(string url, string culture, string relationsToInclude)
         {
-            return this.Get(url, culture, 0, relationsToInclude);
+            return Get(url, culture, 0, relationsToInclude);
         }
 
         public TModel Get(string url, string culture, int versionNumber)
         {
-            return this.Get(url, culture, versionNumber, null);
+            return Get(url, culture, versionNumber, null);
         }
 
         public TModel Get(string url, string culture, int versionNumber, string relationsToInclude)
         {
-            return this.Get(typeof(TModel), null, url, culture, versionNumber, relationsToInclude) as TModel;
+            return Get(typeof(TModel), null, url, culture, versionNumber, relationsToInclude) as TModel;
         }
 
         public TModel GetAny(string url, string culture, string relationsToInclude)
         {
-            return this.Get(typeof(TModel), null, url, culture, 0, relationsToInclude, true) as TModel;
+            return Get(typeof(TModel), null, url, culture, 0, relationsToInclude, true) as TModel;
         }
 
         public Guid? GetId(string idOrUrl)
@@ -158,7 +158,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             var map = EntityHelper.GetObjectMap(typeof(TModel));
-            return (Guid?)this.Manager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND Entity.Url.ToLower().Equals(@1)", StrixPlatform.CurrentCultureCode, idOrUrl).Select("EntityId").GetFirst();
+            return (Guid?)Manager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND Entity.Url.ToLower().Equals(@1)", _cmsData.Environment.Cultures.CurrentCultureCode, idOrUrl).Select("EntityId").GetFirst();
         }
 
         public string GetUrl(Guid id)
@@ -169,7 +169,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             var map = EntityHelper.GetObjectMap(typeof(TModel));
-            return (string)this.Manager.Query(map.ContentType).Where("EntityId.Equals(@0)", id).Select("Entity.Url").GetFirst();
+            return (string)Manager.Query(map.ContentType).Where("EntityId.Equals(@0)", id).Select("Entity.Url").GetFirst();
         }
 
         #endregion Get
@@ -179,12 +179,12 @@ namespace StrixIT.Platform.Modules.Cms
         public virtual TModel GetCached(string url, string permissionKey = null)
         {
             TModel entity = null;
-            var currentCulture = StrixPlatform.CurrentCultureCode;
+            var currentCulture = _cmsData.Environment.Cultures.CurrentCultureCode;
             var cacheKey = string.Format(CmsConstants.CONTENTPERCULTURE, typeof(TModel).Name) + permissionKey;
 
             // First, try to get the content from the cache. If it is not there, retrieve it from
             // the database and add it to the cache.
-            var tupleList = this._cache[cacheKey] as List<Tuple<string, string, dynamic>>;
+            var tupleList = _cache[cacheKey] as List<Tuple<string, string, dynamic>>;
 
             if (tupleList != null)
             {
@@ -194,8 +194,8 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (entity == null)
             {
-                entity = this.Get(url);
-                StrixPlatform.RaiseEvent<CacheEntityModelEvent<TModel>>(new CacheEntityModelEvent<TModel>(entity));
+                entity = Get(url);
+                PlatformEvents.Raise<CacheEntityModelEvent<TModel>>(new CacheEntityModelEvent<TModel>(entity));
 
                 if (tupleList == null)
                 {
@@ -203,7 +203,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
 
                 tupleList.Add(new Tuple<string, string, dynamic>(url, currentCulture, entity));
-                this._cache[cacheKey] = tupleList;
+                _cache[cacheKey] = tupleList;
             }
 
             return entity;
@@ -221,11 +221,11 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             var map = EntityHelper.GetObjectMap(typeof(TModel));
-            var culture = StrixPlatform.CurrentCultureCode.ToLower();
-            IQueryable query = this.Manager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND IsCurrentVersion", culture);
+            var culture = _cmsData.Environment.Cultures.CurrentCultureCode.ToLower();
+            IQueryable query = _cmsData.EntityManager.Query(map.ContentType).Where("Culture.ToLower().Equals(@0) AND IsCurrentVersion", culture);
 
             var queryEvent = new PrepareQueryEvent(query, filter);
-            StrixPlatform.RaiseEvent(queryEvent);
+            PlatformEvents.Raise(queryEvent);
             query = queryEvent.Query;
 
             return query.Map(map.ListModelType);
@@ -237,12 +237,12 @@ namespace StrixIT.Platform.Modules.Cms
 
         public IList<TermViewModel> GetAllTags()
         {
-            return this._taxonomyManager.TagQuery().Map<TermViewModel>().ToList();
+            return _cmsData.TaxonomyManager.TagQuery().Map<TermViewModel>().ToList();
         }
 
         public IList<TermViewModel> GetTags(Guid entityId)
         {
-            return this._taxonomyManager.TagQuery().Where(t => t.TaggedEntities.Any(e => e.Id == entityId)).Map<TermViewModel>().ToList();
+            return _cmsData.TaxonomyManager.TagQuery().Where(t => t.TaggedEntities.Any(e => e.Id == entityId)).Map<TermViewModel>().ToList();
         }
 
         #endregion Tags
@@ -256,7 +256,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return base.Save(model, saveChanges);
             }
 
-            if (this.Exists(model.Name, model.EntityId))
+            if (Exists(model.Name, model.EntityId))
             {
                 return new SaveResult<TModel> { Success = false, Message = StrixIT.Platform.Modules.Cms.Resources.Interface.NameNotUnique };
             }
@@ -280,7 +280,7 @@ namespace StrixIT.Platform.Modules.Cms
             if (!isNew)
             {
                 // remove all old file tags for this entity.
-                var oldContent = this.Manager.Get(map.ContentType, entityModel.EntityId, null, 0, "Entity.Tags") as IContent;
+                var oldContent = _cmsData.EntityManager.Get(map.ContentType, entityModel.EntityId, null, 0, "Entity.Tags") as IContent;
 
                 if (oldContent != null)
                 {
@@ -291,8 +291,8 @@ namespace StrixIT.Platform.Modules.Cms
                     }
 
                     // Remove old tags
-                    var oldFiles = this.GetFileNames(oldContent, rteProperties, fileProperties);
-                    this._taxonomyManager.RemoveTagFromFiles(EntityHelper.GetEntityType(oldContent.Entity.EntityTypeId).FullName + "_" + oldContent.Id.ToString(), oldFiles);
+                    var oldFiles = GetFileNames(oldContent, rteProperties, fileProperties);
+                    _cmsData.TaxonomyManager.RemoveTagFromFiles(EntityHelper.GetEntityType(oldContent.Entity.EntityTypeId).FullName + "_" + oldContent.Id.ToString(), oldFiles);
                 }
             }
             else
@@ -303,17 +303,17 @@ namespace StrixIT.Platform.Modules.Cms
                 }
             }
 
-            this.GetNewRelations(content);
+            GetNewRelations(content);
 
-            content = this.Manager.Save(content);
+            content = _cmsData.EntityManager.Save(content);
 
             if (content != null)
             {
                 // Add all current file tags for this entity.
-                var newFiles = this.GetFileNames(content, rteProperties, fileProperties);
+                var newFiles = GetFileNames(content, rteProperties, fileProperties);
                 var entityType = EntityHelper.GetEntityType(content.Entity.EntityTypeId);
 
-                this._taxonomyManager.AddTagToFiles(entityType.FullName + "_" + content.Id.ToString(), newFiles);
+                _cmsData.TaxonomyManager.AddTagToFiles(entityType.FullName + "_" + content.Id.ToString(), newFiles);
 
                 if (entityModel.Tags != null && EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.AllowFixedTagging))
                 {
@@ -321,16 +321,16 @@ namespace StrixIT.Platform.Modules.Cms
 
                     if (tagIds.Length > 0)
                     {
-                        this._taxonomyManager.Tag(content, tagIds);
+                        _cmsData.TaxonomyManager.Tag(content, tagIds);
                     }
                 }
 
                 var cacheKey = string.Format(CmsConstants.CONTENTPERCULTURE, typeof(TModel).Name);
-                this._cache.Delete(cacheKey);
+                _cache.Delete(cacheKey);
 
                 if (saveChanges)
                 {
-                    this.SaveChanges();
+                    SaveChanges();
 
                     if (isNew)
                     {
@@ -338,7 +338,7 @@ namespace StrixIT.Platform.Modules.Cms
 
                         if (!fileIncludes.IsEmpty())
                         {
-                            result.Entity = this.Manager.Get(map.ContentType, content.EntityId, null, 0, null);
+                            result.Entity = _cmsData.EntityManager.Get(map.ContentType, content.EntityId, null, 0, null);
                         }
                     }
                 }
@@ -358,7 +358,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             if (typeof(EntityViewModel).IsAssignableFrom(typeof(TModel)))
             {
-                this.Delete(typeof(TModel), id, null, 0, null, saveChanges);
+                Delete(typeof(TModel), id, null, 0, null, saveChanges);
             }
             else
             {
@@ -368,22 +368,22 @@ namespace StrixIT.Platform.Modules.Cms
 
         public void Delete(Guid id, string culture)
         {
-            this.Delete(id, culture, 0, null, true);
+            Delete(id, culture, 0, null, true);
         }
 
         public void Delete(Guid id, string culture, int versionNumber)
         {
-            this.Delete(id, culture, versionNumber, null, true);
+            Delete(id, culture, versionNumber, null, true);
         }
 
         public void Delete(Guid id, string culture, int versionNumber, string log)
         {
-            this.Delete(id, culture, versionNumber, log, true);
+            Delete(id, culture, versionNumber, log, true);
         }
 
         public virtual void Delete(Guid id, string culture, int versionNumber, string log, bool saveChanges)
         {
-            this.Delete(typeof(TModel), id, culture, versionNumber, log, saveChanges);
+            Delete(typeof(TModel), id, culture, versionNumber, log, saveChanges);
         }
 
         #endregion Delete
@@ -394,7 +394,7 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var result = new List<VersionViewModel>();
             var map = EntityHelper.GetObjectMap(typeof(TModel));
-            culture = string.IsNullOrWhiteSpace(culture) ? StrixPlatform.CurrentCultureCode : culture;
+            culture = string.IsNullOrWhiteSpace(culture) ? _cmsData.Environment.Cultures.CurrentCultureCode : culture;
 
             if (filter == null || filter.Sort.IsEmpty())
             {
@@ -406,7 +406,7 @@ namespace StrixIT.Platform.Modules.Cms
                 filter.Sort.Add(new SortField { Field = "VersionNumber", Dir = "desc" });
             }
 
-            IQueryable query = this.Manager.Query(map.ContentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1)", id, culture).Filter(filter);
+            IQueryable query = _cmsData.EntityManager.Query(map.ContentType).Where("EntityId.Equals(@0) AND Culture.ToLower().Equals(@1)", id, culture).Filter(filter);
             var projection = query.Select("new ( CreatedByUserId, CreatedOn, VersionNumber, VersionLog, IsCurrentVersion )");
 
             foreach (var item in projection)
@@ -416,7 +416,7 @@ namespace StrixIT.Platform.Modules.Cms
                     EntityId = id,
                     VersionNumber = (int)item.GetPropertyValue("VersionNumber"),
                     IsCurrentVersion = (bool)item.GetPropertyValue("IsCurrentVersion"),
-                    CreatedBy = StrixCms.GetUserName((Guid)item.GetPropertyValue("CreatedByUserId")),
+                    CreatedBy = _cmsData.PlatformHelper.GetUserName((Guid)item.GetPropertyValue("CreatedByUserId")),
                     CreatedOn = (DateTime)item.GetPropertyValue("CreatedOn"),
                     Log = (string)item.GetPropertyValue("VersionLog"),
                 });
@@ -427,8 +427,8 @@ namespace StrixIT.Platform.Modules.Cms
 
         public TModel RestoreVersion(Guid id, int versionNumber, string log)
         {
-            var culture = StrixPlatform.CurrentCultureCode;
-            var currentVersion = this.Get(id);
+            var culture = _cmsData.Environment.Cultures.CurrentCultureCode;
+            var currentVersion = Get(id);
 
             if (versionNumber == currentVersion.VersionNumber)
             {
@@ -436,12 +436,12 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             var currentVersionNumber = currentVersion.VersionNumber;
-            var versionToRestore = this.Get(id, culture, versionNumber);
+            var versionToRestore = Get(id, culture, versionNumber);
             versionToRestore.Map<TModel>(currentVersion);
             currentVersion.VersionNumber = currentVersionNumber;
 
             var map = EntityHelper.GetObjectMap(typeof(TModel));
-            var drafts = this.Manager.Query(map.ContentType).Where("EntityId.Equals(@0) AND Culture.Equals(@1) AND VersionNumber > @2", id, culture, currentVersionNumber);
+            var drafts = _cmsData.EntityManager.Query(map.ContentType).Where("EntityId.Equals(@0) AND Culture.Equals(@1) AND VersionNumber > @2", id, culture, currentVersionNumber);
 
             foreach (var entry in drafts)
             {
@@ -450,8 +450,8 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             versionToRestore.VersionLog = log;
-            var result = this.Save(versionToRestore, false);
-            this.SaveChanges();
+            var result = Save(versionToRestore, false);
+            SaveChanges();
             return result.Model;
         }
 
@@ -467,15 +467,15 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             var map = EntityHelper.GetObjectMap(viewModelType);
-            this.Manager.Delete(map.ContentType, id, culture, versionNumber, log);
+            _cmsData.EntityManager.Delete(map.ContentType, id, culture, versionNumber, log);
 
             if (saveChanges)
             {
-                this.SaveChanges();
+                SaveChanges();
             }
 
             var cacheKey = string.Format(CmsConstants.CONTENTPERCULTURE, viewModelType.Name);
-            this._cache.Delete(cacheKey);
+            _cache.Delete(cacheKey);
         }
 
         protected virtual EntityViewModel Get(Type modelType, Guid? id, string url, string culture, int versionNumber, string relationsToInclude, bool useFallBack = false)
@@ -489,7 +489,7 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 if (string.IsNullOrWhiteSpace(culture))
                 {
-                    culture = StrixPlatform.CurrentCultureCode;
+                    culture = _cmsData.Environment.Cultures.CurrentCultureCode;
                 }
 
                 relationsToInclude = GetRelationsToInclude(relationsToInclude, useTagging);
@@ -498,25 +498,25 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     if (versionNumber > 0)
                     {
-                        content = this.Manager.Get(map.ContentType, id.Value, culture, versionNumber, relationsToInclude);
+                        content = _cmsData.EntityManager.Get(map.ContentType, id.Value, culture, versionNumber, relationsToInclude);
                     }
                     else
                     {
-                        content = this.Manager.Get(map.ContentType, id.Value, culture, 0, relationsToInclude);
+                        content = _cmsData.EntityManager.Get(map.ContentType, id.Value, culture, 0, relationsToInclude);
                     }
                 }
                 else
                 {
                     if (versionNumber > 0)
                     {
-                        content = this.Manager.Get(map.ContentType, url, culture, versionNumber, relationsToInclude);
+                        content = _cmsData.EntityManager.Get(map.ContentType, url, culture, versionNumber, relationsToInclude);
                     }
                     else
                     {
                         if (useFallBack && EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.Translations))
                         {
-                            var query = this.Manager.Query(map.ContentType, relationsToInclude).Where("Entity.Url.ToLower().Equals(@0) AND IsCurrentVersion", url.ToLower());
-                            content = query.Where("Culture.ToLower().Equals(@0)", StrixPlatform.CurrentCultureCode.ToLower()).GetFirst() as IContent;
+                            var query = _cmsData.EntityManager.Query(map.ContentType, relationsToInclude).Where("Entity.Url.ToLower().Equals(@0) AND IsCurrentVersion", url.ToLower());
+                            content = query.Where("Culture.ToLower().Equals(@0)", _cmsData.Environment.Cultures.CurrentCultureCode.ToLower()).GetFirst() as IContent;
 
                             // If no content was found for this url and the current culture, try and
                             // get a version for another culture and set the culture to the current one.
@@ -526,13 +526,13 @@ namespace StrixIT.Platform.Modules.Cms
 
                                 if (content != null)
                                 {
-                                    content.Culture = StrixPlatform.CurrentCultureCode;
+                                    content.Culture = _cmsData.Environment.Cultures.CurrentCultureCode;
                                 }
                             }
                         }
                         else
                         {
-                            content = this.Manager.Get(map.ContentType, url, culture, 0, relationsToInclude);
+                            content = _cmsData.EntityManager.Get(map.ContentType, url, culture, 0, relationsToInclude);
                         }
                     }
                 }
@@ -542,7 +542,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (model == null)
             {
-                model = this.Manager.Get(map.ContentType, null).Map<TModel>();
+                model = _cmsData.EntityManager.Get(map.ContentType, null).Map<TModel>();
 
                 if (id.HasValue)
                 {
@@ -552,7 +552,7 @@ namespace StrixIT.Platform.Modules.Cms
                 model.Url = url;
             }
 
-            this.AddTagsAndTranslations(content, model, map, useTagging);
+            AddTagsAndTranslations(content, model, map, useTagging);
 
             return model;
         }
@@ -647,13 +647,13 @@ namespace StrixIT.Platform.Modules.Cms
             {
                 if (EntityHelper.IsServiceActive(map.ContentType, EntityServiceActions.Translations))
                 {
-                    model.AvailableCultures = this.Manager.GetAvailableCultures(map.ContentType, model.EntityId);
+                    model.AvailableCultures = _cmsData.EntityManager.GetAvailableCultures(map.ContentType, model.EntityId);
                 }
             }
 
             if (useTagging)
             {
-                var allTags = this._taxonomyManager.TagQuery().Map<TermViewModel>().ToList();
+                var allTags = _cmsData.TaxonomyManager.TagQuery().Map<TermViewModel>().ToList();
 
                 if (content != null)
                 {
@@ -706,7 +706,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (!imageIds.IsEmpty())
             {
-                var imageNames = this.Manager.Query<File>().Where(f => imageIds.Contains(f.Id)).Select(f => f.FileName).ToArray();
+                var imageNames = _cmsData.EntityManager.Query<File>().Where(f => imageIds.Contains(f.Id)).Select(f => f.FileName).ToArray();
                 fileNames = fileNames.Union(imageNames).Distinct().ToList();
             }
 
@@ -716,7 +716,7 @@ namespace StrixIT.Platform.Modules.Cms
         private void GetNewRelations(object entity)
         {
             // Get many-to-many relations
-            var manyToMany = this.Manager.GetManyToManyRelations(entity.GetType());
+            var manyToMany = _cmsData.EntityManager.GetManyToManyRelations(entity.GetType());
 
             foreach (var relation in manyToMany)
             {
@@ -728,7 +728,7 @@ namespace StrixIT.Platform.Modules.Cms
                 }
 
                 // Get the current relations.
-                var currentRelations = this.Manager.GetExistingManyToManyRelations(entity, relation);
+                var currentRelations = _cmsData.EntityManager.GetExistingManyToManyRelations(entity, relation);
 
                 // Remove old many-to-many relations
                 var clearMethod = relationProperty.GetType().GetMethod("Clear");

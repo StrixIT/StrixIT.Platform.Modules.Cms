@@ -20,6 +20,7 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
 using System;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -27,9 +28,19 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The view model for vocabularies.
     /// </summary>
-    public class VocabularyViewModel : PlatformBaseViewModel
+    public class VocabularyViewModel : PlatformBaseViewModel, IViewModel
     {
+        #region Public Constructors
+
+        public VocabularyViewModel() : base(typeof(Vocabulary))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
+
+        public bool CanDelete { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user can edit this view model.

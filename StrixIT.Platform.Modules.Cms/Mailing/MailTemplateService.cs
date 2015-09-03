@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System;
 using System.Linq;
 
@@ -30,7 +31,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public MailTemplateService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        public MailTemplateService(ICmsData cmsData, ICacheService cache) : base(cmsData, cache)
         {
         }
 
@@ -71,7 +72,7 @@ namespace StrixIT.Platform.Modules.Cms
         protected override void Delete(Type viewModelType, Guid id, string culture, int versionNumber, string log, bool saveChanges)
         {
             // Get and delete all mails using this template before trying to delete the template itself.
-            var template = this.Manager.Get<MailContentTemplate>(id, culture, versionNumber, "Mails");
+            var template = CmsData.EntityManager.Get<MailContentTemplate>(id, culture, versionNumber, "Mails");
 
             if (template == null)
             {

@@ -28,6 +28,23 @@ namespace StrixIT.Platform.Modules.Cms
 {
     public class UserSaveHandler : IHandlePlatformEvent<GeneralEvent>
     {
+        #region Private Fields
+
+        private IPlatformDataSource _dataSource;
+        private IPlatformHelper _helper;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public UserSaveHandler(IPlatformDataSource dataSource, IPlatformHelper helper)
+        {
+            _dataSource = dataSource;
+            _helper = helper;
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         public void Handle(GeneralEvent args)
@@ -40,10 +57,7 @@ namespace StrixIT.Platform.Modules.Cms
             var id = (Guid)args.Data["Id"];
             var name = (string)args.Data["UserName"];
             var email = (string)args.Data["UserEmail"];
-
-            var source = DependencyInjector.Get<IPlatformDataSource>(PlatformConstants.STRUCTUREMAPPRIVATE);
-
-            var lookup = source.Query<UserData>().FirstOrDefault(u => u.Id == id);
+            var lookup = _dataSource.Query<UserData>().FirstOrDefault(u => u.Id == id);
 
             if (lookup == null)
             {
@@ -52,10 +66,10 @@ namespace StrixIT.Platform.Modules.Cms
 
             lookup.Name = name;
             lookup.Email = email;
-            source.Save(lookup);
-            source.SaveChanges();
+            _dataSource.Save(lookup);
+            _dataSource.SaveChanges();
 
-            StrixCms.ClearUserNameDictionary();
+            _helper.ClearUserNameDictionary();
         }
 
         #endregion Public Methods

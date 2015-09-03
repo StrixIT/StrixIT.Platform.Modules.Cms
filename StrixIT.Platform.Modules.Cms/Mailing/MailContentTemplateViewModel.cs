@@ -29,6 +29,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class MailContentTemplateViewModel : EntityViewModel
     {
+        #region Public Constructors
+
+        public MailContentTemplateViewModel() : base(typeof(MailContentTemplate))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

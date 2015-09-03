@@ -30,6 +30,14 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class NewsViewModel : EntityViewModel
     {
+        #region Public Constructors
+
+        public NewsViewModel() : base(typeof(News))
+        {
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>

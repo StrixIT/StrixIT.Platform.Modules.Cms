@@ -20,6 +20,7 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
 using System;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -27,8 +28,16 @@ namespace StrixIT.Platform.Modules.Cms
     /// <summary>
     /// The base view model for all content list pages.
     /// </summary>
-    public abstract class EntityListModel : AuditViewModel
+    public abstract class EntityListModel : AuditViewModel, IListModel
     {
+        #region Protected Constructors
+
+        protected EntityListModel(Type entityType) : base(entityType)
+        {
+        }
+
+        #endregion Protected Constructors
+
         #region Public Properties
 
         /// <summary>

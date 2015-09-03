@@ -189,7 +189,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
                         new EntityTypeServiceAction
                         {
                             Action = "Translations",
-                            GroupId = TestHelpers.CurrentUserCurrentGroupId
+                            GroupId = Guid.NewGuid()
                         }
                     }
                 };

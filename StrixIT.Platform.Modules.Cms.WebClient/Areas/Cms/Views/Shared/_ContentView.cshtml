@@ -20,7 +20,7 @@
 @{
     Layout = "~/Areas/Admin/Views/Shared/_ItemLayout.cshtml";
     var type = (Type)ViewBag.ModelType;
-    bool IsAdmin = User.IsAdministrator;
+    bool IsAdmin = Platform.User.IsAdministrator;
     bool canEdit = typeof(AuditViewModel).IsAssignableFrom(type);
     var typeName = type.Name.ToLower().Replace("viewmodel", string.Empty);
     var hasName = type.HasProperty("Name");
@@ -32,12 +32,12 @@
 
     if (isEntityType)
     {
-        var contentType = EntityHelper.GetObjectMap(type).ContentType;
-        isTranslatable = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.Translations);
-        isVersionable = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
-        showComments = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.AllowComments);
-        supportAccess = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.EntityTypeAccess);
-        supportDrafts = isEntityType && EntityHelper.IsServiceActive(contentType, EntityServiceActions.Drafts);
+        var contentType = Cms.GetObjectMap(type).ContentType;
+        isTranslatable = isEntityType && Cms.IsServiceActive(contentType, EntityServiceActions.Translations);
+        isVersionable = isEntityType && Cms.IsServiceActive(contentType, EntityServiceActions.AutomaticVersions);
+        showComments = isEntityType && Cms.IsServiceActive(contentType, EntityServiceActions.AllowComments);
+        supportAccess = isEntityType && Cms.IsServiceActive(contentType, EntityServiceActions.EntityTypeAccess);
+        supportDrafts = isEntityType && Cms.IsServiceActive(contentType, EntityServiceActions.Drafts);
     }
 }
 @RenderSection("css", false)

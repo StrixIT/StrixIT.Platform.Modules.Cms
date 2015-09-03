@@ -17,8 +17,8 @@
 <!-- #endregion -->
 
 @{
-    var cultures = StrixPlatform.Cultures.Select(c => new { Id = c.Code, Name = c.Name }).ToList();
-    var languageList = new SelectList(cultures, "Id", "Name", StrixPlatform.CurrentCultureCode);
+    var cultures = Platform.Cultures.Cultures.Select(c => new { Id = c.Code, Name = c.Name }).ToList();
+    var languageList = new SelectList(cultures, "Id", "Name", Platform.Cultures.CurrentCultureCode);
 }
 <div id="editlanguagepicker" ng-controller="editlanguagepickercontroller">
     @if (languageList.Count() > 1)

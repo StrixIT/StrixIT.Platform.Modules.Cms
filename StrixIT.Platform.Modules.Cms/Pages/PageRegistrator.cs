@@ -40,8 +40,20 @@ namespace StrixIT.Platform.Modules.Cms
         private static ConcurrentBag<ContentLocator> _contentLocators = new ConcurrentBag<ContentLocator>();
         private static object _lockObject = new object();
         private static ConcurrentDictionary<string, string> _pageLocations = new ConcurrentDictionary<string, string>();
+        private PageController _controller;
+        private IEnvironment _environment;
 
         #endregion Private Fields
+
+        #region Public Constructors
+
+        public PageRegistrator(IEnvironment environment, PageController controller)
+        {
+            _environment = environment;
+            _controller = controller;
+        }
+
+        #endregion Public Constructors
 
         #region Public Properties
 
@@ -64,7 +76,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public void LocatePages()
         {
-            var folders = Directory.GetDirectories(StrixPlatform.Environment.MapPath("Views")).Where(d => d.ToLower() != "shared");
+            var folders = Directory.GetDirectories(_environment.MapPath("Views")).Where(d => d.ToLower() != "shared");
 
             foreach (var folder in folders)
             {
@@ -151,11 +163,10 @@ namespace StrixIT.Platform.Modules.Cms
                 {
                     if (!_contentLocators.Any(l => l.PageUrl == pagePath))
                     {
-                        var viewPath = "~/" + Web.Helpers.GetVirtualPath(Path.Combine(location, "index.cshtml"));
+                        var viewPath = "~/" + _environment.GetVirtualPath(Path.Combine(location, "index.cshtml"));
                         var requestContext = new RequestContext(httpContext, routeData);
-                        var controller = DependencyInjector.Get(typeof(PageController)) as Controller;
-                        controller.ControllerContext = new ControllerContext(requestContext, controller);
-                        MvcExtensions.RenderViewToString(controller.ControllerContext, viewPath);
+                        _controller.ControllerContext = new ControllerContext(requestContext, _controller);
+                        MvcExtensions.RenderViewToString(_controller.ControllerContext, viewPath);
                     }
                 }
             }

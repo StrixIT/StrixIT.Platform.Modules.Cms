@@ -6,6 +6,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,25 +16,18 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     [TestClass]
     public class EntityManagerTests
     {
-        #region Private Fields
-
-        private List<Mock> _mocks;
-
-        #endregion Private Fields
-
         #region Public Methods
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Logger.LoggingService = null;
-        }
 
         [TestInitialize]
         public void Init()
         {
-            _mocks = TestHelpers.MockUtilities();
-            Logger.LoggingService = new Mock<ILoggingService>().Object;
+            DependencyInjector.Injector = new Mock<IDependencyInjector>().Object;
+        }
+
+        [TestCleanup]
+        public void Teardown()
+        {
+            DependencyInjector.Injector = null;
         }
 
         #endregion Public Methods
@@ -237,15 +231,13 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             var mock = new EntityManagerMock();
             IContent translation = null;
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
             mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { translation = n; return n; });
             var entity = EntityServicesTestData.FirstNewsContentEn;
             entity.Culture = "fr";
             entity.Name = "Francais";
             entity.Body = "La Marseillaise";
             var result = mock.EntityManager.Save(entity);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(false);
             mock.DataSourceMock.Mock.Verify(d => d.Save<IContent>(It.IsAny<IContent>()), Times.Once());
             Assert.IsNotNull(result);
             Assert.IsNotNull(translation);
@@ -260,15 +252,13 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             var mock = new EntityManagerMock();
             IContent translation = null;
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
             mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { translation = n; return n; });
             var entity = EntityServicesTestData.ThirdNewsContentDe;
             entity.Culture = "fr";
             entity.Name = "Francais";
             entity.Body = "La Marseillaise";
             var result = mock.EntityManager.Save(entity);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(false);
             mock.DataSourceMock.Mock.Verify(d => d.Save<IContent>(It.IsAny<IContent>()), Times.Once());
             Assert.IsNotNull(result);
             Assert.IsNotNull(translation);
@@ -299,15 +289,13 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             var mock = new EntityManagerMock();
             IContent version = null;
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             mock.DataSourceMock.Mock.Setup(m => m.GetModifiedPropertyValues(It.IsAny<News>())).Returns(new List<ModifiedPropertyValue> { new ModifiedPropertyValue() });
             mock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { version = n; return n; });
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             var entity = EntityServicesTestData.FirstNewsContentEn;
             entity.Body = "This is a new version of this news.";
             entity.PublishedOn = DateTime.Now;
             var result = mock.EntityManager.Save(entity);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(false);
             mock.DataSourceMock.Mock.Verify(d => d.Save<IContent>(It.IsAny<IContent>()), Times.Once());
             Assert.IsNotNull(result);
             Assert.IsNotNull(version);
@@ -333,10 +321,8 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void DeleteAnEntityByIdMarksTheEntityContentAsDeletedWhenTrashIsActive()
         {
             var mock = new EntityManagerMock();
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
             mock.EntityManager.Delete<News>(EntityServicesTestData.SecondNewsEntityId);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(false);
             var undeleted = mock.DataSourceMock.DataList<News>().Any(n => n.EntityId == EntityServicesTestData.SecondNewsEntityId && !n.DeletedOn.HasValue);
             Assert.IsFalse(undeleted);
         }
@@ -345,10 +331,8 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void DeleteContentByCultureAndVersionNumberDeletesTheContentForThatCultureAndVersionNumberWhenAlreadyMarkedAsDeletedWhenTrashIsActive()
         {
             var mock = new EntityManagerMock();
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
             mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en", 3);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(false);
             mock.DataSourceMock.Mock.Verify(d => d.Delete(It.IsAny<IContent>()), Times.Once());
         }
 
@@ -372,10 +356,8 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void DeleteContentByCultureMarksAsDeletedAllTheContentForThatCultureWhenTrashIsActive()
         {
             var mock = new EntityManagerMock();
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
+            mock.HelperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(true);
             mock.EntityManager.Delete<News>(EntityServicesTestData.FirstNewsEntityId, "en");
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Trashbin)).Returns(false);
             var undeleted = mock.DataSourceMock.DataList<News>().Any(n => n.EntityId == EntityServicesTestData.FirstNewsEntityId && !n.DeletedOn.HasValue && n.Culture == "en");
             Assert.IsFalse(undeleted);
         }
@@ -390,7 +372,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             var groupId = Guid.NewGuid();
 
             var entity = new PlatformEntity();
-            entity.EntityTypeId = EntityHelper.GetEntityTypeId(typeof(T));
+            entity.EntityTypeId = EntityServicesTestData.EntityTypes.Where(t => t.Name == typeof(T).FullName).Select(t => t.Id).First();
             entity.GroupId = groupId;
             entity.OwnerUserId = currentUserId;
 

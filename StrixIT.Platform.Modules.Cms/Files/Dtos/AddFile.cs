@@ -50,7 +50,6 @@ namespace StrixIT.Platform.Modules.Cms
             this.FileIdPropertyName = fileIdPropertyName;
             this.KeepAspectRatio = true;
             this.Unzip = true;
-            this.FileTypes = string.Join(",", StrixCms.Config.Files.AllowedFileTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToLower().Trim());
         }
 
         #endregion Public Constructors
@@ -97,12 +96,6 @@ namespace StrixIT.Platform.Modules.Cms
         /// linked to.
         /// </summary>
         public string FileIdPropertyName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file types allowed (comma-separated), narrowing the file types
-        /// specified in the platform.
-        /// </summary>
-        public string FileTypes { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to keep the aspect ratio for an image when resizing.

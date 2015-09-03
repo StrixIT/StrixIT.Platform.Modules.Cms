@@ -6,6 +6,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,17 +17,22 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     {
         #region Private Fields
 
-        private List<Mock> _mocks;
         private Mock<IUserContext> _userMock;
 
         #endregion Private Fields
 
         #region Public Methods
 
+        [ClassInitialize]
+        public static void Init(TestContext context)
+        {
+            CmsInitializer.ConfigureEntityMaps();
+        }
+
         [TestMethod]
         public void GetEntityTypeIdShouldReturnCorrectId()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
+            var helper = GetEntityHelper();
             var id = helper.GetEntityTypeId(typeof(Html));
             Assert.AreEqual(EntityServicesTestData.HtmlEntityTypeId, id);
         }
@@ -34,24 +40,15 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void GetTypeUsingEntityIdShouldReturnCorrectType()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
+            var helper = GetEntityHelper();
             var type = helper.GetEntityType(EntityServicesTestData.HtmlEntityTypeId);
             Assert.AreEqual(typeof(Html), type);
-        }
-
-        [TestInitialize]
-        public void Init()
-        {
-            _mocks = TestHelpers.MockUtilities();
-            _userMock = _mocks.First(m => typeof(Mock<IUserContext>).IsAssignableFrom(m.GetType())) as Mock<IUserContext>;
-            new StructureMapDependencyInjector();
-            CmsInitializer.ConfigureEntityMaps();
         }
 
         [TestMethod]
         public void IsServiceActiveShouldReturnFalseForNonActiveService()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
+            var helper = GetEntityHelper();
             var result = helper.IsServiceActive(typeof(Html), "Versioning");
             Assert.IsFalse(result);
         }
@@ -59,7 +56,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void IsServiceActiveShouldReturnTrueForActiveService()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
+            var helper = GetEntityHelper();
+            var htmlEntityType = helper.EntityTypes.First(e => e.Name == typeof(Html).FullName);
+            _userMock.Setup(u => u.GroupId).Returns(htmlEntityType.EntityTypeServiceActions.First().GroupId);
             var result = helper.IsServiceActive(typeof(Html), "Translations");
             Assert.IsTrue(result);
         }
@@ -67,8 +66,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void MappingAnEntityToAListModelShouldMapTheUrl()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
-            EntityHelper.SetHelper(helper);
+            var helper = GetEntityHelper();
             var content = EntityServicesTestData.FirstNewsContentEn.Map<NewsListModel>();
             var result = content.Map<NewsListModel>();
             Assert.AreEqual(EntityServicesTestData.FirstNewsContentEn.Entity.Url, result.Url);
@@ -77,7 +75,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         [TestMethod]
         public void ObjectMapShouldReturnProperObjectMap()
         {
-            var helper = new DefaultEntityHelper(_userMock.Object, EntityServicesTestData.EntityTypes);
+            var helper = GetEntityHelper();
             var map = helper.GetObjectMap(typeof(News));
             Assert.AreEqual(typeof(News), map.ContentType);
             Assert.AreEqual(typeof(NewsViewModel), map.ViewModelType);
@@ -85,5 +83,18 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private EntityHelper GetEntityHelper()
+        {
+            var dataSourceMock = new Mock<IPlatformDataSource>();
+            var cmsService = new CmsService(dataSourceMock.Object, EntityServicesTestData.EntityTypes);
+            _userMock = new Mock<IUserContext>();
+            var helper = new EntityHelper(cmsService, _userMock.Object);
+            return helper;
+        }
+
+        #endregion Private Methods
     }
 }

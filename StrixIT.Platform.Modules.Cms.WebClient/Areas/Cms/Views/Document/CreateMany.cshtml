@@ -17,7 +17,7 @@
 <!-- #endregion -->
 
 @{
-    var taggingActive = EntityHelper.IsServiceActive(typeof(Document), EntityServiceActions.AllowFixedTagging);
+    var taggingActive = Cms.IsServiceActive(typeof(Document), EntityServiceActions.AllowFixedTagging);
 }
 <div id="documentcontainer" ng-controller="createdocumentcontroller" ng-init="init()">
     <div ng-show="!editMode">

@@ -32,17 +32,15 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Private Fields
 
-        private IPlatformDataSource _dataSource;
-        private IUserContext _user;
+        private ICmsData _cmsData;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public EntityServiceManager(IPlatformDataSource dataSource, IUserContext user)
+        public EntityServiceManager(ICmsData cmsData)
         {
-            _dataSource = dataSource;
-            _user = user;
+            _cmsData = cmsData;
         }
 
         #endregion Public Constructors
@@ -53,11 +51,11 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var result = new EntityServiceCollection();
 
-            foreach (var type in EntityHelper.EntityTypes.OrderBy(t => t.Name))
+            foreach (var type in _cmsData.EntityHelper.EntityTypes.OrderBy(t => t.Name))
             {
                 var records = new List<ServiceActionRecord>();
 
-                foreach (var service in StrixCms.Services)
+                foreach (var service in _cmsData.PlatformHelper.Services)
                 {
                     foreach (var action in service.Value)
                     {
@@ -92,13 +90,13 @@ namespace StrixIT.Platform.Modules.Cms
             bool result = true;
 
             Guid[] typeIds = records.Select(re => re.Item2).ToArray();
-            var groupId = _user.GroupId;
-            List<EntityType> entityTypes = _dataSource.Query<EntityType>().Include(t => t.EntityTypeServiceActions).Where(e => typeIds.Contains(e.Id)).ToList();
+            var groupId = _cmsData.Environment.User.GroupId;
+            List<EntityType> entityTypes = _cmsData.DataSource.Query<EntityType>().Include(t => t.EntityTypeServiceActions).Where(e => typeIds.Contains(e.Id)).ToList();
 
             foreach (var entityType in entityTypes)
             {
                 var actions = entityType.EntityTypeServiceActions.Where(s => s.GroupId == groupId).ToList();
-                _dataSource.Delete(actions);
+                _cmsData.DataSource.Delete(actions);
 
                 foreach (var action in actions)
                 {
@@ -118,10 +116,10 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Private Methods
 
-        private static void SaveRecord(Tuple<string, Guid, IList<ServiceActionRecord>> group, List<EntityType> entityTypes, Guid groupId)
+        private void SaveRecord(Tuple<string, Guid, IList<ServiceActionRecord>> group, List<EntityType> entityTypes, Guid groupId)
         {
             var entityType = entityTypes.First(e => e.Id == group.Item2);
-            var type = EntityHelper.GetEntityType(entityType.Id);
+            var type = _cmsData.EntityHelper.GetEntityType(entityType.Id);
             var selectedEntries = group.Item3.Where(i => i.Selected);
             var deselectedEntries = group.Item3.Where(i => !i.Selected);
 
@@ -130,8 +128,8 @@ namespace StrixIT.Platform.Modules.Cms
                 entityType.EntityTypeServiceActions.Add(new EntityTypeServiceAction() { EntityTypeId = record.EntityTypeId, Action = record.Action, GroupId = groupId });
             }
 
-            EntityHelper.DeactivateServices(type, deselectedEntries.Select(e => e.Action));
-            EntityHelper.ActivateServices(type, selectedEntries.Select(e => e.Action));
+            _cmsData.EntityHelper.DeactivateServices(type, deselectedEntries.Select(e => e.Action));
+            _cmsData.EntityHelper.ActivateServices(type, selectedEntries.Select(e => e.Action));
         }
 
         #endregion Private Methods

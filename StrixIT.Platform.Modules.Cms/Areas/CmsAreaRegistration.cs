@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using StrixIT.Platform.Web;
 using System.Web.Mvc;
 
@@ -44,7 +45,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
-            var culture = StrixPlatform.DefaultCultureCode.ToLower();
+            var culture = DependencyInjector.Get<ICultureService>().DefaultCultureCode.ToLower();
 
             context.Routes.MapRoute(
                 "SecureFiles",

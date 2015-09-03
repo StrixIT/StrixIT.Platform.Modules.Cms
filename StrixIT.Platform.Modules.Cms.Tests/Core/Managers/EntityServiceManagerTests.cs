@@ -15,66 +15,16 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     [TestClass]
     public class EntityServiceManagerTests
     {
-        #region Private Fields
-
-        private static List<EntityType> entityTypes = new List<EntityType>
-        {
-            new EntityType
-            {
-                Id = Guid.NewGuid(),
-                Name = typeof(Html).FullName
-            },
-            new EntityType
-            {
-                Id = Guid.NewGuid(),
-                Name = typeof(News).FullName
-            },
-            new EntityType
-            {
-                Id = Guid.NewGuid(),
-                Name = typeof(MailContentTemplate).FullName
-            },
-            new EntityType
-            {
-                Id = Guid.NewGuid(),
-                Name = typeof(MailContent).FullName
-            },
-            new EntityType
-            {
-                Id = Guid.NewGuid(),
-                Name = typeof(Document).FullName
-            },
-        };
-
-        private List<Mock> _mocks;
-        private Mock<IUserContext> _userMock;
-
-        #endregion Private Fields
-
         #region Public Methods
 
         [TestMethod()]
         public void GetManagerActionRecordsShouldReturnCorrectNumberOfRecords()
         {
             var mock = new EntityServiceManagerMock();
-            var platformHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IPlatformHelper>))) as Mock<IPlatformHelper>;
-            var entityHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            StrixCms.SetHelper(new DefaultPlatformHelper(null));
-            var entityHelper = new DefaultEntityHelper(_userMock.Object, entityTypes);
-            EntityHelper.SetHelper(entityHelper);
             var result = mock.EntityServiceManager.GetManagerActionRecords();
-            StrixCms.SetHelper(platformHelperMock.Object);
-            EntityHelper.SetHelper(entityHelperMock.Object);
             Assert.IsNotNull(result);
             Assert.AreEqual(5, result.Count);
             Assert.AreEqual(10, result.First().Item3.Count);
-        }
-
-        [TestInitialize]
-        public void Init()
-        {
-            _mocks = TestHelpers.MockUtilities();
-            _userMock = _mocks.First(m => typeof(Mock<IUserContext>).IsAssignableFrom(m.GetType())) as Mock<IUserContext>;
         }
 
         #endregion Public Methods

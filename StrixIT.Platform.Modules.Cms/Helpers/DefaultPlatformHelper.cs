@@ -27,7 +27,7 @@ using System.Linq;
 
 namespace StrixIT.Platform.Modules.Cms
 {
-    public class DefaultPlatformHelper : IPlatformHelper
+    public class PlatformHelper : IPlatformHelper
     {
         #region Private Fields
 
@@ -44,7 +44,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public DefaultPlatformHelper(IPlatformDataSource source)
+        public PlatformHelper(IPlatformDataSource source)
         {
             this._source = source;
 

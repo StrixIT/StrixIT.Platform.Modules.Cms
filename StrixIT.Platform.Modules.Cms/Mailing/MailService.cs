@@ -21,6 +21,8 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
+using StrixIT.Platform.Web;
 using System;
 using System.Linq;
 
@@ -30,7 +32,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public MailService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, ICacheService cache) : base(dataSource, entityManager, taxonomyManager, cache)
+        public MailService(ICmsData cmsData, ICacheService cache) : base(cmsData, cache)
         {
         }
 
@@ -43,7 +45,7 @@ namespace StrixIT.Platform.Modules.Cms
             if (string.IsNullOrWhiteSpace(culture))
             {
                 Logger.Log("No user culture specified. Using default culture.", LogLevel.Warning);
-                culture = StrixPlatform.CurrentCultureCode;
+                culture = CmsData.Environment.Cultures.CurrentCultureCode;
             }
 
             var mail = this.Manager.Query<MailContent>("Template").Where(m => m.Name.ToLower().Equals(name.ToLower())
@@ -62,8 +64,8 @@ namespace StrixIT.Platform.Modules.Cms
                 return null;
             }
 
-            mail.Body = Web.Helpers.HtmlDecode(mail.Body, false);
-            mail.Template.Body = Web.Helpers.HtmlDecode(mail.Template.Body, false);
+            mail.Body = HtmlHelpers.HtmlDecode(mail.Body, false);
+            mail.Template.Body = HtmlHelpers.HtmlDecode(mail.Template.Body, false);
             return mail;
         }
 
@@ -75,11 +77,11 @@ namespace StrixIT.Platform.Modules.Cms
         {
             var model = base.Get(modelType, id, url, culture, versionNumber, "Template", useFallBack) as MailContentViewModel;
 
-            this.GetTemplates(model, culture ?? StrixPlatform.CurrentCultureCode);
+            this.GetTemplates(model, culture ?? CmsData.Environment.Cultures.CurrentCultureCode);
 
             if (model.Template != null)
             {
-                model.Template.Body = StrixIT.Platform.Web.Helpers.HtmlDecode(model.Template.Body, false);
+                model.Template.Body = HtmlHelpers.HtmlDecode(model.Template.Body, false);
             }
 
             return model;

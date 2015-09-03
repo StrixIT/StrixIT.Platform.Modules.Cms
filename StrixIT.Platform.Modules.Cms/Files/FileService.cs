@@ -78,7 +78,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
             catch (Exception ex)
             {
-                this._dataSource.FileSystemWrapper.ClearDeleteQueue();
+                this._dataSource.FileSystem.ClearDeleteQueue();
                 Logger.Log(ex.Message, ex, LogLevel.Fatal);
                 throw;
             }

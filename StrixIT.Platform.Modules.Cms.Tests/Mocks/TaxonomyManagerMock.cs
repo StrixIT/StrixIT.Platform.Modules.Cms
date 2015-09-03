@@ -6,6 +6,7 @@
 
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
@@ -13,7 +14,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     {
         #region Private Fields
 
+        private Mock<ICultureService> _cultureServiceMock = new Mock<ICultureService>();
         private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private Mock<IEnvironment> _environmentMock = new Mock<IEnvironment>();
         private ITaxonomyManager _manager;
         private Mock<IUserContext> _userMock = new Mock<IUserContext>();
 
@@ -23,7 +26,11 @@ namespace StrixIT.Platform.Modules.Cms.Tests
 
         public TaxonomyManagerMock()
         {
-            _manager = new TaxonomyManager(_dataSourceMock.Mock.Object, _userMock.Object);
+            _cultureServiceMock.Setup(c => c.DefaultCultureCode).Returns("en");
+            _cultureServiceMock.Setup(c => c.CurrentCultureCode).Returns("en");
+            _environmentMock.Setup(e => e.Cultures).Returns(_cultureServiceMock.Object);
+            _environmentMock.Setup(e => e.User).Returns(_userMock.Object);
+            _manager = new TaxonomyManager(_dataSourceMock.Mock.Object, _environmentMock.Object);
         }
 
         #endregion Public Constructors
@@ -38,19 +45,19 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             }
         }
 
+        public Mock<IEnvironment> EnvironmentMock
+        {
+            get
+            {
+                return _environmentMock;
+            }
+        }
+
         public ITaxonomyManager TaxonomyManager
         {
             get
             {
                 return _manager;
-            }
-        }
-
-        public Mock<IUserContext> UserMock
-        {
-            get
-            {
-                return _userMock;
             }
         }
 

@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,17 +36,18 @@ namespace StrixIT.Platform.Modules.Cms
         private const string GETCOMMENTQUERY = "EntityId.Equals(@0) AND Culture.ToLower().Equals(@1) And IsCurrentVersion";
 
         private IPlatformDataSource _dataSource;
-
-        private IUserContext _user;
+        private IEntityHelper _entityHelper;
+        private IEnvironment _environment;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public CommentManager(IPlatformDataSource dataSource, IUserContext user)
+        public CommentManager(IPlatformDataSource dataSource, IEnvironment environment, IEntityHelper entityHelper)
         {
             _dataSource = dataSource;
-            _user = user;
+            _environment = environment;
+            _entityHelper = entityHelper;
         }
 
         #endregion Public Constructors
@@ -54,14 +56,14 @@ namespace StrixIT.Platform.Modules.Cms
 
         public Comment AddComment(Guid entityTypeId, Comment comment)
         {
-            Type entityType = EntityHelper.GetEntityType(entityTypeId);
+            Type entityType = _entityHelper.GetEntityType(entityTypeId);
 
-            if (!EntityHelper.IsServiceActive(entityType, EntityServiceActions.AllowNestedComments))
+            if (!_entityHelper.IsServiceActive(entityType, EntityServiceActions.AllowNestedComments))
             {
                 comment.ParentId = null;
             }
 
-            if (EntityHelper.IsServiceActive(entityType, EntityServiceActions.ModerateComments))
+            if (_entityHelper.IsServiceActive(entityType, EntityServiceActions.ModerateComments))
             {
                 comment.CommentStatus = CommentStatus.New;
             }
@@ -72,7 +74,7 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (string.IsNullOrWhiteSpace(comment.EntityCulture))
             {
-                comment.EntityCulture = StrixPlatform.CurrentCultureCode;
+                comment.EntityCulture = _environment.Cultures.CurrentCultureCode;
             }
 
             var content = _dataSource.Query(entityType).Where(GETCOMMENTQUERY, comment.EntityId, comment.EntityCulture.ToLower()).GetFirst() as IContent;
@@ -82,9 +84,9 @@ namespace StrixIT.Platform.Modules.Cms
                 comment.EntityVersion = content.VersionNumber;
             }
 
-            comment.CreatedByUserId = _user.Id;
+            comment.CreatedByUserId = _environment.User.Id;
             comment.CreatedOn = DateTime.Now;
-            comment.UpdatedByUserId = _user.Id;
+            comment.UpdatedByUserId = _environment.User.Id;
             comment.UpdatedOn = comment.CreatedOn;
             var result = _dataSource.Save(comment);
 
@@ -113,7 +115,7 @@ namespace StrixIT.Platform.Modules.Cms
                 return false;
             }
 
-            Type entityType = EntityHelper.GetEntityType(entityTypeId);
+            Type entityType = _entityHelper.GetEntityType(entityTypeId);
             var content = _dataSource.Query(entityType).Where(GETCOMMENTQUERY, comment.EntityId, comment.EntityCulture.ToLower()).GetFirst() as IContent;
 
             if (content == null)
@@ -156,7 +158,7 @@ namespace StrixIT.Platform.Modules.Cms
             }
 
             theComment.Text = comment.Text;
-            theComment.UpdatedByUserId = _user.Id;
+            theComment.UpdatedByUserId = _environment.User.Id;
             theComment.UpdatedOn = DateTime.Now;
             return theComment;
         }
@@ -168,7 +170,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public IList<Comment> GetComments(Guid entityId, string culture)
         {
-            culture = culture ?? StrixPlatform.CurrentCultureCode;
+            culture = culture ?? _environment.Cultures.CurrentCultureCode;
             var query = _dataSource.Query<Comment>().Where(co => co.EntityId == entityId && (culture == null || co.EntityCulture.ToLower() == culture.ToLower()));
             return query.ToList();
         }

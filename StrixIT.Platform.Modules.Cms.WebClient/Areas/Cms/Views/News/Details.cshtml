@@ -21,7 +21,7 @@
     Layout = "~/Areas/Cms/Views/Shared/_ContentView.cshtml";
 }
 @section Content {
-    @if (StrixCms.Config.UseNewsSummary)
+    @if (Platform.Configuration.GetConfiguration<CmsConfiguration>().UseNewsSummary)
     {
         <div ng-bind-html="news.summary"></div>
     }

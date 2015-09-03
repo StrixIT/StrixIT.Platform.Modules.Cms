@@ -6,6 +6,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,23 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     [TestClass]
     public class EntityServiceTests
     {
-        #region Private Fields
+        #region Public Methods
 
-        private List<Mock> _mocks;
+        [TestInitialize]
+        public void Init()
+        {
+            DependencyInjector.Injector = new Mock<IDependencyInjector>().Object;
+        }
 
-        #endregion Private Fields
+        [TestCleanup]
+        public void Teardown()
+        {
+            DependencyInjector.Injector = null;
+        }
+
+        #endregion Public Methods
+
+
 
         #region Public Methods
 
@@ -27,24 +40,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public static void Init(TestContext context)
         {
             CmsInitializer.ConfigureEntityMaps();
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Logger.LoggingService = null;
-        }
-
-        [TestInitialize]
-        public void Init()
-        {
-            _mocks = TestHelpers.MockUtilities();
-            var entityHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            entityHelperMock.Setup(m => m.GetObjectMap(typeof(News))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
-            entityHelperMock.Setup(m => m.GetObjectMap(typeof(NewsViewModel))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
-            entityHelperMock.Setup(m => m.GetObjectMap(typeof(NewsListModel))).Returns(new ObjectMap(typeof(News), typeof(NewsViewModel), typeof(NewsListModel)));
-            entityHelperMock.Setup(m => m.GetEntityType(It.IsAny<Guid>())).Returns(typeof(News));
-            Logger.LoggingService = new Mock<ILoggingService>().Object;
         }
 
         #endregion Public Methods
@@ -114,14 +109,12 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         {
             var mock = new EntityServiceMock<NewsViewModel>();
             var entity = mock.EntityManagerMock.DataSourceMock.DataList<News>().First(n => n.Entity.Url == EntityServicesTestData.FirstNewsContentEn.Entity.Url);
+            mock.EntityHelperMock.Setup(h => h.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
             var url = entity.Entity.Url;
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(true);
             var model = mock.EntityService.GetCached(url);
             mock.CacheMock.Setup(c => c[string.Format(CmsConstants.CONTENTPERCULTURE, typeof(NewsViewModel).Name)]).Returns(new List<Tuple<string, string, dynamic>> { new Tuple<string, string, dynamic>(url, "en", entity.Map<NewsViewModel>()) });
             var model2 = mock.EntityService.GetCached(url);
             mock.CacheMock.Setup(c => c[string.Format(CmsConstants.CONTENTPERCULTURE, typeof(NewsViewModel).Name)]).Returns((List<Tuple<string, string, dynamic>>)null);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(false);
             Assert.IsNotNull(model);
             Assert.IsNotNull(model2);
             Assert.AreEqual(3, model.AvailableCultures.Count());
@@ -209,8 +202,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void GetVersionListShouldReturnProperlyFilledList()
         {
             var mock = new EntityServiceMock<NewsViewModel>();
-            var platformHelperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IPlatformHelper>))) as Mock<IPlatformHelper>;
-            platformHelperMock.Setup(m => m.GetUserName(It.IsAny<Guid>())).Returns("TestUser");
             var list = mock.EntityService.GetVersionList(EntityServicesTestData.FirstNewsEntityId, null, null);
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count());
@@ -222,8 +213,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
         public void RestoreVerionListShouldSetCorrectEntityVersionToIsCurrentAndWriteToLog()
         {
             var mock = new EntityServiceMock<NewsViewModel>();
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { return n; });
             var data = mock.EntityManagerMock.DataSourceMock.DataList<News>().Where(e => e.EntityId == EntityServicesTestData.FirstNewsEntityId && e.Culture == "en");
             var firstVersion = data.First(e => e.VersionNumber == 1);
@@ -233,9 +222,9 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             firstVersion.PublishedOn = DateTime.Now.AddDays(-10);
             secondVersion.IsCurrentVersion = true;
             ThirdVersion.DeletedOn = null;
+            mock.EntityManagerMock.HelperMock.Setup(e => e.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(d => d.GetModifiedPropertyValues(It.IsAny<News>())).Returns(() => { return new List<ModifiedPropertyValue>() { new ModifiedPropertyValue { PropertyName = "Body", NewValue = "", OldValue = "" } }; });
             var model = mock.EntityService.RestoreVersion(EntityServicesTestData.FirstNewsEntityId, 1, "Test message");
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.Translations)).Returns(false);
             Assert.IsNotNull(model);
             Assert.IsTrue(model.IsCurrentVersion);
             Assert.AreEqual(3, model.VersionNumber);
@@ -272,8 +261,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             mock.EntityManagerMock.DataSourceMock.RegisterData<File>(EntityServicesTestData.Files);
             mock.TaxonomyManagerMock.DataSourceMock.RegisterData<File>(EntityServicesTestData.Files);
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { return n; });
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(m => m.GetModifiedPropertyValues(It.IsAny<News>())).Returns(new List<ModifiedPropertyValue> { new ModifiedPropertyValue() });
             var entity = mock.EntityManagerMock.DataSourceMock.DataList<News>().First().Map<NewsViewModel>();
             var fileA = mock.TaxonomyManagerMock.DataSourceMock.DataList<File>().First(f => f.Id == EntityServicesTestData.DiverImageId);
@@ -282,7 +269,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             entity.Name = "Testing";
             entity.Body = string.Format(@"<p>News with a diver image</p><img src=""{0}.jpg"" /><p>Also a karate image</p><img src=""{1}.png"" />", EntityServicesTestData.DiverImageId, EntityServicesTestData.KarateImageId);
             mock.EntityService.Save(entity);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(false);
             Assert.AreEqual(1, fileA.Tags.Count());
             Assert.IsNotNull(fileA.Tags.First());
             Assert.AreEqual(1, fileB.Tags.Count());
@@ -296,8 +282,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             mock.EntityManagerMock.DataSourceMock.RegisterData<File>(EntityServicesTestData.Files);
             mock.TaxonomyManagerMock.DataSourceMock.RegisterData<File>(EntityServicesTestData.Files);
             mock.TaxonomyManagerMock.DataSourceMock.RegisterData<Term>(EntityServicesTestData.Terms);
-            var helperMock = _mocks.First(m => m.GetType().Equals(typeof(Mock<IEntityHelper>))) as Mock<IEntityHelper>;
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(true);
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(m => m.GetModifiedPropertyValues(It.IsAny<News>())).Returns(new List<ModifiedPropertyValue> { new ModifiedPropertyValue() });
             mock.EntityManagerMock.DataSourceMock.Mock.Setup(m => m.Save<IContent>(It.IsAny<IContent>())).Returns<IContent>(n => { return n; });
             var fileA = mock.TaxonomyManagerMock.DataSourceMock.DataList<File>().First(f => f.Id == EntityServicesTestData.DiverImageId);
@@ -312,7 +296,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             model.Name = "Testing";
             model.Body = string.Format(@"<p>News with a diver image</p><img src=""{0}.jpg"" />", EntityServicesTestData.DiverImageId);
             mock.EntityService.Save(model);
-            helperMock.Setup(m => m.IsServiceActive(typeof(News), EntityServiceActions.AutomaticVersions)).Returns(false);
             Assert.AreEqual(1, fileA.Tags.Count());
             Assert.IsNotNull(fileA.Tags.First());
             Assert.AreEqual(0, fileB.Tags.Count());
@@ -328,7 +311,7 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             var groupId = Guid.NewGuid();
 
             var entity = new PlatformEntity();
-            entity.EntityTypeId = EntityHelper.GetEntityTypeId(typeof(T));
+            entity.EntityTypeId = EntityServicesTestData.EntityTypes.Where(t => t.Name == typeof(T).FullName).Select(t => t.Id).First();
             entity.GroupId = groupId;
             entity.OwnerUserId = currentUserId;
 

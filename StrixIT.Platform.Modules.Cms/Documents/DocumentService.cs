@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,8 +39,8 @@ namespace StrixIT.Platform.Modules.Cms
 
         #region Public Constructors
 
-        public DocumentService(IPlatformDataSource dataSource, IEntityManager entityManager, ITaxonomyManager taxonomyManager, IFileManager fileManager, ICacheService cache)
-            : base(dataSource, entityManager, taxonomyManager, cache)
+        public DocumentService(ICmsData cmsData, ICacheService cache, IFileManager fileManager)
+            : base(cmsData, cache)
         {
             this._fileManager = fileManager;
         }
@@ -55,7 +56,7 @@ namespace StrixIT.Platform.Modules.Cms
                 throw new ArgumentNullException("models");
             }
 
-            var nextSortOrder = this.Manager.GetNextSortOrder<Document>();
+            var nextSortOrder = CmsData.EntityManager.GetNextSortOrder<Document>();
 
             var results = new List<DocumentViewModel>();
 
@@ -73,7 +74,7 @@ namespace StrixIT.Platform.Modules.Cms
 
         public DocumentViewModel GetForDownload(string url)
         {
-            var document = this.Manager.Get<Document>(url, StrixPlatform.CurrentCultureCode, "File");
+            var document = CmsData.EntityManager.Get<Document>(url, CmsData.Environment.Cultures.CurrentCultureCode, "File");
 
             if (document == null)
             {
@@ -105,7 +106,7 @@ namespace StrixIT.Platform.Modules.Cms
                 filter.TraverseListPropertyName = "EntityId";
                 var extEnum = Enum.Parse(typeof(DocumentType), documentTypeField.Value);
                 var extensions = this._fileManager.GetExtensions(extEnum.ToString());
-                var culture = StrixPlatform.CurrentCultureCode.ToLower();
+                var culture = CmsData.Environment.Cultures.CurrentCultureCode.ToLower();
                 list = this.Manager.Query<Document>().Where(d => d.Culture.ToLower() == culture && d.IsCurrentVersion && extensions.Contains(d.File.Extension.ToLower())).Filter(filter).Map<DocumentListModel>();
                 return list;
             }

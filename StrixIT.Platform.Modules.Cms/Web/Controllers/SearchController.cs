@@ -30,15 +30,17 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Private Fields
 
+        private IPageRegistrator _pageRegistrator;
         private ISearchService _searchService;
 
         #endregion Private Fields
 
         #region Public Constructors
 
-        public SearchController(ISearchService searchService)
+        public SearchController(ISearchService searchService, IPageRegistrator pageRegistrator)
         {
-            this._searchService = searchService;
+            _searchService = searchService;
+            _pageRegistrator = pageRegistrator;
         }
 
         #endregion Public Constructors
@@ -48,8 +50,8 @@ namespace StrixIT.Platform.Modules.Cms
         public ActionResult Index()
         {
             // Register all pages that have not yet been registered before starting the search.
-            PageRegistration.RegisterAllPages(this.ControllerContext.HttpContext, this.RouteData);
-            return this.View();
+            _pageRegistrator.RegisterAllPages(ControllerContext.HttpContext, RouteData);
+            return View();
         }
 
         [HttpPost]
@@ -59,10 +61,10 @@ namespace StrixIT.Platform.Modules.Cms
 
             if (searchTerm != null)
             {
-                this.ViewBag.SearchTerm = searchTerm.Value;
+                ViewBag.SearchTerm = searchTerm.Value;
             }
 
-            return this.Json(this._searchService.Search(options));
+            return Json(_searchService.Search(options));
         }
 
         #endregion Public Methods

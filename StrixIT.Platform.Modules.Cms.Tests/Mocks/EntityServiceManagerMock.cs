@@ -6,6 +6,8 @@
 
 using Moq;
 using StrixIT.Platform.Core;
+using System;
+using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms.Tests
 {
@@ -13,28 +15,62 @@ namespace StrixIT.Platform.Modules.Cms.Tests
     {
         #region Private Fields
 
-        private DataSourceMock _dataSourceMock = new DataSourceMock();
+        private Mock<ICmsData> _dataMock = new Mock<ICmsData>();
+        private Mock<IEntityHelper> _entityHelperMock = new Mock<IEntityHelper>();
         private IEntityServiceManager _manager;
-        private Mock<IUserContext> _userMock = new Mock<IUserContext>();
+        private Mock<IPlatformHelper> _platformHelperMock = new Mock<IPlatformHelper>();
 
         #endregion Private Fields
+
+        private static List<EntityType> entityTypes = new List<EntityType>
+        {
+            new EntityType
+            {
+                Id = Guid.NewGuid(),
+                Name = typeof(Html).FullName
+            },
+            new EntityType
+            {
+                Id = Guid.NewGuid(),
+                Name = typeof(News).FullName
+            },
+            new EntityType
+            {
+                Id = Guid.NewGuid(),
+                Name = typeof(MailContentTemplate).FullName
+            },
+            new EntityType
+            {
+                Id = Guid.NewGuid(),
+                Name = typeof(MailContent).FullName
+            },
+            new EntityType
+            {
+                Id = Guid.NewGuid(),
+                Name = typeof(Document).FullName
+            },
+        };
 
         #region Public Constructors
 
         public EntityServiceManagerMock()
         {
-            _manager = new EntityServiceManager(_dataSourceMock.Mock.Object, _userMock.Object);
+            _platformHelperMock.Setup(p => p.Services).Returns(new PlatformHelper(null).Services);
+            _entityHelperMock.Setup(h => h.EntityTypes).Returns(entityTypes);
+            _dataMock.Setup(c => c.EntityHelper).Returns(_entityHelperMock.Object);
+            _dataMock.Setup(c => c.PlatformHelper).Returns(_platformHelperMock.Object);
+            _manager = new EntityServiceManager(_dataMock.Object);
         }
 
         #endregion Public Constructors
 
         #region Public Properties
 
-        public DataSourceMock DataSourceMock
+        public Mock<ICmsData> CmsDataMock
         {
             get
             {
-                return _dataSourceMock;
+                return _dataMock;
             }
         }
 
@@ -43,14 +79,6 @@ namespace StrixIT.Platform.Modules.Cms.Tests
             get
             {
                 return _manager;
-            }
-        }
-
-        public Mock<IUserContext> UserMock
-        {
-            get
-            {
-                return _userMock;
             }
         }
 

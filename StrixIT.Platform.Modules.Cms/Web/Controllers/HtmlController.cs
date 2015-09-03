@@ -30,7 +30,7 @@ namespace StrixIT.Platform.Modules.Cms
     {
         #region Public Constructors
 
-        public HtmlController(IEntityService<HtmlViewModel> service, ICommentService commentService, IUserContext user) : base(service, commentService, user)
+        public HtmlController(IEntityService<HtmlViewModel> service, ICmsServices cmsServices) : base(service, cmsServices)
         {
         }
 

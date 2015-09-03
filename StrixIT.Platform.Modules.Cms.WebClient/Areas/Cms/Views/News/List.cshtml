@@ -19,7 +19,7 @@
 @{
     Html.AddScript("~/Areas/Cms/Scripts/Widgets/strixit.newscontroller.js");
     var itemPageUrl = (string)ViewContext.HttpContext.Items[CmsConstants.ITEMPAGEURL];
-    var basePage = Request.Url.AbsolutePath.Replace(string.Format("/{0}/", StrixPlatform.DefaultCultureCode), string.Empty).ToLower();
+    var basePage = Request.Url.AbsolutePath.Replace(string.Format("/{0}/", Platform.Cultures.DefaultCultureCode), string.Empty).ToLower();
     if (!string.IsNullOrWhiteSpace(itemPageUrl) && basePage != itemPageUrl.ToLower())
     {
         basePage = basePage + "/" + itemPageUrl;
@@ -34,9 +34,9 @@
         <h3 ng-bind-html="dataItem.name"></h3>
         <p ng-bind-html="dataItem.summary"></p>
         <a href="{{ '@basePage' + '/' + dataItem.url }}">@Interface.ReadFullNews</a>
-        @if (User.IsInRole(CmsRoleNames.EDITORROLES))
+        @if (Platform.User.IsInRole(CmsRoleNames.EDITORROLES))
         {
-            <a class="cms-editlink" href="{{ '@Url.Action("Edit", "News", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })/' + dataItem.url }}">@Interface.EditNews</a>
+            <a class="cms-editlink" href="{{ '@Url.Action("Edit", "News", new { area = "Cms", language = Platform.Cultures.CurrentCultureCode })/' + dataItem.url>@Interface.EditNews</a>
         }
     </li>
 </script>
@@ -44,8 +44,8 @@
     <input type="text" class="k-textbox" strix-search k-data-source="news" placeholder="Search news..." data-field="Name, Summary, Body" />
     <ul class="cms-list-news" kendo-listview="newslist" k-options="newslistconfig"></ul>
     <div kendo-pager k-data-source="news"></div>
-    @if (User.IsInRole(CmsRoleNames.EDITORROLES))
+    @if (Platform.User.IsInRole(CmsRoleNames.EDITORROLES))
     {
-        <a class="cms-createlink" href="@Url.Action("Edit", "News", new { area = "Cms", language = StrixPlatform.CurrentCultureCode })">@Interface.CreateNews</a>
+        <a class="cms-createlink" href="@Url.Action("Edit", "News", new { area = "Cms", language = Platform.Cultures.CurrentCultureCode>@Interface.CreateNews</a>
     }
 </div>

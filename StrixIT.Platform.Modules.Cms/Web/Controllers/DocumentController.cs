@@ -32,18 +32,11 @@ namespace StrixIT.Platform.Modules.Cms
     [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
     public class DocumentController : EntityController<DocumentViewModel>
     {
-        #region Private Fields
-
-        private ITaxonomyService _taxonomyService;
-
-        #endregion Private Fields
-
         #region Public Constructors
 
-        public DocumentController(IDocumentService documentService, ICommentService commentService, IUserContext user, ITaxonomyService taxonomyService)
-            : base(documentService, commentService, user)
+        public DocumentController(IDocumentService documentService, ICmsServices cmsServices)
+            : base(documentService, cmsServices)
         {
-            this._taxonomyService = taxonomyService;
         }
 
         #endregion Public Constructors
@@ -59,14 +52,14 @@ namespace StrixIT.Platform.Modules.Cms
         [HttpPost]
         public JsonResult CreateMany(IList<DocumentViewModel> models)
         {
-            var result = ((IDocumentService)this.Service).CreateMany(models);
+            var result = ((IDocumentService)this.EntityService).CreateMany(models);
             return this.Json(result);
         }
 
         [AllowAnonymous]
         public ActionResult Download(string id)
         {
-            var document = ((IDocumentService)this.Service).GetForDownload(id);
+            var document = ((IDocumentService)this.EntityService).GetForDownload(id);
 
             if (document == null)
             {
@@ -74,18 +67,18 @@ namespace StrixIT.Platform.Modules.Cms
                 return new HttpUnauthorizedResult();
             }
 
-            return new FilePathResult(StrixPlatform.Environment.MapPath(document.FullPath), MimeMapping.GetMimeMapping(document.FullPath));
+            return new FilePathResult(Environment.MapPath(document.FullPath), MimeMapping.GetMimeMapping(document.FullPath));
         }
 
         [StrixAuthorization(Roles = CmsRoleNames.CONTRIBUTORROLES)]
         public JsonResult GetAllTags()
         {
-            return this.Json(this._taxonomyService.GetAllTags().OrderBy(t => t.Name));
+            return this.Json(Services.TaxonomyService.GetAllTags().OrderBy(t => t.Name));
         }
 
         public override ActionResult Index()
         {
-            var config = new EntityListConfiguration<DocumentViewModel>(User);
+            var config = new EntityListConfiguration<DocumentViewModel>(Environment.User, Services.EntityHelper);
             config.Fields.Insert(0, new ListFieldConfiguration("Extension"));
             config.Fields.Insert(1, new ListFieldConfiguration("FileSize", "bytes") { ShowFilter = false });
             return this.View(config);

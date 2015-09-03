@@ -1,7 +1,7 @@
 ﻿#region Apache License
 
 //-----------------------------------------------------------------------
-// <copyright file="CmsRegistry.cs" company="StrixIT">
+// <copyright file="CmsServiceConfiguration.cs" company="StrixIT">
 // Copyright 2015 StrixIT. Author R.G. Schurgers MA MSc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,28 +20,25 @@
 
 #endregion Apache License
 
-using StrixIT.Platform.Core;
-using StructureMap.Configuration.DSL;
+using StrixIT.Platform.Core.DependencyInjection;
+using System.Collections.Generic;
 
 namespace StrixIT.Platform.Modules.Cms
 {
-    public class CmsRegistry : Registry
+    public class CmsServiceConfiguration : IServiceConfiguration
     {
-        #region Public Constructors
+        #region Public Properties
 
-        public CmsRegistry()
+        public IList<ServiceDescriptor> Services
         {
-            For<IPlatformDataSource>()
-                .AddInstances(inst => inst.ConstructedBy(() => new PlatformDataSource(new FileSystemWrapper(), new CacheService(), DependencyInjector.Get<IUserContext>()))
-                .Named(PlatformConstants.STRUCTUREMAPPRIVATE))
-                .Use<PlatformDataSource>();
-
-            For(typeof(IEntityService<>)).Use(typeof(EntityService<>));
-
-            For<IPlatformHelper>().Use<DefaultPlatformHelper>();
-            For<IEntityHelper>().Use<DefaultEntityHelper>();
+            get
+            {
+                var serviceList = new List<ServiceDescriptor>();
+                serviceList.Add(new ServiceDescriptor(typeof(IEntityService<>), typeof(EntityService<>)));
+                return serviceList;
+            }
         }
 
-        #endregion Public Constructors
+        #endregion Public Properties
     }
 }

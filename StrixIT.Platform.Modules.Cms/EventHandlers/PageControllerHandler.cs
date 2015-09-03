@@ -21,6 +21,7 @@
 #endregion Apache License
 
 using StrixIT.Platform.Core;
+using StrixIT.Platform.Core.Environment;
 using StrixIT.Platform.Web;
 using System;
 using System.Web.Routing;
@@ -29,6 +30,23 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
 {
     public class PageControllerHandler : IHandlePlatformEvent<GetControllerEvent>
     {
+        #region Private Fields
+
+        private ICultureService _cultureService;
+        private IPageRegistrator _registrator;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public PageControllerHandler(ICultureService cultureService, IPageRegistrator registrator)
+        {
+            _cultureService = cultureService;
+            _registrator = registrator;
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         public void Handle(GetControllerEvent args)
@@ -36,7 +54,7 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
             if (args.Stage == ControllerResolveStage.NotFound)
             {
                 // Construct the required variables.
-                var culture = StrixPlatform.CurrentCultureCode.ToLower();
+                var culture = _cultureService.CurrentCultureCode.ToLower();
                 var controller = ((string)args.RequestContext.RouteData.Values[MvcConstants.CONTROLLER]).ToLower();
                 var path = args.RequestContext.HttpContext.Request.Path.ToLower().Replace(string.Format("/{0}/", culture), string.Empty).Replace("/index", string.Empty);
                 var url = path.Substring(path.LastIndexOf("/") + 1);
@@ -65,7 +83,7 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
 
             foreach (var pathPart in path.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (PageRegistration.IsLocationRegistered(pathPart))
+                if (_registrator.IsLocationRegistered(pathPart))
                 {
                     matchedUrl = pathPart;
                     break;
@@ -74,13 +92,13 @@ namespace StrixIT.Platform.Modules.Cms.EventHandlers
 
             if (matchedUrl == null && !retry)
             {
-                PageRegistration.LocatePages();
+                _registrator.LocatePages();
                 matchedUrl = this.GetPageUrl(requestContext, path, true);
             }
 
             if (!retry)
             {
-                PageRegistration.RegisterPage(requestContext.HttpContext, requestContext.RouteData, matchedUrl);
+                _registrator.RegisterPage(requestContext.HttpContext, requestContext.RouteData, matchedUrl);
             }
 
             return matchedUrl;

@@ -27,5 +27,12 @@ namespace StrixIT.Platform.Modules.Cms
     /// </summary>
     public class MailContentListModel : EntityListModel
     {
+        #region Public Constructors
+
+        public MailContentListModel() : base(typeof(MailContent))
+        {
+        }
+
+        #endregion Public Constructors
     }
 }

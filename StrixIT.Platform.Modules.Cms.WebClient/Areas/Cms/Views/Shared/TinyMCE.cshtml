@@ -21,9 +21,9 @@
     Html.AddScript("~/Areas/Cms/TinyMCE/tiny_mce.js");
     var contentType = Model.ModelType;
     var useComments = Model.CommentSettingsOnly.ToString().ToLower();
-    var useAdvanced = EntityHelper.IsServiceActive(contentType, EntityServiceActions.RteAdvanced).ToString().ToLower();
-    var useUploads = EntityHelper.IsServiceActive(contentType, EntityServiceActions.RteFileUpload).ToString().ToLower();
-    var codeEditing = EntityHelper.IsServiceActive(contentType, EntityServiceActions.HtmlEditor).ToString().ToLower();
+    var useAdvanced = Cms.IsServiceActive(contentType, EntityServiceActions.RteAdvanced).ToString().ToLower();
+    var useUploads = Cms.IsServiceActive(contentType, EntityServiceActions.RteFileUpload).ToString().ToLower();
+    var codeEditing = Cms.IsServiceActive(contentType, EntityServiceActions.HtmlEditor).ToString().ToLower();
     var modelName = string.IsNullOrWhiteSpace(Model.ModelName) ? Model.ModelType.Name : Model.ModelName;
     var modelString = string.Format(@"{0}.{1}", modelName.ToCamelCase(), Model.FieldName.ToCamelCase());
     var id = Model.FieldName.ToCamelCase();
