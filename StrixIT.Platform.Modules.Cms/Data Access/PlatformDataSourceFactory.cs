@@ -20,6 +20,8 @@
 
 #endregion Apache License
 
+using StrixIT.Platform.Core;
+using StrixIT.Platform.Framework;
 using System.Data.Entity.Infrastructure;
 
 namespace StrixIT.Platform.Modules.Cms
@@ -33,7 +35,9 @@ namespace StrixIT.Platform.Modules.Cms
 
         public PlatformDataSource Create()
         {
-            return PlatformDataSource.CreateForMigrations();
+            DependencyInjector.Injector = new StructureMapDependencyInjector();
+            var environment = DependencyInjector.Get<IEnvironment>();
+            return new PlatformDataSource(null, null, environment);
         }
 
         #endregion Public Methods

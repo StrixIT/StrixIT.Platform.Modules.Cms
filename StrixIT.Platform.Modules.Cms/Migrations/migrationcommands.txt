@@ -1,0 +1,6 @@
+﻿IMPORTANT: enable the connection string in the web project main web.config before scaffolding a migration!
+IMPORTANT: the webclient project has a reference to this project to be able to scaffold a migration.
+
+Add migration: add-migration [name] -AppDomainBaseDirectory "C:\Development\GitHub\Main\StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.WebClient\bin"
+update-database: update-database -AppDomainBaseDirectory "C:\Development\GitHub\Main\StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.WebClient\bin"
+generate scripts: update-database -script -sourcemigration: $initialdatabase -AppDomainBaseDirectory "C:\Development\GitHub\Main\StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.WebClient\bin"

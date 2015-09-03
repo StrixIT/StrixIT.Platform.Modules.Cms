@@ -13,7 +13,7 @@ namespace StrixIT.Platform.Modules.Cms.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201506251130154_initial"; }
+            get { return "201509031423147_initial"; }
         }
         
         string IMigrationMetadata.Source

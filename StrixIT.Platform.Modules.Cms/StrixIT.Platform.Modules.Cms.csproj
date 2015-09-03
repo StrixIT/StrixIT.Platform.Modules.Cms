@@ -160,6 +160,10 @@
     <Compile Include="CmsService.cs" />
     <Compile Include="ICmsData.cs" />
     <Compile Include="ICmsServices.cs" />
+    <Compile Include="Migrations\201509031423147_initial.cs" />
+    <Compile Include="Migrations\201509031423147_initial.Designer.cs">
+      <DependentUpon>201509031423147_initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrixConfigurationException.cs" />
     <Compile Include="Html\Html.cs" />
     <Compile Include="Html\HtmlListModel.cs" />
@@ -174,10 +178,6 @@
     <Compile Include="Mailing\MailContentViewModel.cs" />
     <Compile Include="Mailing\MailService.cs" />
     <Compile Include="Mailing\MailTemplateService.cs" />
-    <Compile Include="Migrations\201506251130154_initial.cs" />
-    <Compile Include="Migrations\201506251130154_initial.Designer.cs">
-      <DependentUpon>201506251130154_initial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="News\INewsService.cs" />
     <Compile Include="News\News.cs" />
@@ -255,11 +255,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Migrations\migrationcommands.txt" />
     <Content Include="Migrations\Scripts\Create database 1.0.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201506251130154_initial.resx">
-      <DependentUpon>201506251130154_initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509031423147_initial.resx">
+      <DependentUpon>201509031423147_initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\DefaultTokens.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

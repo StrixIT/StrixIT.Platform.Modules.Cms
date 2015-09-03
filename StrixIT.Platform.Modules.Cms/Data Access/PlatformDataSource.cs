@@ -60,15 +60,6 @@ namespace StrixIT.Platform.Modules.Cms
             Configuration.ValidateOnSaveEnabled = false;
         }
 
-        protected PlatformDataSource(IConfiguration config, string connectionStringName) : base(config, connectionStringName)
-        {
-        }
-
-        // Todo: test. does this still work?
-        private PlatformDataSource() : base(DependencyInjector.Get<IConfiguration>(), CmsConstants.CMS)
-        {
-        }
-
         #endregion Constructors
 
         #region Public Properties
@@ -168,11 +159,6 @@ namespace StrixIT.Platform.Modules.Cms
         #endregion DbSets
 
         #region Public Methods
-
-        public static PlatformDataSource CreateForMigrations()
-        {
-            return new PlatformDataSource();
-        }
 
         public IList GetExistingManyToManyRelations(object entity, string propertyName)
         {

@@ -652,6 +652,12 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StrixIT.Platform.Modules.Cms\StrixIT.Platform.Modules.Cms.csproj">
+      <Project>{a3184dca-94da-4cc6-a0c3-ee395dcce88b}</Project>
+      <Name>StrixIT.Platform.Modules.Cms</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -9,7 +9,7 @@ namespace StrixIT.Platform.Modules.Cms.Migrations
     using StrixIT.Platform.Core;
     using System.Data.Entity.Migrations;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<StrixIT.Platform.Modules.Cms.PlatformDataSource>
+    internal sealed class Configuration : DbMigrationsConfiguration<PlatformDataSource>
     {
         #region Public Constructors
 
@@ -22,7 +22,7 @@ namespace StrixIT.Platform.Modules.Cms.Migrations
 
         #region Protected Methods
 
-        protected override void Seed(StrixIT.Platform.Modules.Cms.PlatformDataSource context)
+        protected override void Seed(PlatformDataSource context)
         {
             new MailBuilder(DependencyInjector.Get<IFileSystem>(), DependencyInjector.Get<IEnvironment>()).InitMails(context);
         }
