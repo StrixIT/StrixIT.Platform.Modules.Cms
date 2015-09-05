@@ -60,6 +60,10 @@ namespace StrixIT.Platform.Modules.Cms
             Configuration.ValidateOnSaveEnabled = false;
         }
 
+        protected PlatformDataSource(IConfiguration config, string connectionStringName) : base(config, connectionStringName)
+        {
+        }
+
         #endregion Constructors
 
         #region Public Properties
