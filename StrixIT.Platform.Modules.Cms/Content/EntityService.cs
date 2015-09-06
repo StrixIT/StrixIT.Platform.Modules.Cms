@@ -68,6 +68,14 @@ namespace StrixIT.Platform.Modules.Cms
             }
         }
 
+        protected new IEntityManager Manager
+        {
+            get
+            {
+                return _cmsData.EntityManager;
+            }
+        }
+
         #endregion Protected Properties
 
         #region Public Methods
