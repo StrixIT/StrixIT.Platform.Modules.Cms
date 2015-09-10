@@ -23,7 +23,7 @@
 @section FormContent
 {
     <strix-cms-editor editor-label="@Interface.Template">
-        <select name="templateId" kendo-drop-down-list ng-model="mailcontent.templateId" k-data-source="mailcontent.templates" k-data-text-field="'name'" k-data-value-field="'id'"></select>
+        <strix-drop-down name="preferredCulture" ng-model="mailcontent.templateId" source="mailcontent.templates" option-label="name" option-value="id"></strix-drop-down>
     </strix-cms-editor>
     <strix-cms-editor editor-label="@Interface.From">
         <input type="email" class="k-textbox" name="from" required maxlength="250" ng-model="mailcontent.from" data-email-msg="@Interface.InvalidEmail" />

@@ -33,13 +33,7 @@
         $scope.servicesToFilter = getServicesToFilter;
         $scope.filterServices = filterServices;
         $scope.save = save;
-
-        $scope.selectOptions = {
-            dataSource: dataSource,
-            dataTextField: 'item1',
-            dataValueField: 'item2',
-            change: changeSelect
-        }
+        $scope.changeSelect = changeSelect;
 
         $scope.$on("$routeChangeSuccess", function (event, params) { initServiceData(); });
 
@@ -81,10 +75,8 @@
             });
         }
 
-        function changeSelect(e) {
-            $scope.$apply(function () {
-                var value = e.sender.element.children().eq(e.sender.selectedIndex)[0].value;
-
+        function changeSelect(value) {
+            $scope.$evalAsync(function () {
                 for (var n in $scope.entityServices) {
                     var service = $scope.entityServices[n];
 
